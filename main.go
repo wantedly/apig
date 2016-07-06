@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 )
 
+//go:generate go-bindata templates/
+
 func main() {
 	var (
 		modelDir string

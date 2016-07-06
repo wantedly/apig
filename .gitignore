@@ -28,3 +28,5 @@ _testmain.go
 *.prof
 
 api-server-generator
+
+/bindata.go

@@ -2,9 +2,7 @@ package main
 
 import (
 	"bytes"
-	"io"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -39,25 +37,13 @@ func copyStaticFiles(outDir string) error {
 			}
 		}
 
-		src, err := os.Open(srcPath)
+		body, err := Asset(srcPath)
 
 		if err != nil {
 			return err
 		}
 
-		defer src.Close()
-
-		dst, err := os.Create(dstPath)
-
-		if err != nil {
-			return err
-
-		}
-		defer dst.Close()
-
-		_, err = io.Copy(dst, src)
-
-		if err != nil {
+		if err := ioutil.WriteFile(dstPath, body, 0644); err != nil {
 			return err
 		}
 	}
@@ -66,7 +52,7 @@ func copyStaticFiles(outDir string) error {
 }
 
 func generateController(model *Model, outDir string) error {
-	body, err := ioutil.ReadFile(filepath.Join(templateDir, "controllers", "controller.go.tmpl"))
+	body, err := Asset(filepath.Join(templateDir, "controllers", "controller.go.tmpl"))
 
 	if err != nil {
 		return err
@@ -100,7 +86,7 @@ func generateController(model *Model, outDir string) error {
 }
 
 func generateRouter(models []*Model, outDir string) error {
-	body, err := ioutil.ReadFile(filepath.Join(templateDir, "router", "router.go.tmpl"))
+	body, err := Asset(filepath.Join(templateDir, "router", "router.go.tmpl"))
 
 	if err != nil {
 		return err
