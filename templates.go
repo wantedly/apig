@@ -1,7 +1,6 @@
 package main
 
-const controllerTmpl = `
-func Get{{ pluralize .Name }}(c *gin.Context) {
+const controllerTmpl = `func Get{{ pluralize .Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
 	fields := c.DefaultQuery("fields", "*")
 	var {{ pluralize (tolower .Name) }} []models.{{ .Name }}
@@ -65,8 +64,7 @@ func Delete{{ .Name }}(c *gin.Context) {
 }
 `
 
-const routerTmpl = `
-//{{ .Name }} API
+const routerTmpl = `//{{ .Name }} API
 		api.GET("/{{ pluralize (tolower .Name) }}", controllers.Get{{ pluralize .Name }})
 		api.GET("/{{ pluralize (tolower .Name) }}/:id", controllers.Get{{ .Name }})
 		api.POST("/{{ pluralize (tolower .Name) }}", controllers.Create{{ .Name }})
