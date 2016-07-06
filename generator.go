@@ -23,9 +23,9 @@ var staticFiles = []string{
 	".gitignore",
 	"README.md",
 	"main.go",
-	// filepath.Join("db", "db.go"),
-	// filepath.Join("middleware", "db.go"),
-	// filepath.Join("server", "server.go"),
+	filepath.Join("db", "db.go"),
+	filepath.Join("middleware", "set_db.go"),
+	filepath.Join("server", "server.go"),
 }
 
 func copyStaticFiles(outDir string) error {
