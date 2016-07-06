@@ -4,8 +4,6 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/wantedly/api-server-generator/examples/simple/models"
-
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -17,7 +15,6 @@ func Connect() *gorm.DB {
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
-	db.AutoMigrate(&models.User{})
 	return db
 }
 
