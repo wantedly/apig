@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-//go:generate go-bindata templates/
+//go:generate go-bindata templates/...
 
 func main() {
 	var (
