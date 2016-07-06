@@ -66,7 +66,13 @@ func copyStaticFiles(outDir string) error {
 }
 
 func generateController(model *Model, outDir string) error {
-	tmpl, err := template.New("controller").Funcs(funcMap).Parse(controllerTmpl)
+	body, err := ioutil.ReadFile(filepath.Join(templateDir, "controllers", "controller.go.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("controller").Funcs(funcMap).Parse(string(body))
 
 	if err != nil {
 		return err
@@ -78,7 +84,7 @@ func generateController(model *Model, outDir string) error {
 		return err
 	}
 
-	dstPath := filepath.Join(outDir, "controller", strings.ToLower(model.Name)+".go")
+	dstPath := filepath.Join(outDir, "controllers", strings.ToLower(model.Name)+".go")
 
 	if !fileExists(filepath.Dir(dstPath)) {
 		if err := mkdir(filepath.Dir(dstPath)); err != nil {
