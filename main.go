@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -8,13 +9,29 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 3 {
-		fmt.Fprintln(os.Stderr, "usage: api-server-generator <model directory> <output directory>")
-		os.Exit(1)
+	var (
+		modelDir string
+		outDir   string
+	)
+
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, `Usage of %s:
+   %s -d <model directory> -o <output directory>
+
+Options:
+`, os.Args[0], os.Args[0])
+		flag.PrintDefaults()
 	}
 
-	modelDir := os.Args[1]
-	outDir := os.Args[2]
+	flag.StringVar(&modelDir, "d", "", "Model directory")
+	flag.StringVar(&outDir, "o", "", "Output directory")
+
+	flag.Parse()
+
+	if modelDir == "" || outDir == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
 
 	if !fileExists(outDir) {
 		if err := mkdir(outDir); err != nil {
