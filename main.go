@@ -85,14 +85,22 @@ func parseFile(path string) ([]*Model, error) {
 }
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "usage: api-server-generator <model directory>")
+	if len(os.Args) != 3 {
+		fmt.Fprintln(os.Stderr, "usage: api-server-generator <model directory> <output directory>")
 		os.Exit(1)
 	}
 
-	dir := os.Args[1]
+	modelDir := os.Args[1]
+	outDir := os.Args[2]
 
-	files, err := ioutil.ReadDir(dir)
+	if !fileExists(outDir) {
+		if err := mkdir(outDir); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	files, err := ioutil.ReadDir(modelDir)
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -104,10 +112,8 @@ func main() {
 			continue
 		}
 
-		path := filepath.Join(dir, file.Name())
-		fmt.Println("===== " + path)
-
-		models, err := parseFile(path)
+		modelPath := filepath.Join(modelDir, file.Name())
+		models, err := parseFile(modelPath)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -115,38 +121,20 @@ func main() {
 		}
 
 		for _, model := range models {
-			fmt.Println("// Model: " + model.Name)
-			fmt.Println("// Fields: ")
-
-			for name, t := range model.Fields {
-				fmt.Println("//  - " + name + " => " + t)
-			}
-
-			fmt.Println("")
-			fmt.Println("// Router")
-			fmt.Println("")
-
-			router, err := generateRouter(model)
-
-			if err != nil {
+			if err := generateController(model, outDir); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
 
-			fmt.Println(router)
-
-			fmt.Println("")
-			fmt.Println("// Controller")
-			fmt.Println("")
-
-			controller, err := generateController(model)
-
-			if err != nil {
+			if err := generateRouter(model, outDir); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
-
-			fmt.Println(controller)
 		}
+	}
+
+	if err := copyStaticFiles(outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }

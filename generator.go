@@ -2,119 +2,121 @@ package main
 
 import (
 	"bytes"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/gedex/inflector"
 )
 
-var controllerTmpl = `
-func Get{{ pluralize .Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
-	fields := c.DefaultQuery("fields", "*")
-	var {{ pluralize (tolower .Name) }} []models.{{ .Name }}
-	db.Select(fields).Find(&{{ pluralize (tolower .Name) }})
-	c.JSON(200, {{ pluralize (tolower .Name) }})
-}
-
-func Get{{ .Name }}(c. *gin.Context) {
-	db := db.DBInstance(c)
-	id := c.Params.ByName("id")
-	fields := c.DefaultQuery("fields", "*")
-	var {{ tolower .Name }} models.{{ .Name }}
-	err := db.Select(fields).First(&{{ tolower .Name }}, id).Error
-
-	if err != nil {
-		content := gin.H{"error": "{{ tolower .Name }} with id#" + id + " not found"}
-		c.JSON(404, content)
-		return
-	}
-
-	c.JSON(200, {{ tolower .Name }})
-}
-
-func Create{{ .Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
-	var {{ tolower .Name }} models.{{ .Name }}
-	c.Bind(&{{ tolower .Name }})
-	if db.Create(&{{ tolower .Name }}).Error != nil {
-		content := gin.H{"error": "error occured"}
-		c.JSON(500, content)
-		return
-	}
-	c.JSON(201, {{ tolower .Name }})
-}
-
-func Update{{ .Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
-	id := c.Params.ByName("id")
-	var {{ tolower .Name }} models.{{ .Name }}
-	if db.First(&{{ tolower .Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ tolower .Name }} with id#" + id + " not found"}
-		c.JSON(404, content)
-		return
-	}
-	c.Bind(&{{ tolower .Name }})
-	db.Save(&{{ tolower .Name }})
-	c.JSON(200, {{ tolower .Name }})
-}
-
-func Delete{{ .Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
-	id := c.Params.ByName("id")
-	var {{ tolower .Name }} models.{{ .Name }}
-	if db.First(&{{ tolower .Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ tolower .Name }} with id#" + id + " not found"}
-		c.JSON(404, content)
-		return
-	}
-	db.Delete(&{{ tolower .Name }})
-	c.Writer.WriteHeader(http.StatusNoContent)
-}
-`
-
-var routerTmpl = `
-//{{ .Name }} API
-		api.GET("/{{ pluralize (tolower .Name) }}", controllers.Get{{ pluralize .Name }})
-		api.GET("/{{ pluralize (tolower .Name) }}/:id", controllers.Get{{ .Name }})
-		api.POST("/{{ pluralize (tolower .Name) }}", controllers.Create{{ .Name }})
-		api.PUT("/{{ pluralize (tolower .Name) }}/:id", controllers.Update{{ .Name }})
-		api.DELETE("/{{ pluralize (tolower .Name) }}/:id", controllers.Delete{{ .Name }})
-`
+const templateDir = "templates"
 
 var funcMap = template.FuncMap{
 	"pluralize": inflector.Pluralize,
 	"tolower":   strings.ToLower,
 }
 
-func generateController(model *Model) (string, error) {
+var staticFiles = []string{
+	".gitignore",
+	"README.md",
+	"main.go",
+	// filepath.Join("db", "db.go"),
+	// filepath.Join("middleware", "db.go"),
+	// filepath.Join("server", "server.go"),
+}
+
+func copyStaticFiles(outDir string) error {
+	for _, filename := range staticFiles {
+		srcPath := filepath.Join(templateDir, filename)
+		dstPath := filepath.Join(outDir, filename)
+
+		if !fileExists(filepath.Dir(dstPath)) {
+			if err := mkdir(filepath.Dir(dstPath)); err != nil {
+				return err
+			}
+		}
+
+		src, err := os.Open(srcPath)
+
+		if err != nil {
+			return err
+		}
+
+		defer src.Close()
+
+		dst, err := os.Create(dstPath)
+
+		if err != nil {
+			return err
+
+		}
+		defer dst.Close()
+
+		_, err = io.Copy(dst, src)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func generateController(model *Model, outDir string) error {
 	tmpl, err := template.New("controller").Funcs(funcMap).Parse(controllerTmpl)
 
 	if err != nil {
-		return "", nil
+		return err
 	}
 
 	var buf bytes.Buffer
 
 	if err := tmpl.Execute(&buf, model); err != nil {
-		return "", nil
+		return err
 	}
 
-	return strings.TrimSpace(buf.String()), nil
+	dstPath := filepath.Join(outDir, "controller", strings.ToLower(model.Name)+".go")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func generateRouter(model *Model) (string, error) {
+func generateRouter(model *Model, outDir string) error {
 	tmpl, err := template.New("router").Funcs(funcMap).Parse(routerTmpl)
 
 	if err != nil {
-		return "", nil
+		return err
 	}
 
 	var buf bytes.Buffer
 
 	if err := tmpl.Execute(&buf, model); err != nil {
-		return "", nil
+		return err
 	}
 
-	return strings.TrimSpace(buf.String()), nil
+	dstPath := filepath.Join(outDir, "router", "router.go")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	return nil
 }
