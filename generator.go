@@ -99,8 +99,14 @@ func generateController(model *Model, outDir string) error {
 	return nil
 }
 
-func generateRouter(model *Model, outDir string) error {
-	tmpl, err := template.New("router").Funcs(funcMap).Parse(routerTmpl)
+func generateRouter(models []*Model, outDir string) error {
+	body, err := ioutil.ReadFile(filepath.Join(templateDir, "router", "router.go.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("router").Funcs(funcMap).Parse(string(body))
 
 	if err != nil {
 		return err
@@ -108,7 +114,7 @@ func generateRouter(model *Model, outDir string) error {
 
 	var buf bytes.Buffer
 
-	if err := tmpl.Execute(&buf, model); err != nil {
+	if err := tmpl.Execute(&buf, models); err != nil {
 		return err
 	}
 

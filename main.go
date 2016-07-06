@@ -43,13 +43,13 @@ func main() {
 			os.Exit(1)
 		}
 
+		if err := generateRouter(models, outDir); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
 		for _, model := range models {
 			if err := generateController(model, outDir); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-
-			if err := generateRouter(model, outDir); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
