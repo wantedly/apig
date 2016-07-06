@@ -85,6 +85,15 @@ func Delete{{ .Name }}(c *gin.Context) {
 }
 `
 
+var routerTmpl = `
+//{{ .Name }} API
+		api.GET("/{{ pluralize (tolower .Name) }}", controllers.Get{{ pluralize .Name }})
+		api.GET("/{{ pluralize (tolower .Name) }}/:id", controllers.Get{{ .Name }})
+		api.POST("/{{ pluralize (tolower .Name) }}", controllers.Create{{ .Name }})
+		api.PUT("/{{ pluralize (tolower .Name) }}/:id", controllers.Update{{ .Name }})
+		api.DELETE("/{{ pluralize (tolower .Name) }}/:id", controllers.Delete{{ .Name }})
+`
+
 var funcMap = template.FuncMap{
 	"pluralize": inflector.Pluralize,
 	"tolower":   strings.ToLower,
@@ -92,6 +101,22 @@ var funcMap = template.FuncMap{
 
 func generateController(model *Model) (string, error) {
 	tmpl, err := template.New("controller").Funcs(funcMap).Parse(controllerTmpl)
+
+	if err != nil {
+		return "", nil
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, model); err != nil {
+		return "", nil
+	}
+
+	return strings.TrimSpace(buf.String()), nil
+}
+
+func generateRouter(model *Model) (string, error) {
+	tmpl, err := template.New("router").Funcs(funcMap).Parse(routerTmpl)
 
 	if err != nil {
 		return "", nil
@@ -213,6 +238,21 @@ func main() {
 				fmt.Println("//  - " + name + " => " + t)
 			}
 
+			fmt.Println("")
+			fmt.Println("// Router")
+			fmt.Println("")
+
+			router, err := generateRouter(model)
+
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+
+			fmt.Println(router)
+
+			fmt.Println("")
+			fmt.Println("// Controller")
 			fmt.Println("")
 
 			controller, err := generateController(model)
