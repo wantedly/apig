@@ -1,0 +1,73 @@
+FORMAT: 1A
+HOST: http://localhost:8080
+
+# user API
+Welcome to the user API. This API provides access to the user service.
+
+# users action [/users]
+
+## Create user [POST]
+
+Create a new user
+
++ Request users (application/json; charset=utf-8)
+    + Attributes
+        + name: NAME (string)
+        + age: 1 (number)
+        + admin: false (boolean)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (users)
+
+## Get users [GET]
+
+Returns user list.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array)
+        + (users)
+
+# user action [/users/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired user.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+## Get user [GET]
+
+Returns user.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (users)
+
+## Update user [PUT]
+
+update user.
+
++ Request users (application/json; charset=utf-8)
+    + Attributes
+        + name: NAME (string)
+        + age: 1 (number)
+        + admin: false (boolean)
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (users)
+
+## Delete user [DELETE]
+
+Delete user.
+
++ Response 204
+
+# Data Structures
+## users (object, fixed)
+
++ id: 1 (number) - Id
++ name: NAME (string)
++ age: 1 (number)
++ admin: false (boolean)
++ created_at: `2000-01-01 00:00:00` (string) - CreatedTime
++ updated_at: `2000-01-01 00:00:00` (string) - UpdatedTime
