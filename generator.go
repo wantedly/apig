@@ -10,7 +10,7 @@ import (
 	"github.com/gedex/inflector"
 )
 
-const templateDir = "templates"
+const templateDir = "_templates"
 
 var funcMap = template.FuncMap{
 	"pluralize": inflector.Pluralize,

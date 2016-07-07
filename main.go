@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-//go:generate go-bindata templates/...
+//go:generate go-bindata _templates/...
 
 func main() {
 	var (
