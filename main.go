@@ -49,29 +49,35 @@ Options:
 		os.Exit(1)
 	}
 
+	var models []*Model
+
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
 
 		modelPath := filepath.Join(modelDir, file.Name())
-		models, err := parseFile(modelPath)
+		ms, err := parseFile(modelPath)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
-		if err := generateRouter(models, outDir); err != nil {
+		for _, model := range ms {
+			models = append(models, model)
+		}
+	}
+
+	if err := generateRouter(models, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	for _, model := range models {
+		if err := generateController(model, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
-		}
-
-		for _, model := range models {
-			if err := generateController(model, outDir); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
 		}
 	}
 
