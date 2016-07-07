@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 //go:generate go-bindata templates/...
@@ -54,6 +55,11 @@ Options:
 	for _, file := range files {
 		if file.IsDir() {
 			continue
+		}
+
+		if !strings.HasSuffix(file.Name(), ".go") {
+			fmt.Fprintln(os.Stderr, file.Name()+" is not a Go file.")
+			os.Exit(1)
 		}
 
 		modelPath := filepath.Join(modelDir, file.Name())
