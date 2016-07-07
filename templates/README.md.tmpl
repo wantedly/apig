@@ -1,0 +1,17 @@
+# API Server
+
+Simple Rest API using gin(framework) & gorm(orm)
+
+## Endpoint list
+{{ range . }}
+### {{ pluralize .Name }} Resource
+
+```
+GET    /api/{{ pluralize (tolower .Name) }}
+GET    /api/{{ pluralize (tolower .Name) }}/:id
+POST   /api/{{ pluralize (tolower .Name) }}
+PUT    /api/{{ pluralize (tolower .Name) }}/:id
+DELETE /api/{{ pluralize (tolower .Name) }}/:id
+```
+{{ end }}
+server runs at http://localhost:8080

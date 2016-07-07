@@ -75,6 +75,11 @@ Options:
 		}
 	}
 
+	if err := generateREADME(models, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	if err := generateRouter(models, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

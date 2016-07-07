@@ -19,7 +19,6 @@ var funcMap = template.FuncMap{
 
 var staticFiles = []string{
 	".gitignore",
-	"README.md",
 	"main.go",
 	filepath.Join("db", "db.go"),
 	filepath.Join("middleware", "set_db.go"),
@@ -71,6 +70,40 @@ func generateController(model *Model, outDir string) error {
 	}
 
 	dstPath := filepath.Join(outDir, "controllers", strings.ToLower(model.Name)+".go")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func generateREADME(models []*Model, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "README.md.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("readme").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, models); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, "README.md")
 
 	if !fileExists(filepath.Dir(dstPath)) {
 		if err := mkdir(filepath.Dir(dstPath)); err != nil {
