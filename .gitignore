@@ -27,8 +27,10 @@ _testmain.go
 *.test
 *.prof
 
-api-server-generator
+/api-server-generator
+/bin/
 
 /bindata.go
 
-/vendor
+/glide
+/vendor/
