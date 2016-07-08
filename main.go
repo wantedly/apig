@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/tcnksm/go-gitconfig"
 )
 
 //go:generate go-bindata _templates/...
@@ -72,8 +74,24 @@ func main() {
 
 }
 
-func cmdNew(outDir string) {
-	if err := copyStaticFiles(outDir); err != nil {
+func cmdNew(name string) {
+	vcs := "github.com"
+	username, err := gitconfig.Username()
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		fmt.Println("Error: $GOPATH is not found")
+		os.Exit(1)
+	}
+
+	projectDir := filepath.Join(gopath, "src", vcs, username, name)
+
+	if err := copyStaticFiles(projectDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
