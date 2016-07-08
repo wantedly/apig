@@ -1,0 +1,6 @@
+hash: 1ebffdae872768989f74365de5bf7448190b94fc2e1d95fafb71b6f4f6cc0eda
+updated: 2016-07-08T11:25:58.701312975+09:00
+imports:
+- name: github.com/gedex/inflector
+  version: 91797f1712fd58f224781be1080b8613d096187e
+devImports: []
