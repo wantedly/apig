@@ -11,31 +11,75 @@ import (
 
 //go:generate go-bindata _templates/...
 
+func usage() {
+	fmt.Fprintf(os.Stderr, `Usage of %s:
+	%s new <project name>
+	%s gen -d <model directory -o <output directory>`,
+	os.Args[0], os.Args[0], os.Args[0])
+	os.Exit(1)
+}
+
 func main() {
-	var (
-		modelDir string
-		outDir   string
-	)
 
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `Usage of %s:
-   %s -d <model directory> -o <output directory>
-
-Options:
-`, os.Args[0], os.Args[0])
-		flag.PrintDefaults()
+	if len(os.Args) < 2 {
+		usage()
 	}
 
-	flag.StringVar(&modelDir, "d", "", "Model directory")
-	flag.StringVar(&outDir, "o", "", "Output directory")
+	cmd := os.Args[1]
 
-	flag.Parse()
+	switch cmd {
+	case "gen":
+		var (
+			modelDir string
+			outDir   string
+		)
 
-	if modelDir == "" || outDir == "" {
-		flag.Usage()
+		flag := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+
+		flag.Usage = func() {
+			fmt.Fprintf(os.Stderr, `Usage of %s:
+	   %s gen -d <model directory> -o <output directory>
+
+	Options:
+	`, os.Args[0], os.Args[0])
+			flag.PrintDefaults()
+		}
+
+		flag.StringVar(&modelDir, "d", "", "Model directory")
+		flag.StringVar(&outDir, "o", "", "Output directory")
+
+		flag.Parse(os.Args[:2])
+
+		if modelDir == "" || outDir == "" {
+			flag.Usage()
+			os.Exit(1)
+		}
+		cmdGen(modelDir, outDir)
+
+	case "new":
+		if len(os.Args) < 3 {
+			fmt.Fprintf(os.Stderr, `Usage of %s:
+	   %s gen new <model name>`, os.Args[0], os.Args[0])
+			os.Exit(1)
+		}
+
+		name := os.Args[2]
+		cmdNew(name)
+
+	default:
+		usage()
+	}
+
+}
+
+func cmdNew(outDir string) {
+	if err := copyStaticFiles(outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
 
+func cmdGen(modelDir, outDir string) {
 	if !fileExists(outDir) {
 		if err := mkdir(outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -90,10 +134,5 @@ Options:
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-	}
-
-	if err := copyStaticFiles(outDir); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
 	}
 }
