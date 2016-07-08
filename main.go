@@ -89,9 +89,10 @@ func cmdNew(name string) {
 		os.Exit(1)
 	}
 
-	projectDir := filepath.Join(gopath, "src", vcs, username, name)
+	importPath := ImportPath{vcs, username, name}
+	outDir := filepath.Join(gopath, "src", vcs, username, name)
 
-	if err := copyStaticFiles(projectDir); err != nil {
+	if err := copyStaticFiles(importPath, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

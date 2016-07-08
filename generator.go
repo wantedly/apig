@@ -21,15 +21,15 @@ var funcMap = template.FuncMap{
 
 var staticFiles = []string{
 	".gitignore",
-	"main.go",
+	"main.go.tmpl",
 	filepath.Join("db", "db.go"),
 	filepath.Join("middleware", "set_db.go"),
-	filepath.Join("server", "server.go"),
+	filepath.Join("server", "server.go.tmpl"),
 	filepath.Join("controllers", ".gitkeep"),
 	filepath.Join("models", ".gitkeep"),
 }
 
-func copyStaticFiles(outDir string) error {
+func copyStaticFiles(importPath ImportPath, outDir string) error {
 	if fileExists(outDir) {
 		fmt.Println(outDir)
 		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
@@ -38,13 +38,7 @@ func copyStaticFiles(outDir string) error {
 
 	for _, filename := range staticFiles {
 		srcPath := filepath.Join(templateDir, filename)
-		dstPath := filepath.Join(outDir, filename)
-
-		if !fileExists(filepath.Dir(dstPath)) {
-			if err := mkdir(filepath.Dir(dstPath)); err != nil {
-				return err
-			}
-		}
+		dstPath := filepath.Join(outDir, strings.TrimRight(filename, ".tmpl"))
 
 		body, err := Asset(srcPath)
 
@@ -52,7 +46,25 @@ func copyStaticFiles(outDir string) error {
 			return err
 		}
 
-		if err := ioutil.WriteFile(dstPath, body, 0644); err != nil {
+		tmpl, err := template.New("complex").Funcs(funcMap).Parse(string(body))
+
+		if err != nil {
+			return err
+		}
+
+		var buf bytes.Buffer
+
+		if err := tmpl.Execute(&buf, importPath); err != nil {
+			return err
+		}
+
+		if !fileExists(filepath.Dir(dstPath)) {
+			if err := mkdir(filepath.Dir(dstPath)); err != nil {
+				return err
+			}
+		}
+
+		if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
 			return err
 		}
 	}
@@ -67,7 +79,7 @@ func generateController(model *Model, outDir string) error {
 		return err
 	}
 
-	tmpl, err := template.New("controller").Funcs(funcMap).Parse(string(body))
+	tmpl, err := template.New("controller").Parse(string(body))
 
 	if err != nil {
 		return err
