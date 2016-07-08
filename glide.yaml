@@ -1,0 +1,3 @@
+package: github.com/wantedly/api-server-generator
+import:
+- package: github.com/gedex/inflector
