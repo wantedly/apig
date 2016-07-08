@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"fmt"
+	"os"
 
 	"github.com/gedex/inflector"
 )
@@ -23,9 +25,17 @@ var staticFiles = []string{
 	filepath.Join("db", "db.go"),
 	filepath.Join("middleware", "set_db.go"),
 	filepath.Join("server", "server.go"),
+	filepath.Join("controllers", ".gitkeep"),
+	filepath.Join("models", ".gitkeep"),
 }
 
 func copyStaticFiles(outDir string) error {
+	if fileExists(outDir) {
+		fmt.Println(outDir)
+		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
+		os.Exit(1)
+	}
+
 	for _, filename := range staticFiles {
 		srcPath := filepath.Join(templateDir, filename)
 		dstPath := filepath.Join(outDir, filename)
