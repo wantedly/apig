@@ -33,3 +33,28 @@ func TestCopyStaticFiles(t *testing.T) {
 		}
 	}
 }
+
+func TestGenerateController(t *testing.T) {
+	model := &Model{
+		Name: "User",
+		Fields: map[string]string{
+			"ID": "hoge",
+		},
+	}
+
+	outDir, err := ioutil.TempDir("", "generateController")
+	if err != nil {
+		t.Fatal("Failed to create tempdir")
+	}
+	defer os.RemoveAll(outDir)
+
+	if err := generateController(model, outDir); err != nil {
+		t.Fatalf("Error should not be raised: %#v", err)
+	}
+
+	path := filepath.Join(outDir, "controllers", "user.go")
+	_, err = os.Stat(path)
+	if err != nil {
+		t.Fatalf("Controller file is not generated: %s", path)
+	}
+}
