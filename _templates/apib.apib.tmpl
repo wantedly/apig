@@ -1,0 +1,73 @@
+FORMAT: 1A
+HOST: http://localhost:8080
+
+# {{ pluralize .Name }} API
+Welcome to the {{ pluralize (tolower .Name) }} API. This API provides access to the {{ pluralize (tolower .Name) }} service.
+
+# {{ pluralize (tolower .Name) }} action [/{{ pluralize (tolower .Name) }}]
+
+## Create {{ tolower .Name }} [POST]
+
+Create a new {{ tolower .Name }}
+
++ Request {{ pluralize (tolower .Name) }} (application/json; charset=utf-8)
+    + Attributes
+        + name: NAME (string)
+        + age: 1 (number)
+        + admin: false (boolean)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes ({{ pluralize (tolower .Name) }})
+
+## Get {{ pluralize (tolower .Name) }} [GET]
+
+Returns {{ tolower .Name }} list.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array)
+        + ({{ pluralize (tolower .Name) }})
+
+# {{ tolower .Name }} action [/{{ pluralize (tolower .Name) }}/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired {{ tolower .Name }}.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+## Get {{ tolower .Name }} [GET]
+
+Returns {{ tolower .Name }}.
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes ({{ pluralize (tolower .Name) }})
+
+## Update {{ tolower .Name }} [PUT]
+
+Update {{ tolower .Name }}.
+
++ Request {{ pluralize (tolower .Name) }} (application/json; charset=utf-8)
+    + Attributes
+        + name: NAME (string)
+        + age: 1 (number)
+        + admin: false (boolean)
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes ({{ pluralize (tolower .Name) }})
+
+## Delete {{ tolower .Name }} [DELETE]
+
+Delete {{ tolower .Name }}.
+
++ Response 204
+
+# Data Structures
+## {{ pluralize (tolower .Name) }} (object, fixed)
+
++ id: 1 (number) - Id
++ name: NAME (string)
++ age: 1 (number)
++ admin: false (boolean)
++ created_at: `2000-01-01 00:00:00` (string) - CreatedTime
++ updated_at: `2000-01-01 00:00:00` (string) - UpdatedTime

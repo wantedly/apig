@@ -50,6 +50,40 @@ func copyStaticFiles(outDir string) error {
 	return nil
 }
 
+func generateApib(model *Model, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "apib.apib.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("apib").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, model); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, strings.ToLower(model.Name)+".apib")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func generateController(model *Model, outDir string) error {
 	body, err := Asset(filepath.Join(templateDir, "controllers", "controller.go.tmpl"))
 
