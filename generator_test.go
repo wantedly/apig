@@ -58,3 +58,29 @@ func TestGenerateController(t *testing.T) {
 		t.Fatalf("Controller file is not generated: %s", path)
 	}
 }
+
+func TestGenerateREADME(t *testing.T) {
+	model := &Model{
+		Name: "User",
+		Fields: map[string]string{
+			"ID": "hoge",
+		},
+	}
+	models := []*Model{model}
+
+	outDir, err := ioutil.TempDir("", "generateREADME")
+	if err != nil {
+		t.Fatal("Failed to create tempdir")
+	}
+	defer os.RemoveAll(outDir)
+
+	if err := generateREADME(models, outDir); err != nil {
+		t.Fatalf("Error should not be raised: %#v", err)
+	}
+
+	path := filepath.Join(outDir, "README.md")
+	_, err = os.Stat(path)
+	if err != nil {
+		t.Fatalf("README is not generated: %s", path)
+	}
+}
