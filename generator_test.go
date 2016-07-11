@@ -84,3 +84,29 @@ func TestGenerateREADME(t *testing.T) {
 		t.Fatalf("README is not generated: %s", path)
 	}
 }
+
+func TestGenerateRouter(t *testing.T) {
+	model := &Model{
+		Name: "User",
+		Fields: map[string]string{
+			"ID": "hoge",
+		},
+	}
+	models := []*Model{model}
+
+	outDir, err := ioutil.TempDir("", "generateRouter")
+	if err != nil {
+		t.Fatal("Failed to create tempdir")
+	}
+	defer os.RemoveAll(outDir)
+
+	if err := generateRouter(models, outDir); err != nil {
+		t.Fatalf("Error should not be raised: %#v", err)
+	}
+
+	path := filepath.Join(outDir, "router", "router.go")
+	_, err = os.Stat(path)
+	if err != nil {
+		t.Fatalf("Router file is not generated: %s", path)
+	}
+}
