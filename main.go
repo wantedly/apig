@@ -108,7 +108,7 @@ Options:
 
 		project := os.Args[2]
 
-		detail := Detail{vcs, username, project}
+		detail := &Detail{vcs, username, project}
 
 		cmdNew(detail)
 
@@ -118,7 +118,7 @@ Options:
 
 }
 
-func cmdNew(detail Detail) {
+func cmdNew(detail *Detail) {
 	gopath := os.Getenv("GOPATH")
 
 	if gopath == "" {

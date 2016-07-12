@@ -31,7 +31,7 @@ var skeletons = []string{
 	filepath.Join("models", ".gitkeep.tmpl"),
 }
 
-func generateSkeleton(detail Detail, outDir string) error {
+func generateSkeleton(detail *Detail, outDir string) error {
 	if fileExists(outDir) {
 		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
 		os.Exit(1)
