@@ -17,7 +17,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, `Usage of %s:
 	%s new <project name>
 	%s gen -d <model directory -o <output directory>`,
-	os.Args[0], os.Args[0], os.Args[0])
+		os.Args[0], os.Args[0], os.Args[0])
 	os.Exit(1)
 }
 
@@ -40,7 +40,7 @@ func main() {
 
 		flag.Usage = func() {
 			fmt.Fprintf(os.Stderr, `Usage of %s:
-	   %s gen -d <model directory> -o <output directory>
+   		%s gen -d <model directory> -o <output directory>
 
 	Options:
 	`, os.Args[0], os.Args[0])
@@ -50,7 +50,7 @@ func main() {
 		flag.StringVar(&modelDir, "d", "", "Model directory")
 		flag.StringVar(&outDir, "o", "", "Output directory")
 
-		flag.Parse(os.Args[:2])
+		flag.Parse(os.Args[2:])
 
 		if modelDir == "" || outDir == "" {
 			flag.Usage()
@@ -92,7 +92,7 @@ func cmdNew(name string) {
 	importPath := ImportPath{vcs, username, name}
 	outDir := filepath.Join(gopath, "src", vcs, username, name)
 
-	if err := copyStaticFiles(importPath, outDir); err != nil {
+	if err := generateSkeleton(importPath, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -121,8 +121,7 @@ func cmdGen(modelDir, outDir string) {
 		}
 
 		if !strings.HasSuffix(file.Name(), ".go") {
-			fmt.Fprintln(os.Stderr, file.Name()+" is not a Go file.")
-			os.Exit(1)
+			continue
 		}
 
 		modelPath := filepath.Join(modelDir, file.Name())

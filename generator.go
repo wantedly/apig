@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
-	"fmt"
-	"os"
 
 	"github.com/gedex/inflector"
 )
@@ -19,26 +19,28 @@ var funcMap = template.FuncMap{
 	"tolower":   strings.ToLower,
 }
 
-var staticFiles = []string{
-	".gitignore",
+var skeletons = []string{
+	"README.md.tmpl",
+	".gitignore.tmpl",
 	"main.go.tmpl",
-	filepath.Join("db", "db.go"),
-	filepath.Join("middleware", "set_db.go"),
+	filepath.Join("db", "db.go.tmpl"),
+	filepath.Join("router", "router.go.tmpl"),
+	filepath.Join("middleware", "set_db.go.tmpl"),
 	filepath.Join("server", "server.go.tmpl"),
-	filepath.Join("controllers", ".gitkeep"),
-	filepath.Join("models", ".gitkeep"),
+	filepath.Join("controllers", ".gitkeep.tmpl"),
+	filepath.Join("models", ".gitkeep.tmpl"),
 }
 
-func copyStaticFiles(importPath ImportPath, outDir string) error {
+func generateSkeleton(importPath ImportPath, outDir string) error {
 	if fileExists(outDir) {
 		fmt.Println(outDir)
 		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
 		os.Exit(1)
 	}
 
-	for _, filename := range staticFiles {
-		srcPath := filepath.Join(templateDir, filename)
-		dstPath := filepath.Join(outDir, strings.TrimRight(filename, ".tmpl"))
+	for _, filename := range skeletons {
+		srcPath := filepath.Join(templateDir, "skeleton", filename)
+		dstPath := filepath.Join(outDir, strings.Replace(filename, ".tmpl", "", 1))
 
 		body, err := Asset(srcPath)
 
@@ -46,7 +48,7 @@ func copyStaticFiles(importPath ImportPath, outDir string) error {
 			return err
 		}
 
-		tmpl, err := template.New("complex").Funcs(funcMap).Parse(string(body))
+		tmpl, err := template.New("complex").Parse(string(body))
 
 		if err != nil {
 			return err
@@ -73,13 +75,13 @@ func copyStaticFiles(importPath ImportPath, outDir string) error {
 }
 
 func generateController(model *Model, outDir string) error {
-	body, err := Asset(filepath.Join(templateDir, "controllers", "controller.go.tmpl"))
+	body, err := Asset(filepath.Join(templateDir, "controller.go.tmpl"))
 
 	if err != nil {
 		return err
 	}
 
-	tmpl, err := template.New("controller").Parse(string(body))
+	tmpl, err := template.New("controller").Funcs(funcMap).Parse(string(body))
 
 	if err != nil {
 		return err
@@ -141,7 +143,7 @@ func generateREADME(models []*Model, outDir string) error {
 }
 
 func generateRouter(models []*Model, outDir string) error {
-	body, err := Asset(filepath.Join(templateDir, "router", "router.go.tmpl"))
+	body, err := Asset(filepath.Join(templateDir, "router.go.tmpl"))
 
 	if err != nil {
 		return err
