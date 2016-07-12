@@ -10,5 +10,5 @@ func fileExists(dir string) bool {
 }
 
 func mkdir(dir string) error {
-	return os.Mkdir(dir, os.ModePerm)
+	return os.MkdirAll(dir, os.ModePerm)
 }
