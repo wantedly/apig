@@ -13,11 +13,13 @@ import (
 
 //go:generate go-bindata _templates/...
 
+const defaultVCS = "github.com"
+
 func usage() {
 	fmt.Fprintf(os.Stderr, `Usage of %s:
 	%s new <project name>
-	%s gen -d <model directory -o <output directory>`,
-		os.Args[0], os.Args[0], os.Args[0])
+	%s gen -d <model directory -o <output directory>
+	`, os.Args[0], os.Args[0], os.Args[0])
 	os.Exit(1)
 }
 
@@ -40,10 +42,10 @@ func main() {
 
 		flag.Usage = func() {
 			fmt.Fprintf(os.Stderr, `Usage of %s:
-   		%s gen -d <model directory> -o <output directory>
+	%s gen -d <model directory> -o <output directory>
 
-	Options:
-	`, os.Args[0], os.Args[0])
+Options:
+`, os.Args[0], os.Args[0])
 			flag.PrintDefaults()
 		}
 
@@ -59,14 +61,56 @@ func main() {
 		cmdGen(modelDir, outDir)
 
 	case "new":
-		if len(os.Args) < 3 {
+		var (
+			vcs      string
+			username string
+		)
+
+		flag := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+
+		flag.Usage = func() {
 			fmt.Fprintf(os.Stderr, `Usage of %s:
-	   %s gen new <model name>`, os.Args[0], os.Args[0])
+	%s new <project name>
+
+Options:
+`, os.Args[0], os.Args[0])
+			flag.PrintDefaults()
+		}
+
+		flag.StringVar(&vcs, "v", "", "VCS")
+		flag.StringVar(&username, "u", "", "Username")
+
+		if len(os.Args) < 3 {
+			flag.Usage()
 			os.Exit(1)
 		}
 
+		flag.Parse(os.Args[3:])
+
+		if vcs == "" {
+			vcs = defaultVCS
+		}
+
+		if username == "" {
+			var err error
+			username, err = gitconfig.GithubUser()
+
+			if err != nil {
+				username, err = gitconfig.Username()
+				if err != nil {
+					msg := "Cannot find `~/.gitcofig` file.\n" +
+						"Please use -u option"
+					fmt.Println(msg)
+					os.Exit(1)
+				}
+			}
+		}
+
 		name := os.Args[2]
-		cmdNew(name)
+
+		importPath := ImportPath{vcs, username, name}
+
+		cmdNew(importPath)
 
 	default:
 		usage()
@@ -74,14 +118,7 @@ func main() {
 
 }
 
-func cmdNew(name string) {
-	vcs := "github.com"
-	username, err := gitconfig.Username()
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+func cmdNew(importPath ImportPath) {
 
 	gopath := os.Getenv("GOPATH")
 	if gopath == "" {
@@ -89,8 +126,7 @@ func cmdNew(name string) {
 		os.Exit(1)
 	}
 
-	importPath := ImportPath{vcs, username, name}
-	outDir := filepath.Join(gopath, "src", vcs, username, name)
+	outDir := filepath.Join(gopath, "src", importPath.VCS, importPath.User, importPath.Project)
 
 	if err := generateSkeleton(importPath, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
