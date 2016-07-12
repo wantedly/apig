@@ -1,10 +1,10 @@
 FORMAT: 1A
 HOST: http://localhost:8080
 
-# user API
-Welcome to the user API. This API provides access to the user service.
+# Users API
+Welcome to the Users API. This API provides access to User service.
 
-# users action [/users]
+# Users action [/users]
 
 ## Create user [POST]
 
@@ -17,7 +17,7 @@ Create a new user
         + admin: false (boolean)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (users)
+    + Attributes (User)
 
 ## Get users [GET]
 
@@ -25,9 +25,9 @@ Returns user list.
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array)
-        + (users)
+        + (User)
 
-# user action [/users/{id}]
+# User action [/users/{id}]
 
 + Parameters
     + id: `1` (enum[string]) - The ID of the desired user.
@@ -41,11 +41,11 @@ Returns user list.
 Returns user.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (users)
+    + Attributes (User)
 
 ## Update user [PUT]
 
-update user.
+Update user.
 
 + Request users (application/json; charset=utf-8)
     + Attributes
@@ -54,7 +54,7 @@ update user.
         + admin: false (boolean)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (users)
+    + Attributes (User)
 
 ## Delete user [DELETE]
 
@@ -63,9 +63,9 @@ Delete user.
 + Response 204
 
 # Data Structures
-## users (object, fixed)
+## User (object, fixed)
 
-+ id: 1 (number) - Id
++ id: 1 (number) - ID
 + name: NAME (string)
 + age: 1 (number)
 + admin: false (boolean)
