@@ -106,11 +106,11 @@ Options:
 			}
 		}
 
-		name := os.Args[2]
+		project := os.Args[2]
 
-		importPath := ImportPath{vcs, username, name}
+		detail := Detail{vcs, username, project}
 
-		cmdNew(importPath)
+		cmdNew(detail)
 
 	default:
 		usage()
@@ -118,17 +118,17 @@ Options:
 
 }
 
-func cmdNew(importPath ImportPath) {
-
+func cmdNew(detail Detail) {
 	gopath := os.Getenv("GOPATH")
+
 	if gopath == "" {
 		fmt.Println("Error: $GOPATH is not found")
 		os.Exit(1)
 	}
 
-	outDir := filepath.Join(gopath, "src", importPath.VCS, importPath.User, importPath.Project)
+	outDir := filepath.Join(gopath, "src", detail.VCS, detail.User, detail.Project)
 
-	if err := generateSkeleton(importPath, outDir); err != nil {
+	if err := generateSkeleton(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

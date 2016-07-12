@@ -31,9 +31,8 @@ var skeletons = []string{
 	filepath.Join("models", ".gitkeep.tmpl"),
 }
 
-func generateSkeleton(importPath ImportPath, outDir string) error {
+func generateSkeleton(detail Detail, outDir string) error {
 	if fileExists(outDir) {
-		fmt.Println(outDir)
 		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
 		os.Exit(1)
 	}
@@ -56,7 +55,7 @@ func generateSkeleton(importPath ImportPath, outDir string) error {
 
 		var buf bytes.Buffer
 
-		if err := tmpl.Execute(&buf, importPath); err != nil {
+		if err := tmpl.Execute(&buf, detail); err != nil {
 			return err
 		}
 
