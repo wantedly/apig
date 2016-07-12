@@ -18,7 +18,7 @@ const defaultVCS = "github.com"
 func usage() {
 	fmt.Fprintf(os.Stderr, `Usage of %s:
 	%s new <project name>
-	%s gen -d <model directory -o <output directory>`,
+	%s gen -d <model directory> -o <output directory>`,
 		os.Args[0], os.Args[0], os.Args[0])
 	os.Exit(1)
 }
@@ -98,7 +98,7 @@ Options:
 			if err != nil {
 				username, err = gitconfig.Username()
 				if err != nil {
-					msg := "Cannot find `~/.gitcofig` file.\n" +
+					msg := "Cannot find `~/.gitconfig` file.\n" +
 						"Please use -u option"
 					fmt.Println(msg)
 					os.Exit(1)
