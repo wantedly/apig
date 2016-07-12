@@ -17,7 +17,7 @@ func Get{{ pluralize .Name }}(c *gin.Context) {
 	c.JSON(200, {{ pluralize (tolower .Name) }})
 }
 
-func Get{{ .Name }}(c. *gin.Context) {
+func Get{{ .Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
 	id := c.Params.ByName("id")
 	fields := c.DefaultQuery("fields", "*")
