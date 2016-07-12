@@ -1,12 +1,17 @@
 FORMAT: 1A
 HOST: http://localhost:8080
 
-# Users API
+# Simple API
+
+This is Simple API document.
+
+# Group Users
+
 Welcome to the Users API. This API provides access to User service.
 
-# Users action [/users]
+## Users [/users]
 
-## Create user [POST]
+### Create user [POST]
 
 Create a new user
 
@@ -19,7 +24,7 @@ Create a new user
 + Response 201 (application/json; charset=utf-8)
     + Attributes (User)
 
-## Get users [GET]
+### Get users [GET]
 
 Returns user list.
 
@@ -27,7 +32,7 @@ Returns user list.
     + Attributes (array)
         + (User)
 
-# User action [/users/{id}]
+## User details [/users/{id}]
 
 + Parameters
     + id: `1` (enum[string]) - The ID of the desired user.
@@ -36,14 +41,14 @@ Returns user list.
             + `2`
             + `3`
 
-## Get user [GET]
+### Get user [GET]
 
 Returns user.
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (User)
 
-## Update user [PUT]
+### Update user [PUT]
 
 Update user.
 
@@ -56,13 +61,14 @@ Update user.
 + Response 200 (application/json; charset=utf-8)
     + Attributes (User)
 
-## Delete user [DELETE]
+### Delete user [DELETE]
 
 Delete user.
 
 + Response 204
 
 # Data Structures
+
 ## User (object, fixed)
 
 + id: 1 (number) - ID
