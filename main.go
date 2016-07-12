@@ -18,8 +18,8 @@ const defaultVCS = "github.com"
 func usage() {
 	fmt.Fprintf(os.Stderr, `Usage of %s:
 	%s new <project name>
-	%s gen -d <model directory -o <output directory>
-	`, os.Args[0], os.Args[0], os.Args[0])
+	%s gen -d <model directory -o <output directory>`,
+		os.Args[0], os.Args[0], os.Args[0])
 	os.Exit(1)
 }
 
