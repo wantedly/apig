@@ -6,6 +6,36 @@ import (
 	"go/token"
 )
 
+func parseField(field *ast.Field) map[string]string {
+	fields := make(map[string]string)
+	fieldNames := []string{}
+
+	for _, name := range field.Names {
+		fieldNames = append(fieldNames, name.Name)
+	}
+
+	var fieldType string
+
+	switch x := field.Type.(type) {
+	case *ast.Ident: // e.g. string
+		fieldType = x.Name
+	case *ast.StarExpr: // e.g. *time.Time
+		switch x2 := x.X.(type) {
+		case *ast.SelectorExpr:
+			switch x3 := x2.X.(type) {
+			case *ast.Ident:
+				fieldType = x3.Name + "." + x2.Sel.Name
+			}
+		}
+	}
+
+	for _, name := range fieldNames {
+		fields[name] = fieldType
+	}
+
+	return fields
+}
+
 func parseFile(path string) ([]*Model, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, path, nil, 0)
@@ -24,7 +54,6 @@ func parseFile(path string) ([]*Model, error) {
 			}
 
 			for _, spec := range x.Specs {
-				fieldNames := []string{}
 				fields := make(map[string]string)
 
 				var modelName string
@@ -36,27 +65,10 @@ func parseFile(path string) ([]*Model, error) {
 					switch x3 := x2.Type.(type) {
 					case *ast.StructType:
 						for _, field := range x3.Fields.List {
-							for _, name := range field.Names {
-								fieldNames = append(fieldNames, name.Name)
-							}
+							fs := parseField(field)
 
-							var fieldType string
-
-							switch x4 := field.Type.(type) {
-							case *ast.Ident: // e.g. string
-								fieldType = x4.Name
-							case *ast.StarExpr: // e.g. *time.Time
-								switch x5 := x4.X.(type) {
-								case *ast.SelectorExpr:
-									switch x6 := x5.X.(type) {
-									case *ast.Ident:
-										fieldType = x6.Name + "." + x5.Sel.Name
-									}
-								}
-							}
-
-							for _, name := range fieldNames {
-								fields[name] = fieldType
+							for k, v := range fs {
+								fields[k] = v
 							}
 						}
 					}
