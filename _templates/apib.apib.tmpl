@@ -64,10 +64,5 @@ Delete {{ tolower .Name }}.
 
 # Data Structures
 ## {{ pluralize (tolower .Name) }} (object, fixed)
-
-+ id: 1 (number) - Id
-+ name: NAME (string)
-+ age: 1 (number)
-+ admin: false (boolean)
-+ created_at: `2000-01-01 00:00:00` (string) - CreatedTime
-+ updated_at: `2000-01-01 00:00:00` (string) - UpdatedTime
+{{ range $key, $value := .Fields }}
++ {{ .JSONName }}: {{ apibDefaultValue . }} ({{ apibType . }}){{ end }}

@@ -13,8 +13,10 @@ import (
 const templateDir = "_templates"
 
 var funcMap = template.FuncMap{
-	"pluralize": inflector.Pluralize,
-	"tolower":   strings.ToLower,
+	"apibDefaultValue": apibDefaultValue,
+	"apibType":         apibType,
+	"pluralize":        inflector.Pluralize,
+	"tolower":          strings.ToLower,
 }
 
 var staticFiles = []string{
@@ -23,6 +25,34 @@ var staticFiles = []string{
 	filepath.Join("db", "db.go"),
 	filepath.Join("middleware", "set_db.go"),
 	filepath.Join("server", "server.go"),
+}
+
+func apibDefaultValue(field *ModelField) string {
+	switch field.Type {
+	case "bool":
+		return "false"
+	case "string":
+		return strings.ToUpper(field.Name)
+	case "time.Time":
+		return "`2000-01-01 00:00:00`"
+	case "uint":
+		return "1"
+	}
+
+	return strings.ToUpper(field.Name)
+}
+
+func apibType(field *ModelField) string {
+	switch field.Type {
+	case "bool":
+		return "boolean"
+	case "string":
+		return "string"
+	case "uint":
+		return "number"
+	}
+
+	return "string"
 }
 
 func copyStaticFiles(outDir string) error {
