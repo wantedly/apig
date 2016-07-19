@@ -81,7 +81,7 @@ func copyStaticFiles(outDir string) error {
 }
 
 func generateApib(model *Model, outDir string) error {
-	body, err := Asset(filepath.Join(templateDir, "apib.apib.tmpl"))
+	body, err := Asset(filepath.Join(templateDir, "docs", "model.apib.tmpl"))
 
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func generateApib(model *Model, outDir string) error {
 		return err
 	}
 
-	dstPath := filepath.Join(outDir, strings.ToLower(model.Name)+".apib")
+	dstPath := filepath.Join(outDir, "docs", strings.ToLower(model.Name)+".apib")
 
 	if !fileExists(filepath.Dir(dstPath)) {
 		if err := mkdir(filepath.Dir(dstPath)); err != nil {
