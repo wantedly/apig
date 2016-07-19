@@ -2,6 +2,5 @@ FORMAT: 1A
 HOST: http://localhost:8080
 
 # Awesome API
-
-{{ range . }}<!-- include({{ tolower .Name }}.apib) -->
-{{ end }}
+{{ range . }}
+<!-- include({{ tolower .Name }}.apib) -->{{ end }}

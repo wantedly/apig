@@ -94,6 +94,34 @@ func TestGenerateApib(t *testing.T) {
 	}
 }
 
+func TestGenerateApibIndex(t *testing.T) {
+	models := []*Model{userModel}
+
+	outDir, err := ioutil.TempDir("", "generateApibIndex")
+	if err != nil {
+		t.Fatal("Failed to create tempdir")
+	}
+	defer os.RemoveAll(outDir)
+
+	if err := generateApibIndex(models, outDir); err != nil {
+		t.Fatalf("Error should not be raised: %#v", err)
+	}
+
+	path := filepath.Join(outDir, "docs", "index.apib")
+	_, err = os.Stat(path)
+	if err != nil {
+		t.Fatalf("API Blueprint file is not generated: %s", path)
+	}
+
+	fixture := filepath.Join("_fixtures", "docs", "index.apib")
+
+	if !compareFiles(path, fixture) {
+		c1, _ := ioutil.ReadFile(fixture)
+		c2, _ := ioutil.ReadFile(path)
+		t.Fatalf("Failed to generate API Blueprint correctly.\nexpected:\n%s\nactual:\n%s", string(c1), string(c2))
+	}
+}
+
 func TestGenerateController(t *testing.T) {
 	outDir, err := ioutil.TempDir("", "generateController")
 	if err != nil {
