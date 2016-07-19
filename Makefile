@@ -39,3 +39,8 @@ endif
 install:
 	go generate
 	go install $(LDFLAGS)
+
+.PHONY: test
+test:
+	go generate
+	go test -cover -v
