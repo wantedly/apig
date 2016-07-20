@@ -14,10 +14,10 @@ import (
 //go:generate go-bindata _templates/...
 
 const (
-	defaultVCS = "github.com"
-	modelDir   = "models"
-	outDir     = "controllers"
-	targetFile = "main.go"
+	defaultVCS    = "github.com"
+	modelDir      = "models"
+	controllerDir = "controllers"
+	targetFile    = "main.go"
 )
 
 func usage() {
@@ -38,12 +38,18 @@ func main() {
 
 	switch cmd {
 	case "gen":
-
-		if !fileExists(targetFile) || !fileExists(modelDir) {
-			fmt.Println("Error: Not found 'main.go'. Please move project root.")
+		curDir, err := os.Getwd()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-		cmdGen()
+
+		if !fileExists(filepath.Join(curDir, targetFile)) || !fileExists(filepath.Join(curDir, modelDir)) {
+			fmt.Fprintf(os.Stderr, `%s is not project root. Please move.
+`, curDir)
+			os.Exit(1)
+		}
+		cmdGen(curDir)
 
 	case "new":
 		var (
@@ -119,15 +125,9 @@ func cmdNew(detail *Detail) {
 	}
 }
 
-func cmdGen() {
-	if !fileExists(outDir) {
-		if err := mkdir(outDir); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-	}
-
-	files, err := ioutil.ReadDir(modelDir)
+func cmdGen(outDir string) {
+	absModelDir := filepath.Join(outDir, modelDir)
+	files, err := ioutil.ReadDir(absModelDir)
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -145,7 +145,7 @@ func cmdGen() {
 			continue
 		}
 
-		modelPath := filepath.Join(modelDir, file.Name())
+		modelPath := filepath.Join(absModelDir, file.Name())
 		ms, err := parseModel(modelPath)
 
 		if err != nil {
@@ -158,7 +158,7 @@ func cmdGen() {
 		}
 	}
 
-	paths, err := parseMain(targetFile)
+	paths, err := parseMain(filepath.Join(outDir, targetFile))
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
