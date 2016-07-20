@@ -17,9 +17,9 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	c.JSON(200, {{ pluralize (tolower .Model.Name) }})
 }
 
-func Get{{ .Model.Name }}(c. *gin.Context) {
+func Get{{ .Model.Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
-	id := c.Params.B.Model.Name("id")
+	id := c.Params.ByName("id")
 	fields := c.DefaultQuery("fields", "*")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	err := db.Select(fields).First(&{{ tolower .Model.Name }}, id).Error
@@ -47,7 +47,7 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 
 func Update{{ .Model.Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
-	id := c.Params.B.Model.Name("id")
+	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
 		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
@@ -61,7 +61,7 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 
 func Delete{{ .Model.Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
-	id := c.Params.B.Model.Name("id")
+	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
 		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
