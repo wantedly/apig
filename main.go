@@ -108,7 +108,7 @@ Options:
 
 		project := os.Args[2]
 
-		detail := &Detail{vcs, username, project}
+		detail := &Detail{VCS: vcs, User: username, Project: project}
 
 		cmdNew(detail)
 
@@ -161,7 +161,7 @@ func cmdGen(modelDir, outDir string) {
 		}
 
 		modelPath := filepath.Join(modelDir, file.Name())
-		ms, err := parseFile(modelPath)
+		ms, err := parseModel(modelPath)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -173,20 +173,50 @@ func cmdGen(modelDir, outDir string) {
 		}
 	}
 
-	if err := generateREADME(models, outDir); err != nil {
+	paths, err := parseMain("main.go")
+
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	if err := generateRouter(models, outDir); err != nil {
+	importDir := formatImportDir(paths)
+
+	if len(importDir) > 1 {
+		fmt.Println("Error: Conflict import path. Please check 'main.go'.")
+		os.Exit(1)
+	}
+
+	detail := &Detail{Models: models, ImportDir: importDir[0]}
+
+	if err := generateRouter(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
 	for _, model := range models {
-		if err := generateController(model, outDir); err != nil {
+		detail := &Detail{Model: model, ImportDir: importDir[0]}
+		if err := generateController(detail, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 	}
+
+	if err := generateREADME(models, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func formatImportDir(paths []string) []string {
+	results := make([]string, 0, len(paths))
+	flag := map[string]bool{}
+	for i := 0; i < len(paths); i++ {
+		dir := filepath.Dir(paths[i])
+		if !flag[dir] {
+			flag[dir] = true
+			results = append(results, dir)
+		}
+	}
+	return results
 }

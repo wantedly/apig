@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/USERNAME/APISERVER/controllers"
+	"{{ .ImportDir }}/controllers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,7 +9,7 @@ import (
 func Initialize(r *gin.Engine) {
 	api := r.Group("api")
 	{
-{{ range . }}
+{{ range .Models }}
 		api.GET("/{{ pluralize (tolower .Name) }}", controllers.Get{{ pluralize .Name }})
 		api.GET("/{{ pluralize (tolower .Name) }}/:id", controllers.Get{{ .Name }})
 		api.POST("/{{ pluralize (tolower .Name) }}", controllers.Create{{ .Name }})

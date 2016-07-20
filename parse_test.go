@@ -5,10 +5,10 @@ import (
 	"testing"
 )
 
-func TestParseFile(t *testing.T) {
+func TestParseModel(t *testing.T) {
 	path := filepath.Join("_fixtures", "models.go")
 
-	models, err := parseFile(path)
+	models, err := parseModel(path)
 
 	if err != nil {
 		t.Fatalf("Failed to parse model file. error: %s", err)

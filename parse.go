@@ -4,6 +4,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strings"
 )
 
 func parseField(field *ast.Field) map[string]string {
@@ -36,7 +37,7 @@ func parseField(field *ast.Field) map[string]string {
 	return fields
 }
 
-func parseFile(path string) ([]*Model, error) {
+func parseModel(path string) ([]*Model, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, path, nil, 0)
 
@@ -85,4 +86,33 @@ func parseFile(path string) ([]*Model, error) {
 	})
 
 	return models, nil
+}
+
+func parseMain(path string) ([]string, error) {
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, path, nil, 0)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var importPaths []string
+
+	ast.Inspect(f, func(node ast.Node) bool {
+		switch x := node.(type) {
+		case *ast.GenDecl:
+			if x.Tok != token.IMPORT {
+				break
+			}
+
+			for _, spec := range x.Specs {
+				switch x2 := spec.(type) {
+				case *ast.ImportSpec:
+					importPaths = append(importPaths, strings.Trim(x2.Path.Value, "\""))
+				}
+			}
+		}
+		return true
+	})
+	return importPaths, nil
 }

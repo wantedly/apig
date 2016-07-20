@@ -73,7 +73,7 @@ func generateSkeleton(detail *Detail, outDir string) error {
 	return nil
 }
 
-func generateController(model *Model, outDir string) error {
+func generateController(detail *Detail, outDir string) error {
 	body, err := Asset(filepath.Join(templateDir, "controller.go.tmpl"))
 
 	if err != nil {
@@ -88,11 +88,11 @@ func generateController(model *Model, outDir string) error {
 
 	var buf bytes.Buffer
 
-	if err := tmpl.Execute(&buf, model); err != nil {
+	if err := tmpl.Execute(&buf, detail); err != nil {
 		return err
 	}
 
-	dstPath := filepath.Join(outDir, "controllers", strings.ToLower(model.Name)+".go")
+	dstPath := filepath.Join(outDir, "controllers", strings.ToLower(detail.Model.Name)+".go")
 
 	if !fileExists(filepath.Dir(dstPath)) {
 		if err := mkdir(filepath.Dir(dstPath)); err != nil {
@@ -141,7 +141,7 @@ func generateREADME(models []*Model, outDir string) error {
 	return nil
 }
 
-func generateRouter(models []*Model, outDir string) error {
+func generateRouter(detail *Detail, outDir string) error {
 	body, err := Asset(filepath.Join(templateDir, "router.go.tmpl"))
 
 	if err != nil {
@@ -156,7 +156,7 @@ func generateRouter(models []*Model, outDir string) error {
 
 	var buf bytes.Buffer
 
-	if err := tmpl.Execute(&buf, models); err != nil {
+	if err := tmpl.Execute(&buf, detail); err != nil {
 		return err
 	}
 

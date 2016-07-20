@@ -3,71 +3,71 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/USERNAME/APISERVER/db"
-	"github.com/USERNAME/APISERVER/models"
+	"{{ .ImportDir }}/db"
+	"{{ .ImportDir }}/models"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Get{{ pluralize .Name }}(c *gin.Context) {
+func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
 	fields := c.DefaultQuery("fields", "*")
-	var {{ pluralize (tolower .Name) }} []models.{{ .Name }}
-	db.Select(fields).Find(&{{ pluralize (tolower .Name) }})
-	c.JSON(200, {{ pluralize (tolower .Name) }})
+	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
+	db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }})
+	c.JSON(200, {{ pluralize (tolower .Model.Name) }})
 }
 
-func Get{{ .Name }}(c *gin.Context) {
+func Get{{ .Model.Name }}(c. *gin.Context) {
 	db := db.DBInstance(c)
-	id := c.Params.ByName("id")
+	id := c.Params.B.Model.Name("id")
 	fields := c.DefaultQuery("fields", "*")
-	var {{ tolower .Name }} models.{{ .Name }}
-	err := db.Select(fields).First(&{{ tolower .Name }}, id).Error
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	err := db.Select(fields).First(&{{ tolower .Model.Name }}, id).Error
 
 	if err != nil {
-		content := gin.H{"error": "{{ tolower .Name }} with id#" + id + " not found"}
+		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
 
-	c.JSON(200, {{ tolower .Name }})
+	c.JSON(200, {{ tolower .Model.Name }})
 }
 
-func Create{{ .Name }}(c *gin.Context) {
+func Create{{ .Model.Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
-	var {{ tolower .Name }} models.{{ .Name }}
-	c.Bind(&{{ tolower .Name }})
-	if db.Create(&{{ tolower .Name }}).Error != nil {
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	c.Bind(&{{ tolower .Model.Name }})
+	if db.Create(&{{ tolower .Model.Name }}).Error != nil {
 		content := gin.H{"error": "error occured"}
 		c.JSON(500, content)
 		return
 	}
-	c.JSON(201, {{ tolower .Name }})
+	c.JSON(201, {{ tolower .Model.Name }})
 }
 
-func Update{{ .Name }}(c *gin.Context) {
+func Update{{ .Model.Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
-	id := c.Params.ByName("id")
-	var {{ tolower .Name }} models.{{ .Name }}
-	if db.First(&{{ tolower .Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ tolower .Name }} with id#" + id + " not found"}
+	id := c.Params.B.Model.Name("id")
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
+		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&{{ tolower .Name }})
-	db.Save(&{{ tolower .Name }})
-	c.JSON(200, {{ tolower .Name }})
+	c.Bind(&{{ tolower .Model.Name }})
+	db.Save(&{{ tolower .Model.Name }})
+	c.JSON(200, {{ tolower .Model.Name }})
 }
 
-func Delete{{ .Name }}(c *gin.Context) {
+func Delete{{ .Model.Name }}(c *gin.Context) {
 	db := db.DBInstance(c)
-	id := c.Params.ByName("id")
-	var {{ tolower .Name }} models.{{ .Name }}
-	if db.First(&{{ tolower .Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ tolower .Name }} with id#" + id + " not found"}
+	id := c.Params.B.Model.Name("id")
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
+		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&{{ tolower .Name }})
+	db.Delete(&{{ tolower .Model.Name }})
 	c.Writer.WriteHeader(http.StatusNoContent)
 }
