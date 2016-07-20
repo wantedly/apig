@@ -167,8 +167,13 @@ func cmdGen() {
 
 	importDir := formatImportDir(paths)
 
-	if len(importDir) > 1 {
+	switch {
+	case len(importDir) > 1:
 		fmt.Println("Error: Conflict import path. Please check 'main.go'.")
+		os.Exit(1)
+
+	case len(importDir) == 0:
+		fmt.Println("Error: Can't refer import path. Please check 'main.go'.")
 		os.Exit(1)
 	}
 
