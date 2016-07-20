@@ -5,6 +5,7 @@ import (
 
 	dbpkg "{{ .ImportDir }}/db"
 	"{{ .ImportDir }}/models"
+	"{{ .ImportDir }}/version"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,9 +41,8 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 	id := c.Params.ByName("id")
 	fields := c.DefaultQuery("fields", "*")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
-	err := db.Select(fields).First(&{{ tolower .Model.Name }}, id).Error
 
-	if err != nil {
+	if db.Select(fields).First(&{{ tolower .Model.Name }}, id).Error != nil {
 		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
