@@ -3,14 +3,14 @@ package controllers
 import (
 	"net/http"
 
-	"{{ .ImportDir }}/db"
+	dbpkg "{{ .ImportDir }}/db"
 	"{{ .ImportDir }}/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Get{{ pluralize .Model.Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
+	db := dbpkg.DBInstance(c)
 	fields := c.DefaultQuery("fields", "*")
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
 	db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }})
@@ -18,7 +18,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 }
 
 func Get{{ .Model.Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
+	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	fields := c.DefaultQuery("fields", "*")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
@@ -34,7 +34,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 }
 
 func Create{{ .Model.Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
+	db := dbpkg.DBInstance(c)
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	c.Bind(&{{ tolower .Model.Name }})
 	if db.Create(&{{ tolower .Model.Name }}).Error != nil {
@@ -46,7 +46,7 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 }
 
 func Update{{ .Model.Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
+	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
@@ -60,7 +60,7 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 }
 
 func Delete{{ .Model.Name }}(c *gin.Context) {
-	db := db.DBInstance(c)
+	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
