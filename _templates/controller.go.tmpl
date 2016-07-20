@@ -10,14 +10,32 @@ import (
 )
 
 func Get{{ pluralize .Model.Name }}(c *gin.Context) {
+	ver, err := version.New(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	db := dbpkg.DBInstance(c)
 	fields := c.DefaultQuery("fields", "*")
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
 	db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }})
+
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
+	}
+
 	c.JSON(200, {{ pluralize (tolower .Model.Name) }})
 }
 
 func Get{{ .Model.Name }}(c *gin.Context) {
+	ver, err := version.New(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	fields := c.DefaultQuery("fields", "*")
@@ -30,10 +48,21 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 		return
 	}
 
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
+	}
+
 	c.JSON(200, {{ tolower .Model.Name }})
 }
 
 func Create{{ .Model.Name }}(c *gin.Context) {
+	ver, err := version.New(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	db := dbpkg.DBInstance(c)
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	c.Bind(&{{ tolower .Model.Name }})
@@ -42,10 +71,22 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 		c.JSON(500, content)
 		return
 	}
+
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
+	}
+
 	c.JSON(201, {{ tolower .Model.Name }})
 }
 
 func Update{{ .Model.Name }}(c *gin.Context) {
+	ver, err := version.New(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
@@ -56,10 +97,22 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 	}
 	c.Bind(&{{ tolower .Model.Name }})
 	db.Save(&{{ tolower .Model.Name }})
+
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
+	}
+
 	c.JSON(200, {{ tolower .Model.Name }})
 }
 
 func Delete{{ .Model.Name }}(c *gin.Context) {
+	ver, err := version.New(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
@@ -69,5 +122,11 @@ func Delete{{ .Model.Name }}(c *gin.Context) {
 		return
 	}
 	db.Delete(&{{ tolower .Model.Name }})
+
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
+	}
+
 	c.Writer.WriteHeader(http.StatusNoContent)
 }
