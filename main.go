@@ -23,8 +23,8 @@ const (
 func usage() {
 	fmt.Fprintf(os.Stderr, `Usage of %s:
 	%s new <project name>
-	%s gen`,
-		os.Args[0], os.Args[0], os.Args[0])
+	%s gen
+`, os.Args[0], os.Args[0], os.Args[0])
 	os.Exit(1)
 }
 
