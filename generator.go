@@ -27,6 +27,8 @@ var skeletons = []string{
 	filepath.Join("router", "router.go.tmpl"),
 	filepath.Join("middleware", "set_db.go.tmpl"),
 	filepath.Join("server", "server.go.tmpl"),
+	filepath.Join("version", "version.go.tmpl"),
+	filepath.Join("version", "version_test.go.tmpl"),
 	filepath.Join("controllers", ".gitkeep.tmpl"),
 	filepath.Join("models", ".gitkeep.tmpl"),
 }
