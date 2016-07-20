@@ -69,7 +69,7 @@ func generateSkeleton(detail *Detail, outDir string) error {
 			return err
 		}
 
-		fmt.Printf("	\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+		fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 	}
 
 	return nil
@@ -106,7 +106,7 @@ func generateController(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Printf("	\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+	fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 
 	return nil
 }
@@ -142,7 +142,7 @@ func generateREADME(models []*Model, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(os.Stdout, "	\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
 
 	return nil
 }
@@ -178,7 +178,7 @@ func generateRouter(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(os.Stdout, "	\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
 
 	return nil
 }
