@@ -1,4 +1,4 @@
-# api-server-generator
+# apig: Golang RESTful API Server Generator
 
 ## Development
 

@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/wantedly/api-server-generator/examples/simple/controllers"
+	"github.com/wantedly/apig/_examples/simple/controllers"
 
 	"github.com/gin-gonic/gin"
 )

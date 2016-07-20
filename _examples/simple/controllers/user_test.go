@@ -7,9 +7,9 @@ import (
 	"net/http/httptest"
 	"strconv"
 
-	"github.com/wantedly/api-server-generator/examples/simple/db"
-	"github.com/wantedly/api-server-generator/examples/simple/models"
-	"github.com/wantedly/api-server-generator/examples/simple/server"
+	"github.com/wantedly/apig/_examples/simple/db"
+	"github.com/wantedly/apig/_examples/simple/models"
+	"github.com/wantedly/apig/_examples/simple/server"
 
 	"testing"
 )

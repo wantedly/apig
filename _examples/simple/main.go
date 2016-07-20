@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/wantedly/api-server-generator/examples/simple/db"
-	"github.com/wantedly/api-server-generator/examples/simple/models"
-	"github.com/wantedly/api-server-generator/examples/simple/server"
+	"github.com/wantedly/apig/_examples/simple/db"
+	"github.com/wantedly/apig/_examples/simple/models"
+	"github.com/wantedly/apig/_examples/simple/server"
 )
 
 // main ...
