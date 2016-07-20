@@ -1,4 +1,4 @@
-BINARY := api-server-generator
+BINARY := apig
 SOURCES := $(find . -name '*.go' -type f | grep -v examples)
 
 LDFLAGS := -ldflags="-w"
