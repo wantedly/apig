@@ -123,6 +123,9 @@ func cmdNew(detail *Detail) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	fmt.Fprintf(os.Stdout, `===> Created %s
+`, outDir)
 }
 
 func cmdGen(outDir string) {
@@ -179,11 +182,6 @@ func cmdGen(outDir string) {
 
 	detail := &Detail{Models: models, ImportDir: importDir[0]}
 
-	if err := generateRouter(detail, outDir); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
 	for _, model := range models {
 		detail := &Detail{Model: model, ImportDir: importDir[0]}
 		if err := generateController(detail, outDir); err != nil {
@@ -192,10 +190,17 @@ func cmdGen(outDir string) {
 		}
 	}
 
+	if err := generateRouter(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	if err := generateREADME(models, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	fmt.Println("===> Generated...")
 }
 
 func formatImportDir(paths []string) []string {
