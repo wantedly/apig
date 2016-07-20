@@ -1,0 +1,73 @@
+package controllers
+
+import (
+	"net/http"
+
+	"{{ .ImportDir }}/db"
+	"{{ .ImportDir }}/models"
+
+	"github.com/gin-gonic/gin"
+)
+
+func Get{{ pluralize .Model.Name }}(c *gin.Context) {
+	db := db.DBInstance(c)
+	fields := c.DefaultQuery("fields", "*")
+	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
+	db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }})
+	c.JSON(200, {{ pluralize (tolower .Model.Name) }})
+}
+
+func Get{{ .Model.Name }}(c *gin.Context) {
+	db := db.DBInstance(c)
+	id := c.Params.ByName("id")
+	fields := c.DefaultQuery("fields", "*")
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	err := db.Select(fields).First(&{{ tolower .Model.Name }}, id).Error
+
+	if err != nil {
+		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
+		c.JSON(404, content)
+		return
+	}
+
+	c.JSON(200, {{ tolower .Model.Name }})
+}
+
+func Create{{ .Model.Name }}(c *gin.Context) {
+	db := db.DBInstance(c)
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	c.Bind(&{{ tolower .Model.Name }})
+	if db.Create(&{{ tolower .Model.Name }}).Error != nil {
+		content := gin.H{"error": "error occured"}
+		c.JSON(500, content)
+		return
+	}
+	c.JSON(201, {{ tolower .Model.Name }})
+}
+
+func Update{{ .Model.Name }}(c *gin.Context) {
+	db := db.DBInstance(c)
+	id := c.Params.ByName("id")
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
+		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
+		c.JSON(404, content)
+		return
+	}
+	c.Bind(&{{ tolower .Model.Name }})
+	db.Save(&{{ tolower .Model.Name }})
+	c.JSON(200, {{ tolower .Model.Name }})
+}
+
+func Delete{{ .Model.Name }}(c *gin.Context) {
+	db := db.DBInstance(c)
+	id := c.Params.ByName("id")
+	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
+		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
+		c.JSON(404, content)
+		return
+	}
+	db.Delete(&{{ tolower .Model.Name }})
+	c.Writer.WriteHeader(http.StatusNoContent)
+}

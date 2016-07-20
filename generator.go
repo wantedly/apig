@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -17,24 +19,27 @@ var funcMap = template.FuncMap{
 	"tolower":   strings.ToLower,
 }
 
-var staticFiles = []string{
-	".gitignore",
-	"main.go",
-	filepath.Join("db", "db.go"),
-	filepath.Join("middleware", "set_db.go"),
-	filepath.Join("server", "server.go"),
+var skeletons = []string{
+	"README.md.tmpl",
+	".gitignore.tmpl",
+	"main.go.tmpl",
+	filepath.Join("db", "db.go.tmpl"),
+	filepath.Join("router", "router.go.tmpl"),
+	filepath.Join("middleware", "set_db.go.tmpl"),
+	filepath.Join("server", "server.go.tmpl"),
+	filepath.Join("controllers", ".gitkeep.tmpl"),
+	filepath.Join("models", ".gitkeep.tmpl"),
 }
 
-func copyStaticFiles(outDir string) error {
-	for _, filename := range staticFiles {
-		srcPath := filepath.Join(templateDir, filename)
-		dstPath := filepath.Join(outDir, filename)
+func generateSkeleton(detail *Detail, outDir string) error {
+	if fileExists(outDir) {
+		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
+		os.Exit(1)
+	}
 
-		if !fileExists(filepath.Dir(dstPath)) {
-			if err := mkdir(filepath.Dir(dstPath)); err != nil {
-				return err
-			}
-		}
+	for _, filename := range skeletons {
+		srcPath := filepath.Join(templateDir, "skeleton", filename)
+		dstPath := filepath.Join(outDir, strings.Replace(filename, ".tmpl", "", 1))
 
 		body, err := Asset(srcPath)
 
@@ -42,16 +47,36 @@ func copyStaticFiles(outDir string) error {
 			return err
 		}
 
-		if err := ioutil.WriteFile(dstPath, body, 0644); err != nil {
+		tmpl, err := template.New("complex").Parse(string(body))
+
+		if err != nil {
 			return err
 		}
+
+		var buf bytes.Buffer
+
+		if err := tmpl.Execute(&buf, detail); err != nil {
+			return err
+		}
+
+		if !fileExists(filepath.Dir(dstPath)) {
+			if err := mkdir(filepath.Dir(dstPath)); err != nil {
+				return err
+			}
+		}
+
+		if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+			return err
+		}
+
+		fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 	}
 
 	return nil
 }
 
-func generateController(model *Model, outDir string) error {
-	body, err := Asset(filepath.Join(templateDir, "controllers", "controller.go.tmpl"))
+func generateController(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "controller.go.tmpl"))
 
 	if err != nil {
 		return err
@@ -65,11 +90,11 @@ func generateController(model *Model, outDir string) error {
 
 	var buf bytes.Buffer
 
-	if err := tmpl.Execute(&buf, model); err != nil {
+	if err := tmpl.Execute(&buf, detail); err != nil {
 		return err
 	}
 
-	dstPath := filepath.Join(outDir, "controllers", strings.ToLower(model.Name)+".go")
+	dstPath := filepath.Join(outDir, "controllers", strings.ToLower(detail.Model.Name)+".go")
 
 	if !fileExists(filepath.Dir(dstPath)) {
 		if err := mkdir(filepath.Dir(dstPath)); err != nil {
@@ -80,6 +105,8 @@ func generateController(model *Model, outDir string) error {
 	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
 		return err
 	}
+
+	fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 
 	return nil
 }
@@ -115,11 +142,13 @@ func generateREADME(models []*Model, outDir string) error {
 		return err
 	}
 
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
+
 	return nil
 }
 
-func generateRouter(models []*Model, outDir string) error {
-	body, err := Asset(filepath.Join(templateDir, "router", "router.go.tmpl"))
+func generateRouter(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "router.go.tmpl"))
 
 	if err != nil {
 		return err
@@ -133,7 +162,7 @@ func generateRouter(models []*Model, outDir string) error {
 
 	var buf bytes.Buffer
 
-	if err := tmpl.Execute(&buf, models); err != nil {
+	if err := tmpl.Execute(&buf, detail); err != nil {
 		return err
 	}
 
@@ -148,6 +177,8 @@ func generateRouter(models []*Model, outDir string) error {
 	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
 		return err
 	}
+
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
 
 	return nil
 }
