@@ -13,12 +13,17 @@ import (
 
 //go:generate go-bindata _templates/...
 
-const defaultVCS = "github.com"
+const (
+	defaultVCS = "github.com"
+	modelDir   = "models"
+	outDir     = "controllers"
+	targetFile = "main.go"
+)
 
 func usage() {
 	fmt.Fprintf(os.Stderr, `Usage of %s:
 	%s new <project name>
-	%s gen -d <model directory> -o <output directory>`,
+	%s gen`,
 		os.Args[0], os.Args[0], os.Args[0])
 	os.Exit(1)
 }
@@ -33,32 +38,12 @@ func main() {
 
 	switch cmd {
 	case "gen":
-		var (
-			modelDir string
-			outDir   string
-		)
 
-		flag := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-
-		flag.Usage = func() {
-			fmt.Fprintf(os.Stderr, `Usage of %s:
-	%s gen -d <model directory> -o <output directory>
-
-Options:
-`, os.Args[0], os.Args[0])
-			flag.PrintDefaults()
-		}
-
-		flag.StringVar(&modelDir, "d", "", "Model directory")
-		flag.StringVar(&outDir, "o", "", "Output directory")
-
-		flag.Parse(os.Args[2:])
-
-		if modelDir == "" || outDir == "" {
-			flag.Usage()
+		if !fileExists(targetFile) || !fileExists(modelDir) {
+			fmt.Println("Error: Not found 'main.go'. Please move project root.")
 			os.Exit(1)
 		}
-		cmdGen(modelDir, outDir)
+		cmdGen()
 
 	case "new":
 		var (
@@ -134,7 +119,7 @@ func cmdNew(detail *Detail) {
 	}
 }
 
-func cmdGen(modelDir, outDir string) {
+func cmdGen() {
 	if !fileExists(outDir) {
 		if err := mkdir(outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -173,7 +158,7 @@ func cmdGen(modelDir, outDir string) {
 		}
 	}
 
-	paths, err := parseMain("main.go")
+	paths, err := parseMain(targetFile)
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
