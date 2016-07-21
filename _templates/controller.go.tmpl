@@ -10,6 +10,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func set{{ .Model.Name }}Preload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {
+	sel := make([]string, len(fields))
+	copy(sel, fields)
+	offset := 0
+	for key, val := range fields {
+		switch val {
+		case "*":
+			db = db
+		}
+	}
+	return sel, db
+}
+
 func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
@@ -25,7 +38,8 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		return
 	}
 
-	fields := c.DefaultQuery("fields", "*")
+	fields, nestFields := models.ParseFields(c.DefaultQuery("fields", "*"))
+	sel, db := set{{ .Model.Name }}Preload(fields, db)
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
 	err = db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }}).Error
 
@@ -48,7 +62,11 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(200, {{ pluralize (tolower .Model.Name) }})
+	var fieldMap []map[string]interface{}
+	for key, _ := range {{ pluralize (tolower .Model.Name) }} {
+		fieldMap = append(fieldMap, models.FieldToMap({{ pluralize (tolower .Model.Name) }}[key], fields, nestFields))
+	}
+	c.JSON(200, fieldMap)
 }
 
 func Get{{ .Model.Name }}(c *gin.Context) {
@@ -60,7 +78,8 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	fields := c.DefaultQuery("fields", "*")
+	fields, nestFields := models.ParseFields(c.DefaultQuery("fields", "*"))
+	sel, db := set{{ .Model.Name }}Preload(fields, db)
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 
 	if db.Select(fields).First(&{{ tolower .Model.Name }}, id).Error != nil {
@@ -74,7 +93,8 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(200, {{ tolower .Model.Name }})
+	fieldMap := models.FieldToMap({{ tolower .Model.Name }}, fields, nestFields)
+	c.JSON(200, fieldMap)
 }
 
 func Create{{ .Model.Name }}(c *gin.Context) {
