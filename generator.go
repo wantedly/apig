@@ -24,6 +24,7 @@ var skeletons = []string{
 	".gitignore.tmpl",
 	"main.go.tmpl",
 	filepath.Join("db", "db.go.tmpl"),
+	filepath.Join("db", "pagination.go.tmpl"),
 	filepath.Join("router", "router.go.tmpl"),
 	filepath.Join("middleware", "set_db.go.tmpl"),
 	filepath.Join("server", "server.go.tmpl"),
