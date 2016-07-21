@@ -21,7 +21,7 @@ func New(c *gin.Context) (string, error) {
 
 	// header version
 	if strings.Contains(header, "version=") {
-		ver = strings.Split(header, "=")[1]
+		ver = strings.Split(strings.SplitAfter(header, "version=")[1], ";")[0]
 	}
 
 	// query v
