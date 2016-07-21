@@ -17,10 +17,31 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		return
 	}
 
-	db := dbpkg.DBInstance(c)
+	pagination := dbpkg.Pagination{}
+	db, err := pagination.Paginate(c)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	fields := c.DefaultQuery("fields", "*")
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
-	db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }})
+	err = db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }}).Error
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": "error occured"})
+		return
+	}
+
+	// paging
+	var index int
+	if len(users) < 1 {
+		index = 0
+	} else {
+		index = int(users[len(users)-1].ID)
+	}
+	pagination.SetHeaderLink(c, index)
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
