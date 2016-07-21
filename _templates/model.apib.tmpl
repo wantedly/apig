@@ -8,6 +8,9 @@ Welcome to the {{ pluralize (tolower .Model.Name) }} API. This API provides acce
 Create a new {{ tolower .Model.Name }}
 
 + Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
     + Attributes
 {{ range (requestParams .Model.Fields) }}
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }} {{ end }} ({{ apibType . }}){{ end }}
@@ -18,6 +21,11 @@ Create a new {{ tolower .Model.Name }}
 ### Get {{ pluralize (tolower .Model.Name) }} [GET]
 
 Returns {{ tolower .Model.Name }} list.
+
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
@@ -36,6 +44,11 @@ Returns {{ tolower .Model.Name }} list.
 
 Returns {{ tolower .Model.Name }}.
 
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
+
 + Response 200 (application/json; charset=utf-8)
     + Attributes ({{ pluralize (tolower .Model.Name) }}, fixed)
 
@@ -44,6 +57,9 @@ Returns {{ tolower .Model.Name }}.
 Update {{ tolower .Model.Name }}.
 
 + Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
     + Attributes
 {{ range (requestParams .Model.Fields) }}
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }} {{ end }} ({{ apibType . }}){{ end }}
@@ -54,6 +70,11 @@ Update {{ tolower .Model.Name }}.
 ### Delete {{ tolower .Model.Name }} [DELETE]
 
 Delete {{ tolower .Model.Name }}.
+
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
 
 + Response 204
 

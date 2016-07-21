@@ -182,12 +182,22 @@ func cmdGen(outDir string) {
 		os.Exit(1)
 	}
 
+	vcs := filepath.Base(filepath.Dir(filepath.Dir(importDir[0])))
+	user := filepath.Base(filepath.Dir(importDir[0]))
+	project := filepath.Base(importDir[0])
+
 	for _, model := range models {
 
 		// Check association, stdout "model.Fields[0].Association.Type"
 		model = resolveAssoc(model, mmap, make(map[string]bool))
 
-		d := &Detail{Model: model, ImportDir: importDir[0]}
+		d := &Detail{
+			Model:     model,
+			ImportDir: importDir[0],
+			VCS:       vcs,
+			User:      user,
+			Project:   project,
+		}
 
 		if err := generateApibModel(d, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -203,6 +213,8 @@ func cmdGen(outDir string) {
 	detail := &Detail{
 		Models:    models,
 		ImportDir: importDir[0],
+		VCS:       vcs,
+		User:      user,
 		Project:   filepath.Base(importDir[0]),
 	}
 
