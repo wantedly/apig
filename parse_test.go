@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseModel(t *testing.T) {
-	path := filepath.Join("_fixtures", "models.go")
+	path := filepath.Join("testdata", "models.go")
 
 	models, err := parseModel(path)
 

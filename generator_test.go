@@ -87,7 +87,7 @@ func TestGenerateController(t *testing.T) {
 		t.Fatalf("Controller file is not generated: %s", path)
 	}
 
-	fixture := filepath.Join("_fixtures", "controllers", "user.go")
+	fixture := filepath.Join("testdata", "controllers", "user.go")
 
 	if !compareFiles(path, fixture) {
 		c1, _ := ioutil.ReadFile(fixture)
@@ -113,7 +113,7 @@ func TestGenerateREADME(t *testing.T) {
 		t.Fatalf("README is not generated: %s", path)
 	}
 
-	fixture := filepath.Join("_fixtures", "README.md")
+	fixture := filepath.Join("testdata", "README.md")
 
 	if !compareFiles(path, fixture) {
 		c1, _ := ioutil.ReadFile(fixture)
@@ -139,7 +139,7 @@ func TestGenerateRouter(t *testing.T) {
 		t.Fatalf("Router file is not generated: %s", path)
 	}
 
-	fixture := filepath.Join("_fixtures", "router", "router.go")
+	fixture := filepath.Join("testdata", "router", "router.go")
 
 	if !compareFiles(path, fixture) {
 		c1, _ := ioutil.ReadFile(fixture)
