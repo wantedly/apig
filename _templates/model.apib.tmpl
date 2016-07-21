@@ -13,7 +13,7 @@ Create a new {{ tolower .Model.Name }}
             Accept: application/vnd.{{ .User }}+json
     + Attributes
 {{ range (requestParams .Model.Fields) }}
-        + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }} {{ end }} ({{ apibType . }}){{ end }}
+        + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 201 (application/json; charset=utf-8)
     + Attributes ({{ pluralize (tolower .Model.Name) }})
@@ -62,7 +62,7 @@ Update {{ tolower .Model.Name }}.
             Accept: application/vnd.{{ .User }}+json
     + Attributes
 {{ range (requestParams .Model.Fields) }}
-        + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }} {{ end }} ({{ apibType . }}){{ end }}
+        + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes ({{ pluralize (tolower .Model.Name) }})
@@ -81,4 +81,4 @@ Delete {{ tolower .Model.Name }}.
 # Data Structures
 ## {{ pluralize (tolower .Model.Name) }} (object, fixed)
 {{ range $key, $value := .Model.Fields }}
-+ {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }} {{ end }} ({{ apibType . }}){{ end }}
++ {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}

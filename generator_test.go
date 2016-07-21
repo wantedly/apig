@@ -13,24 +13,28 @@ var userModel = &Model{
 	Fields: []*Field{
 		&Field{
 			Name:        "ID",
+			JSONName:    "id",
 			Type:        "uint",
 			Tag:         "",
 			Association: nil,
 		},
 		&Field{
 			Name:        "Name",
+			JSONName:    "name",
 			Type:        "string",
 			Tag:         "",
 			Association: nil,
 		},
 		&Field{
 			Name:        "CreatedAt",
+			JSONName:    "created_at",
 			Type:        "*time.Time",
 			Tag:         "",
 			Association: nil,
 		},
 		&Field{
 			Name:        "UpdatedAt",
+			JSONName:    "updated_at",
 			Type:        "*time.Time",
 			Tag:         "",
 			Association: nil,
@@ -77,6 +81,32 @@ func TestGenerateApibIndex(t *testing.T) {
 		c1, _ := ioutil.ReadFile(fixture)
 		c2, _ := ioutil.ReadFile(path)
 		t.Fatalf("Failed to generate API Blueprint index correctly.\nexpected:\n%s\nactual:\n%s", string(c1), string(c2))
+	}
+}
+
+func TestGenerateApibModel(t *testing.T) {
+	outDir, err := ioutil.TempDir("", "generateApibModel")
+	if err != nil {
+		t.Fatal("Failed to create tempdir")
+	}
+	defer os.RemoveAll(outDir)
+
+	if err := generateApibModel(detail, outDir); err != nil {
+		t.Fatalf("Error should not be raised: %#v", err)
+	}
+
+	path := filepath.Join(outDir, "docs", "user.apib")
+	_, err = os.Stat(path)
+	if err != nil {
+		t.Fatalf("API Blueprint model is not generated: %s", path)
+	}
+
+	fixture := filepath.Join("testdata", "docs", "user.apib")
+
+	if !compareFiles(path, fixture) {
+		c1, _ := ioutil.ReadFile(fixture)
+		c2, _ := ioutil.ReadFile(path)
+		t.Fatalf("Failed to generate API Blueprint model correctly.\nexpected:\n%s\nactual:\n%s", string(c1), string(c2))
 	}
 }
 
