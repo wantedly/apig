@@ -36,10 +36,10 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 	// paging
 	var index int
-	if len({{ .pluralize (tolower .Model.Name) }}) < 1 {
+	if len({{ pluralize (tolower .Model.Name) }}) < 1 {
 		index = 0
 	} else {
-		index = int({{ .pluralize (tolower .Model.Name) }}[len({{ .pluralize (tolower .Model.Name) }})-1].ID)
+		index = int({{ pluralize (tolower .Model.Name) }}[len({{ pluralize (tolower .Model.Name) }})-1].ID)
 	}
 	pagination.SetHeaderLink(c, index)
 
