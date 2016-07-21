@@ -180,20 +180,24 @@ func cmdGen(outDir string) {
 		os.Exit(1)
 	}
 
-	detail := &Detail{Models: models, ImportDir: importDir[0]}
-
 	for _, model := range models {
-		detail := &Detail{Model: model, ImportDir: importDir[0]}
+		d := &Detail{Model: model, ImportDir: importDir[0]}
 
-		if err := generateApibModel(detail, outDir); err != nil {
+		if err := generateApibModel(d, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
-		if err := generateController(detail, outDir); err != nil {
+		if err := generateController(d, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+	}
+
+	detail := &Detail{
+		Models:    models,
+		ImportDir: importDir[0],
+		Project:   filepath.Base(importDir[0]),
 	}
 
 	if err := generateApibIndex(detail, outDir); err != nil {

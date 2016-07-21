@@ -20,6 +20,7 @@ var funcMap = template.FuncMap{
 	"pluralize":        inflector.Pluralize,
 	"requestParams":    requestParams,
 	"tolower":          strings.ToLower,
+	"title":            strings.Title,
 }
 
 var skeletons = []string{
