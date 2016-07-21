@@ -20,7 +20,8 @@ Create a new {{ tolower .Model.Name }}
 Returns {{ tolower .Model.Name }} list.
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (tolower .Model.Name) }}, fixed)
+    + Attributes (array, fixed)
+        + ({{ pluralize (tolower .Model.Name) }})
 
 ## {{ tolower .Model.Name }} details [/{{ pluralize (tolower .Model.Name) }}/{id}]
 
