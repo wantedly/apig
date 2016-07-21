@@ -1,14 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"os"
 	"strings"
 )
 
-func parseField(field *ast.Field) map[string]string {
-	fields := make(map[string]string)
+func parseField(field *ast.Field) *Field {
 	fieldNames := []string{}
 
 	for _, name := range field.Names {
@@ -16,25 +17,46 @@ func parseField(field *ast.Field) map[string]string {
 	}
 
 	var fieldType string
+	var fieldTag string
 
 	switch x := field.Type.(type) {
 	case *ast.Ident: // e.g. string
 		fieldType = x.Name
-	case *ast.StarExpr: // e.g. *time.Time
-		switch x2 := x.X.(type) {
-		case *ast.SelectorExpr:
+
+	case *ast.ArrayType: // e.g. []Email
+		switch x2 := x.Elt.(type) {
+		case *ast.Ident:
+			fieldType = "[]" + x2.Name
+
+		case *ast.StarExpr: // e.g. []*Email
 			switch x3 := x2.X.(type) {
 			case *ast.Ident:
-				fieldType = x3.Name + "." + x2.Sel.Name
+				fieldType = "[]*" + x3.Name
+			}
+		}
+
+	case *ast.StarExpr:
+		switch x2 := x.X.(type) {
+		case *ast.Ident: // e.g. *Profile
+			fieldType = "*" + x2.Name
+
+		case *ast.SelectorExpr: // e.g. *time.Time
+			switch x3 := x2.X.(type) {
+			case *ast.Ident:
+				fieldType = "*" + x3.Name + "." + x2.Sel.Name
 			}
 		}
 	}
 
-	for _, name := range fieldNames {
-		fields[name] = fieldType
+	fieldTag = field.Tag.Value
+
+	if len(fieldNames) != 1 {
+		fmt.Fprintf(os.Stderr, "Failed to read model files. Please fix struct %s", fieldNames[0])
+		os.Exit(1)
 	}
 
-	return fields
+	fs := Field{Name: fieldNames[0], Type: fieldType, Tag: fieldTag}
+	return &fs
 }
 
 func parseModel(path string) ([]*Model, error) {
@@ -55,7 +77,7 @@ func parseModel(path string) ([]*Model, error) {
 			}
 
 			for _, spec := range x.Specs {
-				fields := make(map[string]string)
+				var fields []*Field
 
 				var modelName string
 
@@ -67,10 +89,7 @@ func parseModel(path string) ([]*Model, error) {
 					case *ast.StructType:
 						for _, field := range x3.Fields.List {
 							fs := parseField(field)
-
-							for k, v := range fs {
-								fields[k] = v
-							}
+							fields = append(fields, fs)
 						}
 					}
 
