@@ -15,8 +15,10 @@ import (
 const templateDir = "_templates"
 
 var funcMap = template.FuncMap{
-	"pluralize": inflector.Pluralize,
-	"tolower":   strings.ToLower,
+	"apibDefaultValue": apibDefaultValue,
+	"apibType":         apibType,
+	"pluralize":        inflector.Pluralize,
+	"tolower":          strings.ToLower,
 }
 
 var skeletons = []string{
@@ -30,7 +32,72 @@ var skeletons = []string{
 	filepath.Join("version", "version.go.tmpl"),
 	filepath.Join("version", "version_test.go.tmpl"),
 	filepath.Join("controllers", ".gitkeep.tmpl"),
+	filepath.Join("docs", ".gitkeep.tmpl"),
 	filepath.Join("models", ".gitkeep.tmpl"),
+}
+
+func apibDefaultValue(field *ModelField) string {
+	switch field.Type {
+	case "bool":
+		return "false"
+	case "string":
+		return strings.ToUpper(field.Name)
+	case "time.Time":
+		return "`2000-01-01 00:00:00`"
+	case "uint":
+		return "1"
+	}
+
+	return strings.ToUpper(field.Name)
+}
+
+func apibType(field *ModelField) string {
+	switch field.Type {
+	case "bool":
+		return "boolean"
+	case "string":
+		return "string"
+	case "uint":
+		return "number"
+	}
+
+	return "string"
+}
+
+func generateApibModel(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "model.apib.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("apib").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, detail); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, "docs", strings.ToLower(detail.Model.Name)+".apib")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+
+	return nil
 }
 
 func generateSkeleton(detail *Detail, outDir string) error {

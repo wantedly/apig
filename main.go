@@ -184,6 +184,12 @@ func cmdGen(outDir string) {
 
 	for _, model := range models {
 		detail := &Detail{Model: model, ImportDir: importDir[0]}
+
+		if err := generateApibModel(detail, outDir); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
 		if err := generateController(detail, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
