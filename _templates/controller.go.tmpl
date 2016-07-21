@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	dbpkg "{{ .ImportDir }}/db"
+	"{{ .ImportDir }}/helper"
 	"{{ .ImportDir }}/models"
 	"{{ .ImportDir }}/version"
 
@@ -54,7 +55,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		return
 	}
 
-	fields, nestFields := models.ParseFields(c.DefaultQuery("fields", "*"))
+	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	sel, db := set{{ .Model.Name }}Preload(fields, db)
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
 	err = db.Select(fields).Find(&{{ pluralize (tolower .Model.Name) }}).Error
@@ -80,7 +81,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 	var fieldMap []map[string]interface{}
 	for key, _ := range {{ pluralize (tolower .Model.Name) }} {
-		fieldMap = append(fieldMap, models.FieldToMap({{ pluralize (tolower .Model.Name) }}[key], fields, nestFields))
+		fieldMap = append(fieldMap, helper.FieldToMap({{ pluralize (tolower .Model.Name) }}[key], fields, nestFields))
 	}
 	c.JSON(200, fieldMap)
 }
@@ -94,7 +95,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	fields, nestFields := models.ParseFields(c.DefaultQuery("fields", "*"))
+	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	sel, db := set{{ .Model.Name }}Preload(fields, db)
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 
@@ -109,7 +110,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := models.FieldToMap({{ tolower .Model.Name }}, fields, nestFields)
+	fieldMap := helper.FieldToMap({{ tolower .Model.Name }}, fields, nestFields)
 	c.JSON(200, fieldMap)
 }
 

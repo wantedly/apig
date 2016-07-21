@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	dbpkg "github.com/wantedly/api-server/db"
+	"github.com/wantedly/api-server/helper"
 	"github.com/wantedly/api-server/models"
 	"github.com/wantedly/api-server/version"
 
@@ -39,7 +40,7 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	fields, nestFields := models.ParseFields(c.DefaultQuery("fields", "*"))
+	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	sel, db := setUserPreload(fields, db)
 	var users []models.User
 	err = db.Select(fields).Find(&users).Error
@@ -65,7 +66,7 @@ func GetUsers(c *gin.Context) {
 
 	var fieldMap []map[string]interface{}
 	for key, _ := range users {
-		fieldMap = append(fieldMap, models.FieldToMap(users[key], fields, nestFields))
+		fieldMap = append(fieldMap, helper.FieldToMap(users[key], fields, nestFields))
 	}
 	c.JSON(200, fieldMap)
 }
@@ -79,7 +80,7 @@ func GetUser(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	fields, nestFields := models.ParseFields(c.DefaultQuery("fields", "*"))
+	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	sel, db := setUserPreload(fields, db)
 	var user models.User
 
@@ -94,7 +95,7 @@ func GetUser(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := models.FieldToMap(user, fields, nestFields)
+	fieldMap := helper.FieldToMap(user, fields, nestFields)
 	c.JSON(200, fieldMap)
 }
 
