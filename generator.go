@@ -75,6 +75,7 @@ func apibType(field *Field) string {
 
 	switch field.Association.Type {
 	case AssociationBelongsTo:
+		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
 	case AssociationHasMany:
 		return fmt.Sprintf("array[%s]", inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "[]", "", -1))))
 	case AssociationHasOne:
