@@ -28,9 +28,11 @@ var skeletons = []string{
 	".gitignore.tmpl",
 	"main.go.tmpl",
 	filepath.Join("db", "db.go.tmpl"),
+	filepath.Join("db", "pagination.go.tmpl"),
 	filepath.Join("router", "router.go.tmpl"),
 	filepath.Join("middleware", "set_db.go.tmpl"),
 	filepath.Join("server", "server.go.tmpl"),
+	filepath.Join("helper", "field.go.tmpl"),
 	filepath.Join("version", "version.go.tmpl"),
 	filepath.Join("version", "version_test.go.tmpl"),
 	filepath.Join("controllers", ".gitkeep.tmpl"),
@@ -44,7 +46,7 @@ var managedFields = []string{
 	"UpdatedAt",
 }
 
-func apibDefaultValue(field *ModelField) string {
+func apibDefaultValue(field *Field) string {
 	switch field.Type {
 	case "bool":
 		return "false"
@@ -59,7 +61,7 @@ func apibDefaultValue(field *ModelField) string {
 	return ""
 }
 
-func apibType(field *ModelField) string {
+func apibType(field *Field) string {
 	switch field.Type {
 	case "bool":
 		return "boolean"
@@ -74,10 +76,10 @@ func apibType(field *ModelField) string {
 	return inflector.Pluralize(strings.ToLower(field.Type))
 }
 
-func requestParams(fields []*ModelField) []*ModelField {
+func requestParams(fields []*Field) []*Field {
 	var managed bool
 
-	params := []*ModelField{}
+	params := []*Field{}
 
 	for _, field := range fields {
 		managed = false

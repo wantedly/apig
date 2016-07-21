@@ -2,11 +2,18 @@ package main
 
 type Model struct {
 	Name   string
-	Fields []*ModelField
+	Fields []*Field
 }
 
-type ModelField struct {
-	Name     string
-	JSONName string
-	Type     string
+type Field struct {
+	Name        string
+	JSONName    string
+	Type        string
+	Tag         string
+	Association *Association
+}
+
+type Association struct {
+	Type  string
+	Model *Model
 }

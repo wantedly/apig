@@ -138,6 +138,7 @@ func cmdGen(outDir string) {
 	}
 
 	var models []*Model
+	mmap := make(map[string]*Model)
 
 	for _, file := range files {
 		if file.IsDir() {
@@ -158,6 +159,7 @@ func cmdGen(outDir string) {
 
 		for _, model := range ms {
 			models = append(models, model)
+			mmap[model.Name] = model
 		}
 	}
 
@@ -181,6 +183,10 @@ func cmdGen(outDir string) {
 	}
 
 	for _, model := range models {
+
+		// Check association, stdout "model.Fields[0].Association.Type"
+		model = resolveAssoc(model, mmap, make(map[string]bool))
+
 		d := &Detail{Model: model, ImportDir: importDir[0]}
 
 		if err := generateApibModel(d, outDir); err != nil {
@@ -229,4 +235,47 @@ func formatImportDir(paths []string) []string {
 		}
 	}
 	return results
+}
+
+func resolveAssoc(model *Model, mmap map[string]*Model, parents map[string]bool) *Model {
+	parents[model.Name] = true
+
+	for i, field := range model.Fields {
+		str := strings.Trim(field.Type, "[]*")
+		if mmap[str] != nil && parents[str] != true {
+			modelNode := resolveAssoc(mmap[str], mmap, parents)
+
+			var assoc string
+			switch string([]rune(field.Type)[0]) {
+			case "[":
+				if validateFKey(modelNode.Fields, model.Name) {
+					assoc = "has_many"
+					break
+				}
+				assoc = "belongs_to"
+
+			default:
+				if validateFKey(modelNode.Fields, model.Name) {
+					assoc = "has_one"
+					break
+				}
+				assoc = "belongs_to"
+			}
+			model.Fields[i] = &Field{Name: field.Name, Type: field.Type, Association: &Association{Type: assoc, Model: modelNode}}
+		} else {
+			model.Fields[i] = &Field{Name: field.Name, Type: field.Type, Association: &Association{Type: ""}}
+		}
+	}
+
+	return model
+}
+
+func validateFKey(fields []*Field, name string) bool {
+	for _, field := range fields {
+		val := name + "ID"
+		if field.Name == val {
+			return true
+		}
+	}
+	return false
 }

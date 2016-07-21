@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func fieldEquals(f1, f2 *ModelField) bool {
+func fieldEquals(f1, f2 *Field) bool {
 	if f1.Name != f2.Name {
 		return false
 	}
@@ -22,7 +22,7 @@ func fieldEquals(f1, f2 *ModelField) bool {
 }
 
 func TestParseModel(t *testing.T) {
-	path := filepath.Join("_fixtures", "models.go")
+	path := filepath.Join("testdata", "models.go")
 
 	models, err := parseModel(path)
 
@@ -40,26 +40,26 @@ func TestParseModel(t *testing.T) {
 		t.Fatalf("Incorrect model name. expected: User, actual: %s", user.Name)
 	}
 
-	expectedFields := []*ModelField{
-		&ModelField{
+	expectedFields := []*Field{
+		&Field{
 			Name:     "ID",
 			JSONName: "id",
 			Type:     "uint",
 		},
-		&ModelField{
+		&Field{
 			Name:     "Name",
 			JSONName: "name",
 			Type:     "string",
 		},
-		&ModelField{
+		&Field{
 			Name:     "CreatedAt",
 			JSONName: "created_at",
-			Type:     "time.Time",
+			Type:     "*time.Time",
 		},
-		&ModelField{
+		&Field{
 			Name:     "UpdatedAt",
 			JSONName: "updated_at",
-			Type:     "time.Time",
+			Type:     "*time.Time",
 		},
 	}
 
@@ -68,4 +68,14 @@ func TestParseModel(t *testing.T) {
 			t.Fatalf("Incorrect field. expected: %#v, actual: %#v", expectedFields[i], actual)
 		}
 	}
+}
+
+func convertMap(fields []*Field) map[string]string {
+	fmap := make(map[string]string)
+
+	for _, field := range fields {
+		fmap[field.Name] = field.Type
+	}
+
+	return fmap
 }
