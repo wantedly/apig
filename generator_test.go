@@ -10,11 +10,31 @@ import (
 
 var userModel = &Model{
 	Name: "User",
-	Fields: map[string]string{
-		"ID":        "uint",
-		"Name":      "string",
-		"CreatedAt": "time.Time",
-		"UpdatedAt": "time.Time",
+	Fields: []*Field{
+		&Field{
+			Name:        "ID",
+			Type:        "uint",
+			Tag:         "",
+			Association: nil,
+		},
+		&Field{
+			Name:        "Name",
+			Type:        "string",
+			Tag:         "",
+			Association: nil,
+		},
+		&Field{
+			Name:        "CreatedAt",
+			Type:        "*time.Time",
+			Tag:         "",
+			Association: nil,
+		},
+		&Field{
+			Name:        "UpdatedAt",
+			Type:        "*time.Time",
+			Tag:         "",
+			Association: nil,
+		},
 	},
 }
 
