@@ -8,5 +8,11 @@ type Model struct {
 type Field struct {
 	Name        string
 	Type        string
-	Association string
+	Tag         string
+	Association *Association
+}
+
+type Association struct {
+	Type  string
+	Model *Model
 }

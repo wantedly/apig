@@ -55,7 +55,7 @@ func parseField(field *ast.Field) *Field {
 		os.Exit(1)
 	}
 
-	fs := Field{Name: fieldNames[0], Type: fieldType, Association: fieldTag}
+	fs := Field{Name: fieldNames[0], Type: fieldType, Tag: fieldTag}
 	return &fs
 }
 
