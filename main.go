@@ -196,6 +196,11 @@ func cmdGen(outDir string) {
 		}
 	}
 
+	if err := generateApibIndex(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	if err := generateRouter(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

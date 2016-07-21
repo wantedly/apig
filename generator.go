@@ -64,6 +64,42 @@ func apibType(field *ModelField) string {
 	return "string"
 }
 
+func generateApibIndex(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "index.apib.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("apib").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, detail); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, "docs", "index.apib")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+
+	return nil
+}
+
 func generateApibModel(detail *Detail, outDir string) error {
 	body, err := Asset(filepath.Join(templateDir, "model.apib.tmpl"))
 
