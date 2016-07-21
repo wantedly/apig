@@ -27,7 +27,7 @@ _testmain.go
 *.test
 *.prof
 
-/api-server-generator
+/apig
 /bin/
 
 /bindata.go
