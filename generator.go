@@ -56,7 +56,7 @@ func apibDefaultValue(field *ModelField) string {
 		return "1"
 	}
 
-	return strings.ToUpper(field.Name)
+	return ""
 }
 
 func apibType(field *ModelField) string {
@@ -65,11 +65,13 @@ func apibType(field *ModelField) string {
 		return "boolean"
 	case "string":
 		return "string"
+	case "time.Time":
+		return "string"
 	case "uint":
 		return "number"
 	}
 
-	return "string"
+	return inflector.Pluralize(strings.ToLower(field.Type))
 }
 
 func requestParams(fields []*ModelField) []*ModelField {
