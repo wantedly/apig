@@ -1,5 +1,12 @@
 package main
 
+const (
+	AssociationNone      = 0
+	AssociationBelongsTo = 1
+	AssociationHasMany   = 2
+	AssociationHasOne    = 3
+)
+
 type Model struct {
 	Name   string
 	Fields []*Field
@@ -14,6 +21,6 @@ type Field struct {
 }
 
 type Association struct {
-	Type  string
+	Type  int
 	Model *Model
 }

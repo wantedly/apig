@@ -257,25 +257,25 @@ func resolveAssoc(model *Model, mmap map[string]*Model, parents map[string]bool)
 		if mmap[str] != nil && parents[str] != true {
 			resolveAssoc(mmap[str], mmap, parents)
 
-			var assoc string
+			var assoc int
 			switch string([]rune(field.Type)[0]) {
 			case "[":
 				if validateFKey(mmap[str].Fields, model.Name) {
-					assoc = "has_many"
+					assoc = AssociationHasMany
 					break
 				}
-				assoc = "belongs_to"
+				assoc = AssociationBelongsTo
 
 			default:
 				if validateFKey(mmap[str].Fields, model.Name) {
-					assoc = "has_one"
+					assoc = AssociationHasOne
 					break
 				}
-				assoc = "belongs_to"
+				assoc = AssociationBelongsTo
 			}
 			model.Fields[i].Association = &Association{Type: assoc, Model: mmap[str]}
 		} else {
-			model.Fields[i].Association = &Association{Type: ""}
+			model.Fields[i].Association = &Association{Type: AssociationNone}
 		}
 	}
 }
