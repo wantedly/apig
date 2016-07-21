@@ -52,7 +52,7 @@ func apibDefaultValue(field *Field) string {
 		return "false"
 	case "string":
 		return strings.ToUpper(field.Name)
-	case "time.Time":
+	case "*time.Time":
 		return "`2000-01-01 00:00:00`"
 	case "uint":
 		return "1"
@@ -67,13 +67,21 @@ func apibType(field *Field) string {
 		return "boolean"
 	case "string":
 		return "string"
-	case "time.Time":
+	case "*time.Time":
 		return "string"
 	case "uint":
 		return "number"
 	}
 
-	return inflector.Pluralize(strings.ToLower(field.Type))
+	switch field.Association.Type {
+	case AssociationBelongsTo:
+	case AssociationHasMany:
+		return fmt.Sprintf("array[%s]", inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "[]", "", -1))))
+	case AssociationHasOne:
+		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
+	}
+
+	return ""
 }
 
 func requestParams(fields []*Field) []*Field {
