@@ -9,9 +9,8 @@ Create a new {{ tolower .Model.Name }}
 
 + Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
     + Attributes
-        + name: NAME (string)
-        + age: 1 (number)
-        + admin: false (boolean)
+{{ range (requestParams .Model.Fields) }}
+        + {{ .JSONName }}: {{ apibDefaultValue . }} ({{ apibType . }}){{ end }}
 
 + Response 201 (application/json; charset=utf-8)
     + Attributes ({{ pluralize (tolower .Model.Name) }})
@@ -45,9 +44,8 @@ Update {{ tolower .Model.Name }}.
 
 + Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
     + Attributes
-        + name: NAME (string)
-        + age: 1 (number)
-        + admin: false (boolean)
+{{ range (requestParams .Model.Fields) }}
+        + {{ .JSONName }}: {{ apibDefaultValue . }} ({{ apibType . }}){{ end }}
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes ({{ pluralize (tolower .Model.Name) }})

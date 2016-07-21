@@ -18,6 +18,7 @@ var funcMap = template.FuncMap{
 	"apibDefaultValue": apibDefaultValue,
 	"apibType":         apibType,
 	"pluralize":        inflector.Pluralize,
+	"requestParams":    requestParams,
 	"tolower":          strings.ToLower,
 }
 
@@ -34,6 +35,12 @@ var skeletons = []string{
 	filepath.Join("controllers", ".gitkeep.tmpl"),
 	filepath.Join("docs", ".gitkeep.tmpl"),
 	filepath.Join("models", ".gitkeep.tmpl"),
+}
+
+var managedFields = []string{
+	"ID",
+	"CreatedAt",
+	"UpdatedAt",
 }
 
 func apibDefaultValue(field *ModelField) string {
@@ -62,6 +69,28 @@ func apibType(field *ModelField) string {
 	}
 
 	return "string"
+}
+
+func requestParams(fields []*ModelField) []*ModelField {
+	var managed bool
+
+	params := []*ModelField{}
+
+	for _, field := range fields {
+		managed = false
+
+		for _, name := range managedFields {
+			if field.Name == name {
+				managed = true
+			}
+		}
+
+		if !managed {
+			params = append(params, field)
+		}
+	}
+
+	return params
 }
 
 func generateApibIndex(detail *Detail, outDir string) error {
