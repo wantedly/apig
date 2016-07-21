@@ -27,11 +27,13 @@ func TestParseModel(t *testing.T) {
 	expectedFields := map[string]string{
 		"ID":        "uint",
 		"Name":      "string",
-		"CreatedAt": "time.Time",
-		"UpdatedAt": "time.Time",
+		"CreatedAt": "*time.Time",
+		"UpdatedAt": "*time.Time",
 	}
 
-	for k, v := range user.Fields {
+	fmap := convertMap(models[0].Fields)
+
+	for k, v := range fmap {
 		if _, ok := expectedFields[k]; !ok {
 			t.Fatalf("Invalid field name: %s", k)
 		}
@@ -40,4 +42,14 @@ func TestParseModel(t *testing.T) {
 			t.Fatalf("Invalid field type. expected: %s, actual: %s", expectedFields[k], v)
 		}
 	}
+}
+
+func convertMap(fields []*Field) map[string]string {
+	fmap := make(map[string]string)
+
+	for _, field := range fields {
+		fmap[field.Name] = field.Type
+	}
+
+	return fmap
 }
