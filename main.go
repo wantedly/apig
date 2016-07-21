@@ -182,20 +182,45 @@ func cmdGen(outDir string) {
 		os.Exit(1)
 	}
 
-	detail := &Detail{Models: models, ImportDir: importDir[0]}
+	vcs := filepath.Base(filepath.Dir(filepath.Dir(importDir[0])))
+	user := filepath.Base(filepath.Dir(importDir[0]))
+	project := filepath.Base(importDir[0])
 
 	for _, model := range models {
 
-		// MEMO(munisystem): resolveAssoc return model struct addition of association.
 		// Check association, stdout "model.Fields[0].Association.Type"
-		model = resolveAssoc(model, mmap, make(map[string]bool))
+		resolveAssoc(model, mmap, make(map[string]bool))
 
-		detail := &Detail{Model: model, ImportDir: importDir[0]}
+		d := &Detail{
+			Model:     model,
+			ImportDir: importDir[0],
+			VCS:       vcs,
+			User:      user,
+			Project:   project,
+		}
 
-		if err := generateController(detail, outDir); err != nil {
+		if err := generateApibModel(d, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+
+		if err := generateController(d, outDir); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	detail := &Detail{
+		Models:    models,
+		ImportDir: importDir[0],
+		VCS:       vcs,
+		User:      user,
+		Project:   filepath.Base(importDir[0]),
+	}
+
+	if err := generateApibIndex(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
 	if err := generateRouter(detail, outDir); err != nil {
@@ -224,37 +249,35 @@ func formatImportDir(paths []string) []string {
 	return results
 }
 
-func resolveAssoc(model *Model, mmap map[string]*Model, parents map[string]bool) *Model {
+func resolveAssoc(model *Model, mmap map[string]*Model, parents map[string]bool) {
 	parents[model.Name] = true
 
 	for i, field := range model.Fields {
 		str := strings.Trim(field.Type, "[]*")
 		if mmap[str] != nil && parents[str] != true {
-			modelNode := resolveAssoc(mmap[str], mmap, parents)
+			resolveAssoc(mmap[str], mmap, parents)
 
-			var assoc string
+			var assoc int
 			switch string([]rune(field.Type)[0]) {
 			case "[":
-				if validateFKey(modelNode.Fields, model.Name) {
-					assoc = "has_many"
+				if validateFKey(mmap[str].Fields, model.Name) {
+					assoc = AssociationHasMany
 					break
 				}
-				assoc = "belongs_to"
+				assoc = AssociationBelongsTo
 
 			default:
-				if validateFKey(modelNode.Fields, model.Name) {
-					assoc = "has_one"
+				if validateFKey(mmap[str].Fields, model.Name) {
+					assoc = AssociationHasOne
 					break
 				}
-				assoc = "belongs_to"
+				assoc = AssociationBelongsTo
 			}
-			model.Fields[i] = &Field{Name: field.Name, Type: field.Type, Association: &Association{Type: assoc, Model: modelNode}}
+			model.Fields[i].Association = &Association{Type: assoc, Model: mmap[str]}
 		} else {
-			model.Fields[i] = &Field{Name: field.Name, Type: field.Type, Association: &Association{Type: ""}}
+			model.Fields[i].Association = &Association{Type: AssociationNone}
 		}
 	}
-
-	return model
 }
 
 func validateFKey(fields []*Field, name string) bool {

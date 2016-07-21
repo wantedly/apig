@@ -1,0 +1,84 @@
+# Group {{ pluralize .Model.Name }}
+Welcome to the {{ pluralize (tolower .Model.Name) }} API. This API provides access to the {{ pluralize (tolower .Model.Name) }} service.
+
+## {{ pluralize (tolower .Model.Name) }} [/{{ pluralize (tolower .Model.Name) }}]
+
+### Create {{ tolower .Model.Name }} [POST]
+
+Create a new {{ tolower .Model.Name }}
+
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
+    + Attributes
+{{ range (requestParams .Model.Fields) }}
+        + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes ({{ pluralize (tolower .Model.Name) }})
+
+### Get {{ pluralize (tolower .Model.Name) }} [GET]
+
+Returns {{ tolower .Model.Name }} list.
+
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array, fixed)
+        + ({{ pluralize (tolower .Model.Name) }})
+
+## {{ tolower .Model.Name }} details [/{{ pluralize (tolower .Model.Name) }}/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired {{ tolower .Model.Name }}.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+### Get {{ tolower .Model.Name }} [GET]
+
+Returns {{ tolower .Model.Name }}.
+
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes ({{ pluralize (tolower .Model.Name) }}, fixed)
+
+### Update {{ tolower .Model.Name }} [PUT]
+
+Update {{ tolower .Model.Name }}.
+
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
+    + Attributes
+{{ range (requestParams .Model.Fields) }}
+        + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes ({{ pluralize (tolower .Model.Name) }})
+
+### Delete {{ tolower .Model.Name }} [DELETE]
+
+Delete {{ tolower .Model.Name }}.
+
++ Request {{ pluralize (tolower .Model.Name) }} (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.{{ .User }}+json
+
++ Response 204
+
+# Data Structures
+## {{ pluralize (tolower .Model.Name) }} (object, fixed)
+{{ range $key, $value := .Model.Fields }}
++ {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}

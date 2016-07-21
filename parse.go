@@ -6,6 +6,8 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -48,6 +50,14 @@ func parseField(field *ast.Field) *Field {
 		}
 	}
 
+	s, err := strconv.Unquote(field.Tag.Value)
+
+	if err != nil {
+		s = field.Tag.Value
+	}
+
+	jsonName := strings.Split((reflect.StructTag)(s).Get("json"), ",")[0]
+
 	fieldTag = field.Tag.Value
 
 	if len(fieldNames) != 1 {
@@ -55,7 +65,12 @@ func parseField(field *ast.Field) *Field {
 		os.Exit(1)
 	}
 
-	fs := Field{Name: fieldNames[0], Type: fieldType, Tag: fieldTag}
+	fs := Field{
+		Name:     fieldNames[0],
+		JSONName: jsonName,
+		Type:     fieldType,
+		Tag:      fieldTag,
+	}
 	return &fs
 }
 

@@ -15,8 +15,12 @@ import (
 const templateDir = "_templates"
 
 var funcMap = template.FuncMap{
-	"pluralize": inflector.Pluralize,
-	"tolower":   strings.ToLower,
+	"apibDefaultValue": apibDefaultValue,
+	"apibType":         apibType,
+	"pluralize":        inflector.Pluralize,
+	"requestParams":    requestParams,
+	"tolower":          strings.ToLower,
+	"title":            strings.Title,
 }
 
 var skeletons = []string{
@@ -32,7 +36,147 @@ var skeletons = []string{
 	filepath.Join("version", "version.go.tmpl"),
 	filepath.Join("version", "version_test.go.tmpl"),
 	filepath.Join("controllers", ".gitkeep.tmpl"),
+	filepath.Join("docs", ".gitkeep.tmpl"),
 	filepath.Join("models", ".gitkeep.tmpl"),
+}
+
+var managedFields = []string{
+	"ID",
+	"CreatedAt",
+	"UpdatedAt",
+}
+
+func apibDefaultValue(field *Field) string {
+	switch field.Type {
+	case "bool":
+		return "false"
+	case "string":
+		return strings.ToUpper(field.Name)
+	case "*time.Time":
+		return "`2000-01-01 00:00:00`"
+	case "uint":
+		return "1"
+	}
+
+	return ""
+}
+
+func apibType(field *Field) string {
+	switch field.Type {
+	case "bool":
+		return "boolean"
+	case "string":
+		return "string"
+	case "*time.Time":
+		return "string"
+	case "uint":
+		return "number"
+	}
+
+	switch field.Association.Type {
+	case AssociationBelongsTo:
+		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
+	case AssociationHasMany:
+		return fmt.Sprintf("array[%s]", inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "[]", "", -1))))
+	case AssociationHasOne:
+		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
+	}
+
+	return ""
+}
+
+func requestParams(fields []*Field) []*Field {
+	var managed bool
+
+	params := []*Field{}
+
+	for _, field := range fields {
+		managed = false
+
+		for _, name := range managedFields {
+			if field.Name == name {
+				managed = true
+			}
+		}
+
+		if !managed {
+			params = append(params, field)
+		}
+	}
+
+	return params
+}
+
+func generateApibIndex(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "index.apib.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("apib").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, detail); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, "docs", "index.apib")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+
+	return nil
+}
+
+func generateApibModel(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "model.apib.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("apib").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, detail); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, "docs", strings.ToLower(detail.Model.Name)+".apib")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+
+	return nil
 }
 
 func generateSkeleton(detail *Detail, outDir string) error {
