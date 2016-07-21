@@ -9,6 +9,7 @@ import (
 	"github.com/wantedly/api-server/version"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 func setUserPreload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {

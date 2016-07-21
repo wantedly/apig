@@ -9,6 +9,7 @@ import (
 	"{{ .ImportDir }}/version"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 func set{{ .Model.Name }}Preload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {
