@@ -16,6 +16,7 @@ func setUserPreload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {
 	offset := 0
 	for key, val := range fields {
 		switch val {
+
 		case "*":
 			db = db
 		}

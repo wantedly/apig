@@ -16,8 +16,24 @@ func set{{ .Model.Name }}Preload(fields []string, db *gorm.DB) ([]string, *gorm.
 	offset := 0
 	for key, val := range fields {
 		switch val {
+{{ range .Model.Fields }}{{ if .IsAssociation }}
+		case "{{ .JSONName }}":
+			db = db.Preload("{{ .Name }}")
+			sel = append(sel[:(key-offset)], sel[(key+1-offset):]...)
+			offset += 1
+			idflag := true
+			for _, v := range sel {
+				if v == "{{ if .IsBelongsTo }}{{ .JSONName }}_id{{ else }}id{{ end }}" {
+					idflag = false
+					break
+				}
+			}
+			if idflag {
+				sel = append(sel, "{{ if .IsBelongsTo }}{{ .JSONName }}_id{{ else }}id{{ end }}")
+			}
+{{ end }}{{ end }}
 		case "*":
-			db = db
+			db = db{{ range .Model.Fields }}{{ if .IsAssociation }}.Preload("{{ .Name }}"){{ end }}{{ end }}
 		}
 	}
 	return sel, db
