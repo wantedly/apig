@@ -10,12 +10,41 @@ import (
 
 var userModel = &Model{
 	Name: "User",
-	Fields: map[string]string{
-		"ID":        "uint",
-		"Name":      "string",
-		"CreatedAt": "time.Time",
-		"UpdatedAt": "time.Time",
+	Fields: []*Field{
+		&Field{
+			Name:        "ID",
+			Type:        "uint",
+			Tag:         "",
+			Association: nil,
+		},
+		&Field{
+			Name:        "Name",
+			Type:        "string",
+			Tag:         "",
+			Association: nil,
+		},
+		&Field{
+			Name:        "CreatedAt",
+			Type:        "*time.Time",
+			Tag:         "",
+			Association: nil,
+		},
+		&Field{
+			Name:        "UpdatedAt",
+			Type:        "*time.Time",
+			Tag:         "",
+			Association: nil,
+		},
 	},
+}
+
+var detail = &Detail{
+	VCS:       "github.com",
+	User:      "wantedly",
+	Project:   "api-server",
+	Model:     userModel,
+	Models:    []*Model{userModel},
+	ImportDir: "github.com/wantedly/api-server",
 }
 
 func compareFiles(f1, f2 string) bool {
@@ -25,23 +54,32 @@ func compareFiles(f1, f2 string) bool {
 	return bytes.Compare(c1, c2) == 0
 }
 
-func TestCopyStaticFiles(t *testing.T) {
-	outDir, err := ioutil.TempDir("", "copyStaticFiles")
+func TestGenerateSkeleton(t *testing.T) {
+	tempDir, err := ioutil.TempDir("", "copyStaticFiles")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
 	}
-	defer os.RemoveAll(outDir)
+	defer os.RemoveAll(tempDir)
 
-	if err := copyStaticFiles(outDir); err != nil {
+	outDir := filepath.Join(tempDir, "api-server")
+
+	if err := generateSkeleton(detail, outDir); err != nil {
 		t.Fatalf("Error should not be raised: %#v", err)
 	}
 
 	files := []string{
+		"README.md",
 		".gitignore",
 		"main.go",
 		filepath.Join("db", "db.go"),
+		filepath.Join("db", "pagination.go"),
+		filepath.Join("router", "router.go"),
 		filepath.Join("middleware", "set_db.go"),
 		filepath.Join("server", "server.go"),
+		filepath.Join("version", "version.go"),
+		filepath.Join("version", "version_test.go"),
+		filepath.Join("controllers", ".gitkeep"),
+		filepath.Join("models", ".gitkeep"),
 	}
 
 	for _, file := range files {
@@ -59,7 +97,7 @@ func TestGenerateController(t *testing.T) {
 	}
 	defer os.RemoveAll(outDir)
 
-	if err := generateController(userModel, outDir); err != nil {
+	if err := generateController(detail, outDir); err != nil {
 		t.Fatalf("Error should not be raised: %#v", err)
 	}
 
@@ -69,7 +107,7 @@ func TestGenerateController(t *testing.T) {
 		t.Fatalf("Controller file is not generated: %s", path)
 	}
 
-	fixture := filepath.Join("_fixtures", "controllers", "user.go")
+	fixture := filepath.Join("testdata", "controllers", "user.go")
 
 	if !compareFiles(path, fixture) {
 		c1, _ := ioutil.ReadFile(fixture)
@@ -79,15 +117,13 @@ func TestGenerateController(t *testing.T) {
 }
 
 func TestGenerateREADME(t *testing.T) {
-	models := []*Model{userModel}
-
 	outDir, err := ioutil.TempDir("", "generateREADME")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
 	}
 	defer os.RemoveAll(outDir)
 
-	if err := generateREADME(models, outDir); err != nil {
+	if err := generateREADME([]*Model{userModel}, outDir); err != nil {
 		t.Fatalf("Error should not be raised: %#v", err)
 	}
 
@@ -97,7 +133,7 @@ func TestGenerateREADME(t *testing.T) {
 		t.Fatalf("README is not generated: %s", path)
 	}
 
-	fixture := filepath.Join("_fixtures", "README.md")
+	fixture := filepath.Join("testdata", "README.md")
 
 	if !compareFiles(path, fixture) {
 		c1, _ := ioutil.ReadFile(fixture)
@@ -107,15 +143,13 @@ func TestGenerateREADME(t *testing.T) {
 }
 
 func TestGenerateRouter(t *testing.T) {
-	models := []*Model{userModel}
-
 	outDir, err := ioutil.TempDir("", "generateRouter")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
 	}
 	defer os.RemoveAll(outDir)
 
-	if err := generateRouter(models, outDir); err != nil {
+	if err := generateRouter(detail, outDir); err != nil {
 		t.Fatalf("Error should not be raised: %#v", err)
 	}
 
@@ -125,7 +159,7 @@ func TestGenerateRouter(t *testing.T) {
 		t.Fatalf("Router file is not generated: %s", path)
 	}
 
-	fixture := filepath.Join("_fixtures", "router", "router.go")
+	fixture := filepath.Join("testdata", "router", "router.go")
 
 	if !compareFiles(path, fixture) {
 		c1, _ := ioutil.ReadFile(fixture)
