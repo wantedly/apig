@@ -262,41 +262,33 @@ func formatImportDir(paths []string) []string {
 
 func resolveAssoc(model *Model, mmap map[string]*Model, parents map[string]bool) {
 	parents[model.Name] = true
-	var wg sync.WaitGroup
 
-	for index, field := range model.Fields {
-		wg.Add(1)
+	for i, field := range model.Fields {
+		str := strings.Trim(field.Type, "[]*")
+		if mmap[str] != nil && parents[str] != true {
+			resolveAssoc(mmap[str], mmap, parents)
 
-		go func(i int, f *Field) {
-			defer wg.Done()
-
-			str := strings.Trim(f.Type, "[]*")
-			if mmap[str] != nil && parents[str] != true {
-				resolveAssoc(mmap[str], mmap, parents)
-
-				var assoc int
-				switch string([]rune(f.Type)[0]) {
-				case "[":
-					if validateFKey(mmap[str].Fields, model.Name) {
-						assoc = AssociationHasMany
-						break
-					}
-					assoc = AssociationBelongsTo
-
-				default:
-					if validateFKey(mmap[str].Fields, model.Name) {
-						assoc = AssociationHasOne
-						break
-					}
-					assoc = AssociationBelongsTo
+			var assoc int
+			switch string([]rune(field.Type)[0]) {
+			case "[":
+				if validateFKey(mmap[str].Fields, model.Name) {
+					assoc = AssociationHasMany
+					break
 				}
-				model.Fields[i].Association = &Association{Type: assoc, Model: mmap[str]}
-			} else {
-				model.Fields[i].Association = &Association{Type: AssociationNone}
+				assoc = AssociationBelongsTo
+
+			default:
+				if validateFKey(mmap[str].Fields, model.Name) {
+					assoc = AssociationHasOne
+					break
+				}
+				assoc = AssociationBelongsTo
 			}
-		}(index, field)
+			model.Fields[i].Association = &Association{Type: assoc, Model: mmap[str]}
+		} else {
+			model.Fields[i].Association = &Association{Type: AssociationNone}
+		}
 	}
-	wg.Wait()
 }
 
 func validateFKey(fields []*Field, name string) bool {
