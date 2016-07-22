@@ -52,6 +52,8 @@ func apibDefaultValue(field *Field) string {
 		return "false"
 	case "string":
 		return strings.ToUpper(field.Name)
+	case "time.Time":
+		return "`2000-01-01 00:00:00`"
 	case "*time.Time":
 		return "`2000-01-01 00:00:00`"
 	case "uint":
@@ -66,6 +68,8 @@ func apibType(field *Field) string {
 	case "bool":
 		return "boolean"
 	case "string":
+		return "string"
+	case "time.Time":
 		return "string"
 	case "*time.Time":
 		return "string"
