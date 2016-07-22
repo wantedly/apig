@@ -346,3 +346,39 @@ func generateRouter(detail *Detail, outDir string) error {
 
 	return nil
 }
+
+func generateDB(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "db.go.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("db").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, detail); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, "db", "db.go")
+
+	if !fileExists(filepath.Dir(dstPath)) {
+		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
+
+	return nil
+}

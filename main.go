@@ -228,6 +228,11 @@ func cmdGen(outDir string) {
 		os.Exit(1)
 	}
 
+	if err := generateDB(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	if err := generateREADME(models, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
