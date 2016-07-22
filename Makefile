@@ -7,13 +7,14 @@ GLIDE_VERSION := 0.11.0
 
 .DEFAULT_GOAL := bin/$(BINARY)
 
-bin/$(BINARY): $(SOURCES)
+bin/$(BINARY): deps $(SOURCES)
 	go generate
 	go build $(LDFLAGS) -o bin/$(BINARY)
 
 .PHONY: clean
 clean:
 	rm -fr bin/*
+	rm -fr vendor/*
 
 .PHONY: deps
 deps: glide

@@ -25,8 +25,9 @@ If you're using Go 1.5, `GO15VENDOREXPERIMENT=1` must be set.
 
 ### How to build
 
+`make` generates binary into `bin/apig`.
+
 ```bash
-$ make deps
 $ make
 ```
 
