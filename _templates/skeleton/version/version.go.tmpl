@@ -1,7 +1,6 @@
 package version
 
 import (
-	"errors"
 	"math"
 	"strconv"
 	"strings"
@@ -13,11 +12,6 @@ func New(c *gin.Context) (string, error) {
 	header := c.Request.Header["Accept"][0]
 	header = strings.Join(strings.Fields(header), "")
 	var ver string
-
-	// check accept-type
-	if !strings.Contains(header, "application/vnd.{{ .User }}+json") {
-		return "", errors.New("Incorrect Accept-type!")
-	}
 
 	// header version
 	if strings.Contains(header, "version=") {
