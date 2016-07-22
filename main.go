@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/tcnksm/go-gitconfig"
 )
@@ -140,28 +141,34 @@ func cmdGen(outDir string) {
 	var models []*Model
 	mmap := make(map[string]*Model)
 
+	var wg sync.WaitGroup
 	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
+		wg.Add(1)
+		go func(f os.FileInfo) {
+			defer wg.Done()
+			if f.IsDir() {
+				return
+			}
 
-		if !strings.HasSuffix(file.Name(), ".go") {
-			continue
-		}
+			if !strings.HasSuffix(f.Name(), ".go") {
+				return
+			}
 
-		modelPath := filepath.Join(absModelDir, file.Name())
-		ms, err := parseModel(modelPath)
+			modelPath := filepath.Join(absModelDir, f.Name())
+			ms, err := parseModel(modelPath)
 
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 
-		for _, model := range ms {
-			models = append(models, model)
-			mmap[model.Name] = model
-		}
+			for _, model := range ms {
+				models = append(models, model)
+				mmap[model.Name] = model
+			}
+		}(file)
 	}
+	wg.Wait()
 
 	paths, err := parseMain(filepath.Join(outDir, targetFile))
 
@@ -187,28 +194,32 @@ func cmdGen(outDir string) {
 	project := filepath.Base(importDir[0])
 
 	for _, model := range models {
+		wg.Add(1)
+		go func(m *Model) {
+			defer wg.Done()
+			// Check association, stdout "model.Fields[0].Association.Type"
+			resolveAssoc(m, mmap, make(map[string]bool))
 
-		// Check association, stdout "model.Fields[0].Association.Type"
-		resolveAssoc(model, mmap, make(map[string]bool))
+			d := &Detail{
+				Model:     m,
+				ImportDir: importDir[0],
+				VCS:       vcs,
+				User:      user,
+				Project:   project,
+			}
 
-		d := &Detail{
-			Model:     model,
-			ImportDir: importDir[0],
-			VCS:       vcs,
-			User:      user,
-			Project:   project,
-		}
+			if err := generateApibModel(d, outDir); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 
-		if err := generateApibModel(d, outDir); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-
-		if err := generateController(d, outDir); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+			if err := generateController(d, outDir); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		}(model)
 	}
+	wg.Wait()
 
 	detail := &Detail{
 		Models:    models,

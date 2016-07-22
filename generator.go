@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"text/template"
 
 	"github.com/gedex/inflector"
@@ -23,23 +24,6 @@ var funcMap = template.FuncMap{
 	"tolower":          strings.ToLower,
 	"toSnakeCase":      toSnakeCase,
 	"title":            strings.Title,
-}
-
-var skeletons = []string{
-	"README.md.tmpl",
-	".gitignore.tmpl",
-	"main.go.tmpl",
-	filepath.Join("db", "db.go.tmpl"),
-	filepath.Join("db", "pagination.go.tmpl"),
-	filepath.Join("router", "router.go.tmpl"),
-	filepath.Join("middleware", "set_db.go.tmpl"),
-	filepath.Join("server", "server.go.tmpl"),
-	filepath.Join("helper", "field.go.tmpl"),
-	filepath.Join("version", "version.go.tmpl"),
-	filepath.Join("version", "version_test.go.tmpl"),
-	filepath.Join("controllers", ".gitkeep.tmpl"),
-	filepath.Join("docs", ".gitkeep.tmpl"),
-	filepath.Join("models", ".gitkeep.tmpl"),
 }
 
 var managedFields = []string{
@@ -201,39 +185,60 @@ func generateSkeleton(detail *Detail, outDir string) error {
 		os.Exit(1)
 	}
 
-	for _, filename := range skeletons {
-		srcPath := filepath.Join(templateDir, "skeleton", filename)
-		dstPath := filepath.Join(outDir, strings.Replace(filename, ".tmpl", "", 1))
+	ch := make(chan error)
+	go func() {
+		var wg sync.WaitGroup
+		r := regexp.MustCompile(`_templates/skeleton/*`)
+		for _, skeleton := range AssetNames() {
+			wg.Add(1)
+			go func(s string) {
+				defer wg.Done()
+				if !r.MatchString(s) {
+					return
+				}
 
-		body, err := Asset(srcPath)
+				trim := strings.Replace(s, "_templates/skeleton/", "", 1)
+				path := strings.Replace(trim, ".tmpl", "", 1)
+				dstPath := filepath.Join(outDir, path)
 
-		if err != nil {
-			return err
+				body, err := Asset(s)
+
+				if err != nil {
+					ch <- err
+				}
+
+				tmpl, err := template.New("complex").Parse(string(body))
+
+				if err != nil {
+					ch <- err
+				}
+
+				var buf bytes.Buffer
+
+				if err := tmpl.Execute(&buf, detail); err != nil {
+					ch <- err
+				}
+
+				if !fileExists(filepath.Dir(dstPath)) {
+					if err := mkdir(filepath.Dir(dstPath)); err != nil {
+						ch <- err
+					}
+				}
+
+				if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+					ch <- err
+				}
+
+				fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+			}(skeleton)
 		}
+		wg.Wait()
+		ch <- nil
+	}()
 
-		tmpl, err := template.New("complex").Parse(string(body))
-
-		if err != nil {
-			return err
-		}
-
-		var buf bytes.Buffer
-
-		if err := tmpl.Execute(&buf, detail); err != nil {
-			return err
-		}
-
-		if !fileExists(filepath.Dir(dstPath)) {
-			if err := mkdir(filepath.Dir(dstPath)); err != nil {
-				return err
-			}
-		}
-
-		if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
-			return err
-		}
-
-		fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+	err := <-ch
+	if err != nil {
+		return err
 	}
 
 	return nil
