@@ -1,7 +1,7 @@
 BINARY := apig
 SOURCES := $(shell find . -name '*.go' -type f | grep -v _examples)
 
-LDFLAGS := -ldflags="-w"
+LDFLAGS := -ldflags="-s -w"
 
 GLIDE_VERSION := 0.11.0
 
