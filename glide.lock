@@ -1,8 +1,8 @@
-hash: 67e99e068c6b48e8392d049fa9989b0e1b3fe2b6a11b7d003a1fdd420f28930e
-updated: 2016-07-20T16:43:28.680533357+09:00
+hash: 947bd12c6e998c51bf55cb14cc9ad039e9550b5210bbc50b79b92be113f23609
+updated: 2016-07-22T09:59:47.967544909+09:00
 imports:
 - name: github.com/gedex/inflector
   version: 91797f1712fd58f224781be1080b8613d096187e
 - name: github.com/tcnksm/go-gitconfig
   version: 6411ba19847f20afe47f603328d97aaeca6def6f
-devImports: []
+testImports: []
