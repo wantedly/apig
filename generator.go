@@ -186,8 +186,9 @@ func generateSkeleton(detail *Detail, outDir string) error {
 					return
 				}
 
-				filename := filepath.Base(s)
-				dstPath := filepath.Join(outDir, strings.Replace(filename, ".tmpl", "", 1))
+				trim := strings.Replace(s, "_templates/skeleton/", "", 1)
+				path := strings.Replace(trim, ".tmpl", "", 1)
+				dstPath := filepath.Join(outDir, path)
 
 				body, err := Asset(s)
 
