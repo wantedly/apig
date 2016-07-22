@@ -14,6 +14,7 @@ bin/$(BINARY): deps $(SOURCES)
 .PHONY: clean
 clean:
 	rm -fr bin/*
+	rm -fr vendor/*
 
 .PHONY: deps
 deps: glide
