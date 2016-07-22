@@ -4,11 +4,27 @@ import (
 	"net/http"
 
 	dbpkg "github.com/wantedly/api-server/db"
+	"github.com/wantedly/api-server/helper"
 	"github.com/wantedly/api-server/models"
 	"github.com/wantedly/api-server/version"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
+
+func setUserPreload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {
+	sel := make([]string, len(fields))
+	copy(sel, fields)
+	offset := 0
+	for key, val := range fields {
+		switch val {
+
+		case "*":
+			db = db
+		}
+	}
+	return sel, db
+}
 
 func GetUsers(c *gin.Context) {
 	ver, err := version.New(c)
@@ -25,9 +41,10 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	fields := c.DefaultQuery("fields", "*")
+	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	sel, db := setUserPreload(fields, db)
 	var users []models.User
-	err = db.Select(fields).Find(&users).Error
+	err = db.Select(sel).Find(&users).Error
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "error occured"})
@@ -48,7 +65,11 @@ func GetUsers(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(200, users)
+	var fieldMap []map[string]interface{}
+	for key, _ := range users {
+		fieldMap = append(fieldMap, helper.FieldToMap(users[key], fields, nestFields))
+	}
+	c.JSON(200, fieldMap)
 }
 
 func GetUser(c *gin.Context) {
@@ -60,10 +81,11 @@ func GetUser(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	fields := c.DefaultQuery("fields", "*")
+	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	sel, db := setUserPreload(fields, db)
 	var user models.User
 
-	if db.Select(fields).First(&user, id).Error != nil {
+	if db.Select(sel).First(&user, id).Error != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
@@ -74,7 +96,8 @@ func GetUser(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(200, user)
+	fieldMap := helper.FieldToMap(user, fields, nestFields)
+	c.JSON(200, fieldMap)
 }
 
 func CreateUser(c *gin.Context) {
