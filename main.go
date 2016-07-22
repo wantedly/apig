@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/tcnksm/go-gitconfig"
 )
@@ -140,28 +141,34 @@ func cmdGen(outDir string) {
 	var models []*Model
 	mmap := make(map[string]*Model)
 
+	var wg sync.WaitGroup
 	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
+		wg.Add(1)
+		go func(f os.FileInfo) {
+			defer wg.Done()
+			if f.IsDir() {
+				return
+			}
 
-		if !strings.HasSuffix(file.Name(), ".go") {
-			continue
-		}
+			if !strings.HasSuffix(f.Name(), ".go") {
+				return
+			}
 
-		modelPath := filepath.Join(absModelDir, file.Name())
-		ms, err := parseModel(modelPath)
+			modelPath := filepath.Join(absModelDir, f.Name())
+			ms, err := parseModel(modelPath)
 
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 
-		for _, model := range ms {
-			models = append(models, model)
-			mmap[model.Name] = model
-		}
+			for _, model := range ms {
+				models = append(models, model)
+				mmap[model.Name] = model
+			}
+		}(file)
 	}
+	wg.Wait()
 
 	paths, err := parseMain(filepath.Join(outDir, targetFile))
 
@@ -187,28 +194,32 @@ func cmdGen(outDir string) {
 	project := filepath.Base(importDir[0])
 
 	for _, model := range models {
+		wg.Add(1)
+		go func(m *Model) {
+			defer wg.Done()
+			// Check association, stdout "model.Fields[0].Association.Type"
+			resolveAssoc(m, mmap, make(map[string]bool))
 
-		// Check association, stdout "model.Fields[0].Association.Type"
-		resolveAssoc(model, mmap, make(map[string]bool))
+			d := &Detail{
+				Model:     m,
+				ImportDir: importDir[0],
+				VCS:       vcs,
+				User:      user,
+				Project:   project,
+			}
 
-		d := &Detail{
-			Model:     model,
-			ImportDir: importDir[0],
-			VCS:       vcs,
-			User:      user,
-			Project:   project,
-		}
+			if err := generateApibModel(d, outDir); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 
-		if err := generateApibModel(d, outDir); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-
-		if err := generateController(d, outDir); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+			if err := generateController(d, outDir); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		}(model)
 	}
+	wg.Wait()
 
 	detail := &Detail{
 		Models:    models,
@@ -251,33 +262,41 @@ func formatImportDir(paths []string) []string {
 
 func resolveAssoc(model *Model, mmap map[string]*Model, parents map[string]bool) {
 	parents[model.Name] = true
+	var wg sync.WaitGroup
 
-	for i, field := range model.Fields {
-		str := strings.Trim(field.Type, "[]*")
-		if mmap[str] != nil && parents[str] != true {
-			resolveAssoc(mmap[str], mmap, parents)
+	for index, field := range model.Fields {
+		wg.Add(1)
 
-			var assoc int
-			switch string([]rune(field.Type)[0]) {
-			case "[":
-				if validateFKey(mmap[str].Fields, model.Name) {
-					assoc = AssociationHasMany
-					break
+		go func(i int, f *Field) {
+			defer wg.Done()
+
+			str := strings.Trim(f.Type, "[]*")
+			if mmap[str] != nil && parents[str] != true {
+				resolveAssoc(mmap[str], mmap, parents)
+
+				var assoc int
+				switch string([]rune(f.Type)[0]) {
+				case "[":
+					if validateFKey(mmap[str].Fields, model.Name) {
+						assoc = AssociationHasMany
+						break
+					}
+					assoc = AssociationBelongsTo
+
+				default:
+					if validateFKey(mmap[str].Fields, model.Name) {
+						assoc = AssociationHasOne
+						break
+					}
+					assoc = AssociationBelongsTo
 				}
-				assoc = AssociationBelongsTo
-
-			default:
-				if validateFKey(mmap[str].Fields, model.Name) {
-					assoc = AssociationHasOne
-					break
-				}
-				assoc = AssociationBelongsTo
+				model.Fields[i].Association = &Association{Type: assoc, Model: mmap[str]}
+			} else {
+				model.Fields[i].Association = &Association{Type: AssociationNone}
 			}
-			model.Fields[i].Association = &Association{Type: assoc, Model: mmap[str]}
-		} else {
-			model.Fields[i].Association = &Association{Type: AssociationNone}
-		}
+		}(index, field)
 	}
+	wg.Wait()
 }
 
 func validateFKey(fields []*Field, name string) bool {
