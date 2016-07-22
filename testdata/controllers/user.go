@@ -44,7 +44,7 @@ func GetUsers(c *gin.Context) {
 	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	sel, db := setUserPreload(fields, db)
 	var users []models.User
-	err = db.Select(fields).Find(&users).Error
+	err = db.Select(sel).Find(&users).Error
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "error occured"})
@@ -85,7 +85,7 @@ func GetUser(c *gin.Context) {
 	sel, db := setUserPreload(fields, db)
 	var user models.User
 
-	if db.Select(fields).First(&user, id).Error != nil {
+	if db.Select(sel).First(&user, id).Error != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
