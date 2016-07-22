@@ -10,11 +10,11 @@ func Initialize(r *gin.Engine) {
 	api := r.Group("api")
 	{
 {{ range .Models }}
-		api.GET("/{{ pluralize (tolower .Name) }}", controllers.Get{{ pluralize .Name }})
-		api.GET("/{{ pluralize (tolower .Name) }}/:id", controllers.Get{{ .Name }})
-		api.POST("/{{ pluralize (tolower .Name) }}", controllers.Create{{ .Name }})
-		api.PUT("/{{ pluralize (tolower .Name) }}/:id", controllers.Update{{ .Name }})
-		api.DELETE("/{{ pluralize (tolower .Name) }}/:id", controllers.Delete{{ .Name }})
+		api.GET("/{{ pluralize (toSnakeCase .Name) }}", controllers.Get{{ pluralize .Name }})
+		api.GET("/{{ pluralize (toSnakeCase .Name) }}/:id", controllers.Get{{ .Name }})
+		api.POST("/{{ pluralize (toSnakeCase .Name) }}", controllers.Create{{ .Name }})
+		api.PUT("/{{ pluralize (toSnakeCase .Name) }}/:id", controllers.Update{{ .Name }})
+		api.DELETE("/{{ pluralize (toSnakeCase .Name) }}/:id", controllers.Delete{{ .Name }})
 {{ end }}
 	}
 }
