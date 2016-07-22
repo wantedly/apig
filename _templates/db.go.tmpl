@@ -24,7 +24,9 @@ func Connect() *gorm.DB {
 	}
 
 	if os.Getenv("AUTOMIGRATE") == "true" {
-		db.AutoMigrate({{ range $key, $value := .Models }}{{ if $key }}, {{ end }}&models.{{ $value.Name }}{}{{ end }})
+		db.AutoMigrate({{ range .Models }}
+			&models.{{ .Name }}{},{{ end }}
+		)
 	}
 	return db
 }
