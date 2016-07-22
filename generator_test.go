@@ -66,7 +66,7 @@ func TestGenerateApibIndex(t *testing.T) {
 	defer os.RemoveAll(outDir)
 
 	if err := generateApibIndex(detail, outDir); err != nil {
-		t.Fatalf("Error should not be raised: %#v", err)
+		t.Fatalf("Error should not be raised: %s", err)
 	}
 
 	path := filepath.Join(outDir, "docs", "index.apib")
@@ -92,7 +92,7 @@ func TestGenerateApibModel(t *testing.T) {
 	defer os.RemoveAll(outDir)
 
 	if err := generateApibModel(detail, outDir); err != nil {
-		t.Fatalf("Error should not be raised: %#v", err)
+		t.Fatalf("Error should not be raised: %s", err)
 	}
 
 	path := filepath.Join(outDir, "docs", "user.apib")
@@ -120,7 +120,7 @@ func TestGenerateSkeleton(t *testing.T) {
 	outDir := filepath.Join(tempDir, "api-server")
 
 	if err := generateSkeleton(detail, outDir); err != nil {
-		t.Fatalf("Error should not be raised: %#v", err)
+		t.Fatalf("Error should not be raised: %s", err)
 	}
 
 	files := []string{
@@ -155,7 +155,7 @@ func TestGenerateController(t *testing.T) {
 	defer os.RemoveAll(outDir)
 
 	if err := generateController(detail, outDir); err != nil {
-		t.Fatalf("Error should not be raised: %#v", err)
+		t.Fatalf("Error should not be raised: %s", err)
 	}
 
 	path := filepath.Join(outDir, "controllers", "user.go")
@@ -181,7 +181,7 @@ func TestGenerateREADME(t *testing.T) {
 	defer os.RemoveAll(outDir)
 
 	if err := generateREADME([]*Model{userModel}, outDir); err != nil {
-		t.Fatalf("Error should not be raised: %#v", err)
+		t.Fatalf("Error should not be raised: %s", err)
 	}
 
 	path := filepath.Join(outDir, "README.md")
@@ -207,7 +207,7 @@ func TestGenerateRouter(t *testing.T) {
 	defer os.RemoveAll(outDir)
 
 	if err := generateRouter(detail, outDir); err != nil {
-		t.Fatalf("Error should not be raised: %#v", err)
+		t.Fatalf("Error should not be raised: %s", err)
 	}
 
 	path := filepath.Join(outDir, "router", "router.go")
