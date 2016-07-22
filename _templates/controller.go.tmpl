@@ -34,8 +34,6 @@ func set{{ .Model.Name }}Preload(fields []string, db *gorm.DB) ([]string, *gorm.
 				sel = append(sel, "{{ if .IsBelongsTo }}{{ .JSONName }}_id{{ else }}id{{ end }}")
 			}
 {{ end }}{{ end }}
-		case "*":
-			db = db{{ range .Model.AllPreloadAssocs }}.Preload("{{ . }}"){{ end }}
 		}
 	}
 	return sel, db
