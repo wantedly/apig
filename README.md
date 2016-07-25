@@ -2,8 +2,8 @@
 
 apig is an RESTful API server generator.
 
-* Input: model definition based on [gorm](https://github.com/jinzhu/gorm) annotated struct
-* Output: restful json api server including tests and documents
+* Input: Model definitions based on [gorm](https://github.com/jinzhu/gorm) annotated struct
+* Output: RESTful json api server including tests and documents
 
 ## How to build and install
 
