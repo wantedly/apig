@@ -89,8 +89,8 @@ Options:
 
 			if err != nil {
 				username, err = gitconfig.Username()
-				if err != nil {
-					msg := "Cannot find `~/.gitconfig` file.\n" +
+				if err != nil || strings.Contains(username, " ") {
+					msg := "Cannot find github username in `~/.gitconfig` file.\n" +
 						"Please use -u option"
 					fmt.Println(msg)
 					os.Exit(1)
