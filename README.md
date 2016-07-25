@@ -10,12 +10,15 @@ apig is an RESTful API server generator.
 Prepare Go 1.6 or higher.
 Go 1.5 is acceptable, but `GO15VENDOREXPERIMENT=1` must be set.
 
+After installing required version of Go, you can build and install `apig` by
+
 ```bash
 $ make
 $ make install
 ```
 
 `make` generates binary into `bin/apig`.
+`make install` put it to `$GOPATH/bin`.
 
 ## How to use
 
