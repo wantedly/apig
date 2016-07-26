@@ -14,24 +14,6 @@ import (
 	"github.com/serenize/snaker"
 )
 
-func set{{ .Model.Name }}Preloads(preloads string, db *gorm.DB) *gorm.DB {
-	if preloads == "" {
-		return db
-	}
-
-	for _, preload := range strings.Split(preloads, ",") {
-		var a []string
-
-		for _, s := range strings.Split(preload, ".") {
-			a = append(a, snaker.SnakeToCamel(s))
-		}
-
-		db = db.Preload(strings.Join(a, "."))
-	}
-
-	return db
-}
-
 func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
@@ -50,7 +32,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		return
 	}
 
-	db = set{{ .Model.Name }}Preloads(preloads, db)
+	db = dbpkg.SetPreloads(preloads, db)
 
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
 	if err := db.Select("*").Find(&{{ pluralize (tolower .Model.Name) }}).Error; err != nil {
@@ -91,7 +73,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	db := dbpkg.DBInstance(c)
-	db = set{{ .Model.Name }}Preloads(preloads, db)
+	db = dbpkg.SetPreloads(preloads, db)
 
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	if err := db.Select("*").First(&{{ tolower .Model.Name }}, id).Error; err != nil {

@@ -14,24 +14,6 @@ import (
 	"github.com/serenize/snaker"
 )
 
-func setUserPreloads(preloads string, db *gorm.DB) *gorm.DB {
-	if preloads == "" {
-		return db
-	}
-
-	for _, preload := range strings.Split(preloads, ",") {
-		var a []string
-
-		for _, s := range strings.Split(preload, ".") {
-			a = append(a, snaker.SnakeToCamel(s))
-		}
-
-		db = db.Preload(strings.Join(a, "."))
-	}
-
-	return db
-}
-
 func GetUsers(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
@@ -50,7 +32,7 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	db = setUserPreloads(preloads, db)
+	db = dbpkg.SetPreloads(preloads, db)
 
 	var users []models.User
 	if err := db.Select("*").Find(&users).Error; err != nil {
@@ -91,7 +73,7 @@ func GetUser(c *gin.Context) {
 	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	db := dbpkg.DBInstance(c)
-	db = setUserPreloads(preloads, db)
+	db = dbpkg.SetPreloads(preloads, db)
 
 	var user models.User
 	if err := db.Select("*").First(&user, id).Error; err != nil {
