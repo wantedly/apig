@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 
 	dbpkg "{{ .ImportDir }}/db"
 	"{{ .ImportDir }}/helper"
@@ -10,8 +9,6 @@ import (
 	"{{ .ImportDir }}/version"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	"github.com/serenize/snaker"
 )
 
 func Get{{ pluralize .Model.Name }}(c *gin.Context) {

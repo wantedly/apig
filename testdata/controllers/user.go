@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 
 	dbpkg "github.com/wantedly/api-server/db"
 	"github.com/wantedly/api-server/helper"
@@ -10,8 +9,6 @@ import (
 	"github.com/wantedly/api-server/version"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	"github.com/serenize/snaker"
 )
 
 func GetUsers(c *gin.Context) {
