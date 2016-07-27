@@ -19,7 +19,7 @@ func GetUsers(c *gin.Context) {
 	}
 
 	preloads := c.DefaultQuery("preloads", "")
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -53,7 +53,7 @@ func GetUsers(c *gin.Context) {
 
 	var fieldMap []map[string]interface{}
 	for key, _ := range users {
-		fieldMap = append(fieldMap, helper.FieldToMap(users[key], fields, nestFields))
+		fieldMap = append(fieldMap, helper.FieldToMap(users[key], fields))
 	}
 	c.JSON(200, fieldMap)
 }
@@ -67,7 +67,7 @@ func GetUser(c *gin.Context) {
 
 	id := c.Params.ByName("id")
 	preloads := c.DefaultQuery("preloads", "")
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
@@ -84,7 +84,7 @@ func GetUser(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := helper.FieldToMap(user, fields, nestFields)
+	fieldMap := helper.FieldToMap(user, fields)
 	c.JSON(200, fieldMap)
 }
 
