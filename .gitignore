@@ -29,7 +29,7 @@ _testmain.go
 
 /bin/
 
-/bindata.go
+bindata.go
 
 /glide
 /vendor/
