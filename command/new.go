@@ -75,12 +75,18 @@ func (c *NewCommand) parseArgs(args []string) error {
 }
 
 func (c *NewCommand) Synopsis() string {
-	return ""
+	return "Generate boilerplate"
 }
 
 func (c *NewCommand) Help() string {
 	helpText := `
+Usage: apig new PROJECTNAME
 
+Options:
+	-vcs=name, -v
+	-user=name, -u
+
+Generate boilerplate
 `
 	return strings.TrimSpace(helpText)
 }
