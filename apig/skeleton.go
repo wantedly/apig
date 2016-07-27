@@ -3,7 +3,7 @@ package apig
 import (
 	"bytes"
 	"fmt"
-	"html/template"
+	"text/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
