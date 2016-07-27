@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"{{ .ImportDir }}/models"
+	"github.com/wantedly/api-server/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -26,8 +26,8 @@ func Connect() *gorm.DB {
 	}
 
 	if os.Getenv("AUTOMIGRATE") == "true" {
-		db.AutoMigrate({{ range .Models }}
-			&models.{{ .Name }}{},{{ end }}
+		db.AutoMigrate(
+			&models.User{},
 		)
 	}
 	return db

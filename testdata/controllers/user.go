@@ -9,22 +9,7 @@ import (
 	"github.com/wantedly/api-server/version"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
-
-func setUserPreload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {
-	sel := make([]string, len(fields))
-	copy(sel, fields)
-	offset := 0
-	for key, val := range fields {
-		switch val {
-
-		case "*":
-			db = db
-		}
-	}
-	return sel, db
-}
 
 func GetUsers(c *gin.Context) {
 	ver, err := version.New(c)
@@ -32,6 +17,9 @@ func GetUsers(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	preloads := c.DefaultQuery("preloads", "")
+	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -41,12 +29,10 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	sel, db := setUserPreload(fields, db)
-	var users []models.User
-	err = db.Select(sel).Find(&users).Error
+	db = dbpkg.SetPreloads(preloads, db)
 
-	if err != nil {
+	var users []models.User
+	if err := db.Select("*").Find(&users).Error; err != nil {
 		c.JSON(500, gin.H{"error": "error occured"})
 		return
 	}
@@ -79,13 +65,15 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
+	preloads := c.DefaultQuery("preloads", "")
 	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	sel, db := setUserPreload(fields, db)
-	var user models.User
 
-	if db.Select(sel).First(&user, id).Error != nil {
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(preloads, db)
+
+	var user models.User
+	if err := db.Select("*").First(&user, id).Error; err != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
 		c.JSON(404, content)
 		return

@@ -1,8 +1,10 @@
-hash: 947bd12c6e998c51bf55cb14cc9ad039e9550b5210bbc50b79b92be113f23609
-updated: 2016-07-22T09:59:47.967544909+09:00
+hash: 940d575bdb04f73f7fb740517d5956c6861623c147e2ae45cdab81611f785dcd
+updated: 2016-07-22T20:48:44.491668499+09:00
 imports:
 - name: github.com/gedex/inflector
   version: 91797f1712fd58f224781be1080b8613d096187e
+- name: github.com/serenize/snaker
+  version: 8824b61eca66d308fcb2d515287d3d7a28dba8d6
 - name: github.com/tcnksm/go-gitconfig
   version: 6411ba19847f20afe47f603328d97aaeca6def6f
 testImports: []
