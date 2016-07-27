@@ -69,3 +69,23 @@ func TestParseModel(t *testing.T) {
 		}
 	}
 }
+
+func TestParseImport(t *testing.T) {
+	path := filepath.Join("testdata", "router", "router.go")
+
+	importPaths, err := parseImport(path)
+
+	if err != nil {
+		t.Fatalf("Failed to parse file. error: %s", err)
+	}
+
+	if len(importPaths) != 2 {
+		t.Fatalf("Number of parsed import paths is incorrect. expected: 2, actual: %d", len(importPaths))
+	}
+
+	importPath := importPaths[0]
+	expect := "github.com/wantedly/api-server/controllers"
+	if importPath != expect {
+		t.Fatalf("Incorrect import path. expected: %s, actual: %s", expect, importPath)
+	}
+}
