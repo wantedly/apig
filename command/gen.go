@@ -34,12 +34,14 @@ func (c *GenCommand) Run(args []string) int {
 }
 
 func (c *GenCommand) Synopsis() string {
-	return ""
+	return "Generate controllers based on models"
 }
 
 func (c *GenCommand) Help() string {
 	helpText := `
+Usage: apig gen
 
+Generate controllers and more based on models
 `
 	return strings.TrimSpace(helpText)
 }
