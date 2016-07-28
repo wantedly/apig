@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	dbpkg "github.com/wantedly/_example/db"
-	"github.com/wantedly/_example/helper"
-	"github.com/wantedly/_example/models"
-	"github.com/wantedly/_example/version"
+	dbpkg "github.com/wantedly/apig/_example/db"
+	"github.com/wantedly/apig/_example/helper"
+	"github.com/wantedly/apig/_example/models"
+	"github.com/wantedly/apig/_example/version"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
