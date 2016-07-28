@@ -133,11 +133,13 @@ docs
 ```
 
 [Aglio](https://github.com/danielgtaylor/aglio) is an API Blueprint renderer.
-You can build a html file or running server as the format of the document.
+Aglio can be installed by
 
 ```
 $ npm install -g aglio
 ```
+
+You can build a html file or running server as the format of the document.
 
 ```
 // html file
