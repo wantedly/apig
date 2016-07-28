@@ -1,4 +1,5 @@
 # apig: Golang RESTful API Server Generator
+[![Build Status](https://travis-ci.org/wantedly/apig.svg?branch=master)](https://travis-ci.org/wantedly/apig)
 
 apig is an RESTful API server generator.
 
