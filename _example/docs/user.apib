@@ -1,0 +1,94 @@
+# Group Users
+Welcome to the users API. This API provides access to the users service.
+
+## users [/users]
+
+### Create user [POST]
+
+Create a new user
+
++ Request users (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + name: NAME (string)
+        + profile (profiles)
+        + jobs ()
+        + emails (array[*emails])
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (users)
+
+### Get users [GET]
+
+Returns user list.
+
++ Request users (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array, fixed)
+        + (users)
+
+## user details [/users/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired user.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+### Get user [GET]
+
+Returns user.
+
++ Request users (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (users, fixed)
+
+### Update user [PUT]
+
+Update user.
+
++ Request users (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + name: NAME (string)
+        + profile (profiles)
+        + jobs ()
+        + emails (array[*emails])
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (users)
+
+### Delete user [DELETE]
+
+Delete user.
+
++ Request users (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 204
+
+# Data Structures
+## users (object, fixed)
+
++ id: 1 (number)
++ name: NAME (string)
++ profile (profiles)
++ jobs ()
++ emails (array[*emails])

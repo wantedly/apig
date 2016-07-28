@@ -1,0 +1,94 @@
+# Group Profiles
+Welcome to the profiles API. This API provides access to the profiles service.
+
+## profiles [/profiles]
+
+### Create profile [POST]
+
+Create a new profile
+
++ Request profiles (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + user_id: 1 (number)
+        + user ()
+        + birthday ()
+        + engaged: false (boolean)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (profiles)
+
+### Get profiles [GET]
+
+Returns profile list.
+
++ Request profiles (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array, fixed)
+        + (profiles)
+
+## profile details [/profiles/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired profile.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+### Get profile [GET]
+
+Returns profile.
+
++ Request profiles (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (profiles, fixed)
+
+### Update profile [PUT]
+
+Update profile.
+
++ Request profiles (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + user_id: 1 (number)
+        + user ()
+        + birthday ()
+        + engaged: false (boolean)
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (profiles)
+
+### Delete profile [DELETE]
+
+Delete profile.
+
++ Request profiles (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 204
+
+# Data Structures
+## profiles (object, fixed)
+
++ id: 1 (number)
++ user_id: 1 (number)
++ user ()
++ birthday ()
++ engaged: false (boolean)

@@ -1,0 +1,91 @@
+# Group Emails
+Welcome to the emails API. This API provides access to the emails service.
+
+## emails [/emails]
+
+### Create email [POST]
+
+Create a new email
+
++ Request emails (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + address: ADDRESS (string)
+        + user_id: 1 (number)
+        + user ()
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (emails)
+
+### Get emails [GET]
+
+Returns email list.
+
++ Request emails (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array, fixed)
+        + (emails)
+
+## email details [/emails/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired email.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+### Get email [GET]
+
+Returns email.
+
++ Request emails (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (emails, fixed)
+
+### Update email [PUT]
+
+Update email.
+
++ Request emails (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + address: ADDRESS (string)
+        + user_id: 1 (number)
+        + user ()
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (emails)
+
+### Delete email [DELETE]
+
+Delete email.
+
++ Request emails (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 204
+
+# Data Structures
+## emails (object, fixed)
+
++ id: 1 (number)
++ address: ADDRESS (string)
++ user_id: 1 (number)
++ user ()

@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/wantedly/apig/_example/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -19,8 +21,18 @@ func Connect() *gorm.DB {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
 	db.LogMode(false)
-	if gin.IsDebugging() {
+	if os.Getenv("DB") == "DEBUG" {
 		db.LogMode(true)
+	}
+
+	if os.Getenv("AUTOMIGRATE") == "true" {
+		db.AutoMigrate(
+			&models.Email{},
+			&models.Job{},
+			&models.User{},
+			&models.Company{},
+			&models.Profile{},
+		)
 	}
 	return db
 }

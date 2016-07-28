@@ -6,12 +6,12 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"sync"
 	"text/template"
 
 	"github.com/gedex/inflector"
+	"github.com/serenize/snaker"
 	"github.com/wantedly/apig/util"
 )
 
@@ -23,7 +23,7 @@ var funcMap = template.FuncMap{
 	"pluralize":        inflector.Pluralize,
 	"requestParams":    requestParams,
 	"tolower":          strings.ToLower,
-	"toSnakeCase":      toSnakeCase,
+	"toSnakeCase":      snaker.CamelToSnake,
 	"title":            strings.Title,
 }
 
@@ -31,16 +31,6 @@ var managedFields = []string{
 	"ID",
 	"CreatedAt",
 	"UpdatedAt",
-}
-
-var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
-var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
-
-// code from https://gist.github.com/stoewer/fbe273b711e6a06315d19552dd4d33e6
-func toSnakeCase(str string) string {
-	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
-	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
-	return strings.ToLower(snake)
 }
 
 func apibDefaultValue(field *Field) string {
@@ -163,7 +153,7 @@ func generateApibModel(detail *Detail, outDir string) error {
 		return err
 	}
 
-	dstPath := filepath.Join(outDir, "docs", toSnakeCase(detail.Model.Name)+".apib")
+	dstPath := filepath.Join(outDir, "docs", snaker.CamelToSnake(detail.Model.Name)+".apib")
 
 	if !util.FileExists(filepath.Dir(dstPath)) {
 		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
@@ -199,7 +189,7 @@ func generateController(detail *Detail, outDir string) error {
 		return err
 	}
 
-	dstPath := filepath.Join(outDir, "controllers", toSnakeCase(detail.Model.Name)+".go")
+	dstPath := filepath.Join(outDir, "controllers", snaker.CamelToSnake(detail.Model.Name)+".go")
 
 	if !util.FileExists(filepath.Dir(dstPath)) {
 		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {

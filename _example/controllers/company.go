@@ -3,15 +3,15 @@ package controllers
 import (
 	"net/http"
 
-	dbpkg "github.com/wantedly/api-server/db"
-	"github.com/wantedly/api-server/helper"
-	"github.com/wantedly/api-server/models"
-	"github.com/wantedly/api-server/version"
+	dbpkg "github.com/wantedly/apig/_example/db"
+	"github.com/wantedly/apig/_example/helper"
+	"github.com/wantedly/apig/_example/models"
+	"github.com/wantedly/apig/_example/version"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetUsers(c *gin.Context) {
+func GetCompanies(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -31,18 +31,18 @@ func GetUsers(c *gin.Context) {
 
 	db = dbpkg.SetPreloads(preloads, db)
 
-	var users []models.User
-	if err := db.Select("*").Find(&users).Error; err != nil {
+	var companies []models.Company
+	if err := db.Select("*").Find(&companies).Error; err != nil {
 		c.JSON(500, gin.H{"error": "error occured"})
 		return
 	}
 
 	// paging
 	var index int
-	if len(users) < 1 {
+	if len(companies) < 1 {
 		index = 0
 	} else {
-		index = int(users[len(users)-1].ID)
+		index = int(companies[len(companies)-1].ID)
 	}
 	pagination.SetHeaderLink(c, index)
 
@@ -52,13 +52,13 @@ func GetUsers(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for _, user := range users {
-		fieldMap = append(fieldMap, helper.FieldToMap(user, fields))
+	for _, company := range companies {
+		fieldMap = append(fieldMap, helper.FieldToMap(company, fields))
 	}
 	c.JSON(200, fieldMap)
 }
 
-func GetUser(c *gin.Context) {
+func GetCompany(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -72,9 +72,9 @@ func GetUser(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
 
-	var user models.User
-	if err := db.Select("*").First(&user, id).Error; err != nil {
-		content := gin.H{"error": "user with id#" + id + " not found"}
+	var company models.Company
+	if err := db.Select("*").First(&company, id).Error; err != nil {
+		content := gin.H{"error": "company with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
@@ -84,11 +84,11 @@ func GetUser(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := helper.FieldToMap(user, fields)
+	fieldMap := helper.FieldToMap(company, fields)
 	c.JSON(200, fieldMap)
 }
 
-func CreateUser(c *gin.Context) {
+func CreateCompany(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -96,9 +96,9 @@ func CreateUser(c *gin.Context) {
 	}
 
 	db := dbpkg.DBInstance(c)
-	var user models.User
-	c.Bind(&user)
-	if db.Create(&user).Error != nil {
+	var company models.Company
+	c.Bind(&company)
+	if db.Create(&company).Error != nil {
 		content := gin.H{"error": "error occured"}
 		c.JSON(500, content)
 		return
@@ -109,10 +109,10 @@ func CreateUser(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(201, user)
+	c.JSON(201, company)
 }
 
-func UpdateUser(c *gin.Context) {
+func UpdateCompany(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -121,24 +121,24 @@ func UpdateUser(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var user models.User
-	if db.First(&user, id).Error != nil {
-		content := gin.H{"error": "user with id#" + id + " not found"}
+	var company models.Company
+	if db.First(&company, id).Error != nil {
+		content := gin.H{"error": "company with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&user)
-	db.Save(&user)
+	c.Bind(&company)
+	db.Save(&company)
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(200, user)
+	c.JSON(200, company)
 }
 
-func DeleteUser(c *gin.Context) {
+func DeleteCompany(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -147,13 +147,13 @@ func DeleteUser(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var user models.User
-	if db.First(&user, id).Error != nil {
-		content := gin.H{"error": "user with id#" + id + " not found"}
+	var company models.Company
+	if db.First(&company, id).Error != nil {
+		content := gin.H{"error": "company with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&user)
+	db.Delete(&company)
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.

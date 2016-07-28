@@ -18,7 +18,7 @@ func generateSkeleton(detail *Detail, outDir string) error {
 	ch := make(chan error)
 	go func() {
 		var wg sync.WaitGroup
-		r := regexp.MustCompile(`_templates/skeleton/*`)
+		r := regexp.MustCompile(`_templates/skeleton/.*\.tmpl$`)
 		for _, skeleton := range AssetNames() {
 			wg.Add(1)
 			go func(s string) {

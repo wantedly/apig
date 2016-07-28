@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	dbpkg "github.com/wantedly/api-server/db"
-	"github.com/wantedly/api-server/helper"
-	"github.com/wantedly/api-server/models"
-	"github.com/wantedly/api-server/version"
+	dbpkg "github.com/wantedly/apig/_example/db"
+	"github.com/wantedly/apig/_example/helper"
+	"github.com/wantedly/apig/_example/models"
+	"github.com/wantedly/apig/_example/version"
 
 	"github.com/gin-gonic/gin"
 )

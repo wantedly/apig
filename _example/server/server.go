@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/wantedly/apig/_examples/simple/middleware"
-	"github.com/wantedly/apig/_examples/simple/router"
+	"github.com/wantedly/apig/_example/middleware"
+	"github.com/wantedly/apig/_example/router"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"

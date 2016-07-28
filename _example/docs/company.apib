@@ -1,0 +1,91 @@
+# Group Companies
+Welcome to the companies API. This API provides access to the companies service.
+
+## companies [/companies]
+
+### Create company [POST]
+
+Create a new company
+
++ Request companies (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + name: NAME (string)
+        + url ()
+        + jobs (array[*jobs])
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (companies)
+
+### Get companies [GET]
+
+Returns company list.
+
++ Request companies (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array, fixed)
+        + (companies)
+
+## company details [/companies/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired company.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+### Get company [GET]
+
+Returns company.
+
++ Request companies (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (companies, fixed)
+
+### Update company [PUT]
+
+Update company.
+
++ Request companies (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+    + Attributes
+
+        + name: NAME (string)
+        + url ()
+        + jobs (array[*jobs])
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (companies)
+
+### Delete company [DELETE]
+
+Delete company.
+
++ Request companies (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.apig+json
+
++ Response 204
+
+# Data Structures
+## companies (object, fixed)
+
++ id: 1 (number)
++ name: NAME (string)
++ url ()
++ jobs (array[*jobs])
