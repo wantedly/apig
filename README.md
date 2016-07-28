@@ -132,12 +132,12 @@ docs
 └── user.apib
 ```
 
+[Aglio](https://github.com/danielgtaylor/aglio) is an API Blueprint renderer.
+You can build a html file or running server as the format of the document.
+
 ```
 $ npm install -g aglio
 ```
-
-[Aglio](https://github.com/danielgtaylor/aglio) is an API Blueprint renderer.
-You can build a html file or running server as the format of the document.
 
 ```
 // html file
