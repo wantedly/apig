@@ -62,7 +62,10 @@ func (c *GenCommand) Help() string {
 	helpText := `
 Usage: apig gen
 
-Generate controllers and more based on models
+  Generates controllers and more based on models
+
+Options:
+  -all, -a          Generate all boilerplate including new command generated code
 `
 	return strings.TrimSpace(helpText)
 }

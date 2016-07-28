@@ -80,11 +80,12 @@ func (c *NewCommand) Help() string {
 	helpText := `
 Usage: apig new PROJECTNAME
 
-Options:
-	-vcs=name, -v
-	-user=name, -u
+  Generate go project and its boilerplate
 
-Generate boilerplate
+Options:
+  -vcs=name, -v     Version controll system to use (default: github.com)
+  -user=name, -u    Username of VCS (default: username of github in .gitconfig)
+
 `
 	return strings.TrimSpace(helpText)
 }

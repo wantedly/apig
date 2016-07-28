@@ -30,5 +30,9 @@ func (c *VersionCommand) Synopsis() string {
 }
 
 func (c *VersionCommand) Help() string {
-	return ""
+	return `
+Usage: apig version
+
+  Returns version of apig
+`
 }
