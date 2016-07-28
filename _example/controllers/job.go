@@ -33,7 +33,7 @@ func GetJobs(c *gin.Context) {
 
 	var jobs []models.Job
 	if err := db.Select("*").Find(&jobs).Error; err != nil {
-		c.JSON(500, gin.H{"error": "error occured"})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -99,8 +99,7 @@ func CreateJob(c *gin.Context) {
 	var job models.Job
 	c.Bind(&job)
 	if db.Create(&job).Error != nil {
-		content := gin.H{"error": "error occured"}
-		c.JSON(500, content)
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 

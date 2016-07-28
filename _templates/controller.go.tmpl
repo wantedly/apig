@@ -33,7 +33,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
 	if err := db.Select("*").Find(&{{ pluralize (tolower .Model.Name) }}).Error; err != nil {
-		c.JSON(500, gin.H{"error": "error occured"})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -99,8 +99,7 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	c.Bind(&{{ tolower .Model.Name }})
 	if db.Create(&{{ tolower .Model.Name }}).Error != nil {
-		content := gin.H{"error": "error occured"}
-		c.JSON(500, content)
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
