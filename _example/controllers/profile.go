@@ -51,7 +51,7 @@ func GetProfiles(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	var fieldMap []map[string]interface{}
+	fieldMap := []map[string]interface{}{}
 	for key, _ := range profiles {
 		fieldMap = append(fieldMap, helper.FieldToMap(profiles[key], fields))
 	}

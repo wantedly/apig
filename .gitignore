@@ -33,3 +33,5 @@ bindata.go
 
 /glide
 /vendor/
+
+/_example/_example
