@@ -1,4 +1,4 @@
-package main
+package apig
 
 import (
 	"fmt"
@@ -122,7 +122,7 @@ func parseModel(path string) ([]*Model, error) {
 	return models, nil
 }
 
-func parseMain(path string) ([]string, error) {
+func parseImport(path string) ([]string, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, path, nil, 0)
 

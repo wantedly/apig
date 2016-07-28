@@ -1,4 +1,4 @@
-package main
+package apig
 
 import (
 	"bytes"
@@ -107,43 +107,6 @@ func TestGenerateApibModel(t *testing.T) {
 		c1, _ := ioutil.ReadFile(fixture)
 		c2, _ := ioutil.ReadFile(path)
 		t.Fatalf("Failed to generate API Blueprint model correctly.\nexpected:\n%s\nactual:\n%s", string(c1), string(c2))
-	}
-}
-
-func TestGenerateSkeleton(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "copyStaticFiles")
-	if err != nil {
-		t.Fatal("Failed to create tempdir")
-	}
-	defer os.RemoveAll(tempDir)
-
-	outDir := filepath.Join(tempDir, "api-server")
-
-	if err := generateSkeleton(detail, outDir); err != nil {
-		t.Fatalf("Error should not be raised: %s", err)
-	}
-
-	files := []string{
-		"README.md",
-		".gitignore",
-		"main.go",
-		filepath.Join("db", "db.go"),
-		filepath.Join("db", "pagination.go"),
-		filepath.Join("router", "router.go"),
-		filepath.Join("middleware", "set_db.go"),
-		filepath.Join("server", "server.go"),
-		filepath.Join("helper", "field.go"),
-		filepath.Join("version", "version.go"),
-		filepath.Join("version", "version_test.go"),
-		filepath.Join("controllers", ".gitkeep"),
-		filepath.Join("models", ".gitkeep"),
-	}
-
-	for _, file := range files {
-		_, err := os.Stat(filepath.Join(outDir, file))
-		if err != nil {
-			t.Fatalf("Static file is not copied: %s", file)
-		}
 	}
 }
 

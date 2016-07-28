@@ -44,4 +44,4 @@ install:
 .PHONY: test
 test:
 	go generate
-	go test -cover -v
+	go test -cover -v ./apig ./command

@@ -1,4 +1,4 @@
-package main
+package apig
 
 type Detail struct {
 	VCS       string

@@ -1,4 +1,4 @@
-package main
+package apig
 
 const (
 	AssociationNone      = 0
