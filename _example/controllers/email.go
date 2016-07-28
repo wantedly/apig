@@ -33,7 +33,7 @@ func GetEmails(c *gin.Context) {
 
 	var emails []models.Email
 	if err := db.Select("*").Find(&emails).Error; err != nil {
-		c.JSON(500, gin.H{"error": "error occured"})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -99,8 +99,7 @@ func CreateEmail(c *gin.Context) {
 	var email models.Email
 	c.Bind(&email)
 	if db.Create(&email).Error != nil {
-		content := gin.H{"error": "error occured"}
-		c.JSON(500, content)
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 

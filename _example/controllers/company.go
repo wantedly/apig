@@ -33,7 +33,7 @@ func GetCompanies(c *gin.Context) {
 
 	var companies []models.Company
 	if err := db.Select("*").Find(&companies).Error; err != nil {
-		c.JSON(500, gin.H{"error": "error occured"})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -99,8 +99,7 @@ func CreateCompany(c *gin.Context) {
 	var company models.Company
 	c.Bind(&company)
 	if db.Create(&company).Error != nil {
-		content := gin.H{"error": "error occured"}
-		c.JSON(500, content)
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -33,7 +33,7 @@ func GetProfiles(c *gin.Context) {
 
 	var profiles []models.Profile
 	if err := db.Select("*").Find(&profiles).Error; err != nil {
-		c.JSON(500, gin.H{"error": "error occured"})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -99,8 +99,7 @@ func CreateProfile(c *gin.Context) {
 	var profile models.Profile
 	c.Bind(&profile)
 	if db.Create(&profile).Error != nil {
-		content := gin.H{"error": "error occured"}
-		c.JSON(500, content)
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 

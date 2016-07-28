@@ -33,7 +33,7 @@ func GetUsers(c *gin.Context) {
 
 	var users []models.User
 	if err := db.Select("*").Find(&users).Error; err != nil {
-		c.JSON(500, gin.H{"error": "error occured"})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -99,8 +99,7 @@ func CreateUser(c *gin.Context) {
 	var user models.User
 	c.Bind(&user)
 	if db.Create(&user).Error != nil {
-		content := gin.H{"error": "error occured"}
-		c.JSON(500, content)
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
