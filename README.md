@@ -123,12 +123,13 @@ $ apig gen
 
 ### API Document
 
-API Documents are auto-generated in `docs/` directory in the form of APIBlueprint.
+API Documents are generated automatically in `docs/` directory in the form of [API Blueprint](https://apiblueprint.org/).
 
-```:docs/
-- index.apib
-- user.apib
-- email.apib
+```
+docs
+├── email.apib
+├── index.apib
+└── user.apib
 ```
 
 ```
