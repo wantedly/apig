@@ -1,6 +1,7 @@
 package command
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -17,6 +18,8 @@ const (
 
 type GenCommand struct {
 	Meta
+
+	all bool
 }
 
 func (c *GenCommand) Run(args []string) int {
@@ -30,7 +33,25 @@ func (c *GenCommand) Run(args []string) int {
 `, wd)
 		return 1
 	}
-	return apig.Generate(wd, modelDir, targetFile)
+
+	if err := c.parseArgs(args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	return apig.Generate(wd, modelDir, targetFile, c.all)
+}
+
+func (c *GenCommand) parseArgs(args []string) error {
+	flag := flag.NewFlagSet("apig", flag.ContinueOnError)
+
+	flag.BoolVar(&c.all, "a", false, "Generate all skelton")
+	flag.BoolVar(&c.all, "all", false, "Generate all skelton")
+
+	if err := flag.Parse(args); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *GenCommand) Synopsis() string {
@@ -41,7 +62,10 @@ func (c *GenCommand) Help() string {
 	helpText := `
 Usage: apig gen
 
-Generate controllers and more based on models
+  Generates controllers and more based on models
+
+Options:
+  -all, -a          Generate all boilerplate including new command generated code
 `
 	return strings.TrimSpace(helpText)
 }

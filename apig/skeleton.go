@@ -74,8 +74,8 @@ func generateSkeleton(detail *Detail, outDir string) error {
 	return nil
 }
 
-func Skeleton(gopath, vcs, username, project string) int {
-	detail := &Detail{VCS: vcs, User: username, Project: project}
+func Skeleton(gopath, vcs, username, project string, namespace string) int {
+	detail := &Detail{VCS: vcs, User: username, Project: project, Namespace: namespace}
 	outDir := filepath.Join(gopath, "src", detail.VCS, detail.User, detail.Project)
 	if util.FileExists(outDir) {
 		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)

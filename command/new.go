@@ -16,31 +16,16 @@ const defaultVCS = "github.com"
 type NewCommand struct {
 	Meta
 
-	project  string
-	vcs      string
-	username string
+	vcs       string
+	username  string
+	project   string
+	namespace string
 }
 
 func (c *NewCommand) Run(args []string) int {
 	if err := c.parseArgs(args); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
-	}
-	if c.vcs == "" {
-		c.vcs = defaultVCS
-	}
-	if c.username == "" {
-		var err error
-		c.username, err = gitconfig.GithubUser()
-		if err != nil {
-			c.username, err = gitconfig.Username()
-			if err != nil || strings.Contains(c.username, " ") {
-				msg := "Cannot find github username in `~/.gitconfig` file.\n" +
-					"Please use -u option"
-				fmt.Fprintln(os.Stderr, msg)
-				return 1
-			}
-		}
 	}
 
 	gopath := os.Getenv("GOPATH")
@@ -49,27 +34,40 @@ func (c *NewCommand) Run(args []string) int {
 		return 1
 	}
 
-	return apig.Skeleton(gopath, c.vcs, c.username, c.project)
+	return apig.Skeleton(gopath, c.vcs, c.username, c.project, c.namespace)
 }
 
 func (c *NewCommand) parseArgs(args []string) error {
 	flag := flag.NewFlagSet("apig", flag.ContinueOnError)
 
-	flag.StringVar(&c.vcs, "v", "", "VCS")
-	flag.StringVar(&c.vcs, "vcs", "", "VCS")
+	flag.StringVar(&c.vcs, "v", defaultVCS, "VCS")
+	flag.StringVar(&c.vcs, "vcs", defaultVCS, "VCS")
 	flag.StringVar(&c.username, "u", "", "Username")
 	flag.StringVar(&c.username, "user", "", "Username")
+	flag.StringVar(&c.namespace, "n", "", "Namespace of API")
+	flag.StringVar(&c.namespace, "namespace", "", "Namespace of API")
 
 	if err := flag.Parse(args); err != nil {
 		return err
 	}
-	for 0 < flag.NArg() {
+	if 0 < flag.NArg() {
 		c.project = flag.Arg(0)
-		flag.Parse(flag.Args()[1:])
 	}
+
 	if c.project == "" {
-		err := errors.New("Please specify project name.")
-		return err
+		return errors.New("Please specify project name.")
+	}
+
+	if c.username == "" {
+		var err error
+		c.username, err = gitconfig.GithubUser()
+		if err != nil {
+			c.username, err = gitconfig.Username()
+			if err != nil || strings.Contains(c.username, " ") {
+				return errors.New("Cannot find github username in `~/.gitconfig` file.\n" +
+					"Please use -u option")
+			}
+		}
 	}
 	return nil
 }
@@ -82,11 +80,12 @@ func (c *NewCommand) Help() string {
 	helpText := `
 Usage: apig new PROJECTNAME
 
-Options:
-	-vcs=name, -v
-	-user=name, -u
+  Generate go project and its boilerplate
 
-Generate boilerplate
+Options:
+  -vcs=name, -v     Version controll system to use (default: github.com)
+  -user=name, -u    Username of VCS (default: username of github in .gitconfig)
+
 `
 	return strings.TrimSpace(helpText)
 }
