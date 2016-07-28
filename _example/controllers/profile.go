@@ -52,8 +52,8 @@ func GetProfiles(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for key, _ := range profiles {
-		fieldMap = append(fieldMap, helper.FieldToMap(profiles[key], fields))
+	for _, profile := range profiles {
+		fieldMap = append(fieldMap, helper.FieldToMap(profile, fields))
 	}
 	c.JSON(200, fieldMap)
 }

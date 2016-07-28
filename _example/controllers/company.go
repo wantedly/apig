@@ -52,8 +52,8 @@ func GetCompanies(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for key, _ := range companies {
-		fieldMap = append(fieldMap, helper.FieldToMap(companies[key], fields))
+	for _, company := range companies {
+		fieldMap = append(fieldMap, helper.FieldToMap(company, fields))
 	}
 	c.JSON(200, fieldMap)
 }

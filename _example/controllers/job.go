@@ -52,8 +52,8 @@ func GetJobs(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for key, _ := range jobs {
-		fieldMap = append(fieldMap, helper.FieldToMap(jobs[key], fields))
+	for _, job := range jobs {
+		fieldMap = append(fieldMap, helper.FieldToMap(job, fields))
 	}
 	c.JSON(200, fieldMap)
 }
