@@ -45,8 +45,8 @@ import "time"
 
 type User struct {
 	ID        uint       `gorm:"primary_key;AUTO_INCREMENT" json:"id"`
-	Name      string     `gorm:"unique" json:"name,omitempty"`
-	Emails    []Email    `gorm:"unique" json:"emails"`
+	Name      string     `json:"name"`
+	Emails    []Email    `json:"emails"`
 	CreatedAt *time.Time `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 }
@@ -59,8 +59,8 @@ package models
 type Email struct {
 	ID      uint   `gorm:"primary_key;AUTO_INCREMENT" json:"id"`
 	UserID  uint   `json:"user_id"`
-	Address string `gorm:"unique" json:"address"`
-	User    *User  `json:"user,omitempty"`
+	Address string `json:"address"`
+	User    *User  `json:"user`
 }
 ```
 

@@ -1,4 +1,4 @@
-package main
+package apig
 
 import (
 	"bytes"
@@ -12,6 +12,7 @@ import (
 	"text/template"
 
 	"github.com/gedex/inflector"
+	"github.com/wantedly/apig/util"
 )
 
 const templateDir = "_templates"
@@ -128,8 +129,8 @@ func generateApibIndex(detail *Detail, outDir string) error {
 
 	dstPath := filepath.Join(outDir, "docs", "index.apib")
 
-	if !fileExists(filepath.Dir(dstPath)) {
-		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+	if !util.FileExists(filepath.Dir(dstPath)) {
+		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
 			return err
 		}
 	}
@@ -164,8 +165,8 @@ func generateApibModel(detail *Detail, outDir string) error {
 
 	dstPath := filepath.Join(outDir, "docs", toSnakeCase(detail.Model.Name)+".apib")
 
-	if !fileExists(filepath.Dir(dstPath)) {
-		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+	if !util.FileExists(filepath.Dir(dstPath)) {
+		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
 			return err
 		}
 	}
@@ -175,71 +176,6 @@ func generateApibModel(detail *Detail, outDir string) error {
 	}
 
 	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
-
-	return nil
-}
-
-func generateSkeleton(detail *Detail, outDir string) error {
-	if fileExists(outDir) {
-		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
-		os.Exit(1)
-	}
-
-	ch := make(chan error)
-	go func() {
-		var wg sync.WaitGroup
-		r := regexp.MustCompile(`_templates/skeleton/*`)
-		for _, skeleton := range AssetNames() {
-			wg.Add(1)
-			go func(s string) {
-				defer wg.Done()
-				if !r.MatchString(s) {
-					return
-				}
-
-				trim := strings.Replace(s, "_templates/skeleton/", "", 1)
-				path := strings.Replace(trim, ".tmpl", "", 1)
-				dstPath := filepath.Join(outDir, path)
-
-				body, err := Asset(s)
-
-				if err != nil {
-					ch <- err
-				}
-
-				tmpl, err := template.New("complex").Parse(string(body))
-
-				if err != nil {
-					ch <- err
-				}
-
-				var buf bytes.Buffer
-
-				if err := tmpl.Execute(&buf, detail); err != nil {
-					ch <- err
-				}
-
-				if !fileExists(filepath.Dir(dstPath)) {
-					if err := mkdir(filepath.Dir(dstPath)); err != nil {
-						ch <- err
-					}
-				}
-
-				if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
-					ch <- err
-				}
-
-				fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
-			}(skeleton)
-		}
-		wg.Wait()
-		ch <- nil
-	}()
-
-	err := <-ch
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
@@ -265,8 +201,8 @@ func generateController(detail *Detail, outDir string) error {
 
 	dstPath := filepath.Join(outDir, "controllers", toSnakeCase(detail.Model.Name)+".go")
 
-	if !fileExists(filepath.Dir(dstPath)) {
-		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+	if !util.FileExists(filepath.Dir(dstPath)) {
+		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
 			return err
 		}
 	}
@@ -301,8 +237,8 @@ func generateREADME(models []*Model, outDir string) error {
 
 	dstPath := filepath.Join(outDir, "README.md")
 
-	if !fileExists(filepath.Dir(dstPath)) {
-		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+	if !util.FileExists(filepath.Dir(dstPath)) {
+		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
 			return err
 		}
 	}
@@ -337,8 +273,8 @@ func generateRouter(detail *Detail, outDir string) error {
 
 	dstPath := filepath.Join(outDir, "router", "router.go")
 
-	if !fileExists(filepath.Dir(dstPath)) {
-		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+	if !util.FileExists(filepath.Dir(dstPath)) {
+		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
 			return err
 		}
 	}
@@ -373,8 +309,8 @@ func generateDB(detail *Detail, outDir string) error {
 
 	dstPath := filepath.Join(outDir, "db", "db.go")
 
-	if !fileExists(filepath.Dir(dstPath)) {
-		if err := mkdir(filepath.Dir(dstPath)); err != nil {
+	if !util.FileExists(filepath.Dir(dstPath)) {
+		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
 			return err
 		}
 	}
@@ -386,4 +322,149 @@ func generateDB(detail *Detail, outDir string) error {
 	fmt.Fprintf(os.Stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
 
 	return nil
+}
+
+func Generate(outDir, modelDir, targetFile string) int {
+	outModelDir := filepath.Join(outDir, modelDir)
+	files, err := ioutil.ReadDir(outModelDir)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+
+	var models []*Model
+	var wg sync.WaitGroup
+	modelMap := make(map[string]*Model)
+	errCh := make(chan error)
+	modelsCh := make(chan []*Model)
+	doneCh := make(chan struct{})
+	go func() {
+		defer close(doneCh)
+		for _, file := range files {
+			wg.Add(1)
+			go func(f os.FileInfo) {
+				defer wg.Done()
+				if f.IsDir() {
+					return
+				}
+				if !strings.HasSuffix(f.Name(), ".go") {
+					return
+				}
+
+				modelPath := filepath.Join(outModelDir, f.Name())
+				ms, err := parseModel(modelPath)
+				if err != nil {
+					errCh <- err
+				}
+				modelsCh <- ms
+			}(file)
+		}
+		wg.Wait()
+	}()
+
+	go func() {
+		defer close(errCh)
+	loop:
+		for {
+			select {
+			case ms := <-modelsCh:
+				for _, model := range ms {
+					models = append(models, model)
+					modelMap[model.Name] = model
+				}
+			case <-doneCh:
+				errCh <- nil
+				break loop
+			}
+		}
+	}()
+
+	err = <-errCh
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+
+	importPaths, err := parseImport(filepath.Join(outDir, targetFile))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	importDir := formatImportDir(importPaths)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	switch {
+	case len(importDir) > 1:
+		fmt.Fprintln(os.Stderr, "Conflict import path. Please check 'main.go'.")
+		return 1
+	case len(importDir) == 0:
+		fmt.Fprintln(os.Stderr, "Can't refer import path. Please check 'main.go'.")
+		return 1
+	}
+
+	vcs := filepath.Base(filepath.Dir(filepath.Dir(importDir[0])))
+	user := filepath.Base(filepath.Dir(importDir[0]))
+	project := filepath.Base(importDir[0])
+	errCh = make(chan error)
+	go func() {
+		defer close(errCh)
+		for _, model := range models {
+			wg.Add(1)
+			go func(m *Model) {
+				defer wg.Done()
+				// Check association, stdout "model.Fields[0].Association.Type"
+				resolveAssociate(m, modelMap, make(map[string]bool))
+				d := &Detail{
+					Model:     m,
+					ImportDir: importDir[0],
+					VCS:       vcs,
+					User:      user,
+					Project:   project,
+				}
+				if err := generateApibModel(d, outDir); err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					errCh <- err
+				}
+				if err := generateController(d, outDir); err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					errCh <- err
+				}
+			}(model)
+		}
+		wg.Wait()
+	}()
+
+	err = <-errCh
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+
+	detail := &Detail{
+		Models:    models,
+		ImportDir: importDir[0],
+		VCS:       vcs,
+		User:      user,
+		Project:   filepath.Base(importDir[0]),
+	}
+	if err := generateApibIndex(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	if err := generateRouter(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	if err := generateDB(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	if err := generateREADME(models, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	fmt.Println("===> Generated...")
+	return 0
 }

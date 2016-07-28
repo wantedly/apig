@@ -27,10 +27,9 @@ _testmain.go
 *.test
 *.prof
 
-/apig
 /bin/
 
-/bindata.go
+bindata.go
 
 /glide
 /vendor/
