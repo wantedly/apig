@@ -1,0 +1,94 @@
+# Group Jobs
+Welcome to the jobs API. This API provides access to the jobs service.
+
+## jobs [/jobs]
+
+### Create job [POST]
+
+Create a new job
+
++ Request jobs (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.wantedly+json
+    + Attributes
+
+        + user_id: 1 (number)
+        + user ()
+        + company_id: 1 (number)
+        + role_cd: 1 (number)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (jobs)
+
+### Get jobs [GET]
+
+Returns job list.
+
++ Request jobs (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.wantedly+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array, fixed)
+        + (jobs)
+
+## job details [/jobs/{id}]
+
++ Parameters
+    + id: `1` (enum[string]) - The ID of the desired job.
+        + Members
+            + `1`
+            + `2`
+            + `3`
+
+### Get job [GET]
+
+Returns job.
+
++ Request jobs (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.wantedly+json
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (jobs, fixed)
+
+### Update job [PUT]
+
+Update job.
+
++ Request jobs (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.wantedly+json
+    + Attributes
+
+        + user_id: 1 (number)
+        + user ()
+        + company_id: 1 (number)
+        + role_cd: 1 (number)
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (jobs)
+
+### Delete job [DELETE]
+
+Delete job.
+
++ Request jobs (application/json; charset=utf-8)
+    + Headers
+
+            Accept: application/vnd.wantedly+json
+
++ Response 204
+
+# Data Structures
+## jobs (object, fixed)
+
++ id: 1 (number)
++ user_id: 1 (number)
++ user ()
++ company_id: 1 (number)
++ role_cd: 1 (number)

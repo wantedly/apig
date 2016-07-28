@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/wantedly/_example/db"
-	"github.com/wantedly/_example/server"
+	"github.com/wantedly/apig/_example/db"
+	"github.com/wantedly/apig/_example/server"
 )
 
 // main ...

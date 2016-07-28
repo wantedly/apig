@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/wantedly/apig/_example/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -19,6 +21,16 @@ func Connect() *gorm.DB {
 	db.LogMode(false)
 	if os.Getenv("DB") == "DEBUG" {
 		db.LogMode(true)
+	}
+
+	if os.Getenv("AUTOMIGRATE") == "true" {
+		db.AutoMigrate(
+			&models.Job{},
+			&models.User{},
+			&models.Email{},
+			&models.Profile{},
+			&models.Company{},
+		)
 	}
 	return db
 }
