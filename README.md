@@ -28,7 +28,7 @@ $ make install
 First, creating by `apig new` command.
 
 ```
-apig new apig-sample -u wantedly -v gihub.com
+apig new -u wantedly -v gihub.com apig-sample
 ```
 
 generates golang api server boilerplate under `$GOPATH/src/gihhub.com/wantedly/apig-sample`.
@@ -84,6 +84,19 @@ Finally, just build as normal go code.
 
 ```bash
 $ go build -o bin/server
+```
+
+After that just execute the server binary.
+For the first time, you may want to use `AUTOMIGRATE=1` when running the server.
+
+```
+$ AUTOMIGRATE=1 bin/server
+```
+
+When `AUTOMIGRATE=1`, the db tables are generated automatically.
+After that, you can run the server just executing the command:
+
+```
 $ bin/server
 ```
 
