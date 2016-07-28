@@ -16,9 +16,10 @@ const defaultVCS = "github.com"
 type NewCommand struct {
 	Meta
 
-	project  string
-	vcs      string
-	username string
+	vcs       string
+	username  string
+	project   string
+	namespace string
 }
 
 func (c *NewCommand) Run(args []string) int {
@@ -33,7 +34,7 @@ func (c *NewCommand) Run(args []string) int {
 		return 1
 	}
 
-	return apig.Skeleton(gopath, c.vcs, c.username, c.project)
+	return apig.Skeleton(gopath, c.vcs, c.username, c.project, c.namespace)
 }
 
 func (c *NewCommand) parseArgs(args []string) error {
@@ -43,6 +44,8 @@ func (c *NewCommand) parseArgs(args []string) error {
 	flag.StringVar(&c.vcs, "vcs", defaultVCS, "VCS")
 	flag.StringVar(&c.username, "u", "", "Username")
 	flag.StringVar(&c.username, "user", "", "Username")
+	flag.StringVar(&c.namespace, "n", "", "Namespace of API")
+	flag.StringVar(&c.namespace, "namespace", "", "Namespace of API")
 
 	if err := flag.Parse(args); err != nil {
 		return err
