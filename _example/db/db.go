@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,10 @@ func Connect() *gorm.DB {
 	db, err := gorm.Open("sqlite3", dir+"/database.db")
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
+	}
+	db.LogMode(false)
+	if os.Getenv("DB") == "DEBUG" {
+		db.LogMode(true)
 	}
 	return db
 }
