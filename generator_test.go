@@ -133,6 +133,7 @@ func TestGenerateSkeleton(t *testing.T) {
 		filepath.Join("middleware", "set_db.go"),
 		filepath.Join("server", "server.go"),
 		filepath.Join("helper", "field.go"),
+		filepath.Join("helper", "field_test.go"),
 		filepath.Join("version", "version.go"),
 		filepath.Join("version", "version_test.go"),
 		filepath.Join("controllers", ".gitkeep"),
