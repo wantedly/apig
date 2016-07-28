@@ -52,8 +52,8 @@ func GetEmails(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for key, _ := range emails {
-		fieldMap = append(fieldMap, helper.FieldToMap(emails[key], fields))
+	for _, email := range emails {
+		fieldMap = append(fieldMap, helper.FieldToMap(email, fields))
 	}
 	c.JSON(200, fieldMap)
 }

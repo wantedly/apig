@@ -52,8 +52,8 @@ func GetUsers(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for key, _ := range users {
-		fieldMap = append(fieldMap, helper.FieldToMap(users[key], fields))
+	for _, user := range users {
+		fieldMap = append(fieldMap, helper.FieldToMap(user, fields))
 	}
 	c.JSON(200, fieldMap)
 }

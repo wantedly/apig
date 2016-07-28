@@ -52,8 +52,8 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for key, _ := range {{ pluralize (tolower .Model.Name) }} {
-		fieldMap = append(fieldMap, helper.FieldToMap({{ pluralize (tolower .Model.Name) }}[key], fields))
+	for _, {{ tolower .Model.Name }} := range {{ pluralize (tolower .Model.Name) }} {
+		fieldMap = append(fieldMap, helper.FieldToMap({{ tolower .Model.Name }}, fields))
 	}
 	c.JSON(200, fieldMap)
 }
