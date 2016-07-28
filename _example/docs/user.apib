@@ -10,11 +10,11 @@ Create a new user
 + Request users (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.wantedly+json
+            Accept: application/vnd.apig+json
     + Attributes
 
         + name: NAME (string)
-        + profile ()
+        + profile (profiles)
         + jobs (array[*jobs])
         + emails (array[*emails])
 
@@ -28,7 +28,7 @@ Returns user list.
 + Request users (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.wantedly+json
+            Accept: application/vnd.apig+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
@@ -50,7 +50,7 @@ Returns user.
 + Request users (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.wantedly+json
+            Accept: application/vnd.apig+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (users, fixed)
@@ -62,11 +62,11 @@ Update user.
 + Request users (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.wantedly+json
+            Accept: application/vnd.apig+json
     + Attributes
 
         + name: NAME (string)
-        + profile ()
+        + profile (profiles)
         + jobs (array[*jobs])
         + emails (array[*emails])
 
@@ -80,7 +80,7 @@ Delete user.
 + Request users (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.wantedly+json
+            Accept: application/vnd.apig+json
 
 + Response 204
 
@@ -89,6 +89,6 @@ Delete user.
 
 + id: 1 (number)
 + name: NAME (string)
-+ profile ()
++ profile (profiles)
 + jobs (array[*jobs])
 + emails (array[*emails])

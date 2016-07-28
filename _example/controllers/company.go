@@ -9,35 +9,7 @@ import (
 	"github.com/wantedly/apig/_example/version"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
-
-func setCompanyPreload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {
-	sel := make([]string, len(fields))
-	copy(sel, fields)
-	offset := 0
-	for key, val := range fields {
-		switch val {
-
-		case "jobs":
-			db = db.Preload("Jobs")
-			sel = append(sel[:(key-offset)], sel[(key+1-offset):]...)
-			offset += 1
-			idflag := true
-			for _, v := range sel {
-				if v == "id" {
-					idflag = false
-					break
-				}
-			}
-			if idflag {
-				sel = append(sel, "id")
-			}
-
-		}
-	}
-	return sel, db
-}
 
 func GetCompanies(c *gin.Context) {
 	ver, err := version.New(c)
@@ -45,6 +17,9 @@ func GetCompanies(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	preloads := c.DefaultQuery("preloads", "")
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -54,12 +29,10 @@ func GetCompanies(c *gin.Context) {
 		return
 	}
 
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	sel, db := setCompanyPreload(fields, db)
-	var companies []models.Company
-	err = db.Select(sel).Find(&companies).Error
+	db = dbpkg.SetPreloads(preloads, db)
 
-	if err != nil {
+	var companies []models.Company
+	if err := db.Select("*").Find(&companies).Error; err != nil {
 		c.JSON(500, gin.H{"error": "error occured"})
 		return
 	}
@@ -80,7 +53,7 @@ func GetCompanies(c *gin.Context) {
 
 	var fieldMap []map[string]interface{}
 	for key, _ := range companies {
-		fieldMap = append(fieldMap, helper.FieldToMap(companies[key], fields, nestFields))
+		fieldMap = append(fieldMap, helper.FieldToMap(companies[key], fields))
 	}
 	c.JSON(200, fieldMap)
 }
@@ -92,13 +65,15 @@ func GetCompany(c *gin.Context) {
 		return
 	}
 
-	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	sel, db := setCompanyPreload(fields, db)
-	var company models.Company
+	preloads := c.DefaultQuery("preloads", "")
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
-	if db.Select(sel).First(&company, id).Error != nil {
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(preloads, db)
+
+	var company models.Company
+	if err := db.Select("*").First(&company, id).Error; err != nil {
 		content := gin.H{"error": "company with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
@@ -109,7 +84,7 @@ func GetCompany(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := helper.FieldToMap(company, fields, nestFields)
+	fieldMap := helper.FieldToMap(company, fields)
 	c.JSON(200, fieldMap)
 }
 

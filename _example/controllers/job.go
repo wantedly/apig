@@ -9,20 +9,7 @@ import (
 	"github.com/wantedly/apig/_example/version"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
-
-func setJobPreload(fields []string, db *gorm.DB) ([]string, *gorm.DB) {
-	sel := make([]string, len(fields))
-	copy(sel, fields)
-	offset := 0
-	for key, val := range fields {
-		switch val {
-
-		}
-	}
-	return sel, db
-}
 
 func GetJobs(c *gin.Context) {
 	ver, err := version.New(c)
@@ -30,6 +17,9 @@ func GetJobs(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	preloads := c.DefaultQuery("preloads", "")
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -39,12 +29,10 @@ func GetJobs(c *gin.Context) {
 		return
 	}
 
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	sel, db := setJobPreload(fields, db)
-	var jobs []models.Job
-	err = db.Select(sel).Find(&jobs).Error
+	db = dbpkg.SetPreloads(preloads, db)
 
-	if err != nil {
+	var jobs []models.Job
+	if err := db.Select("*").Find(&jobs).Error; err != nil {
 		c.JSON(500, gin.H{"error": "error occured"})
 		return
 	}
@@ -65,7 +53,7 @@ func GetJobs(c *gin.Context) {
 
 	var fieldMap []map[string]interface{}
 	for key, _ := range jobs {
-		fieldMap = append(fieldMap, helper.FieldToMap(jobs[key], fields, nestFields))
+		fieldMap = append(fieldMap, helper.FieldToMap(jobs[key], fields))
 	}
 	c.JSON(200, fieldMap)
 }
@@ -77,13 +65,15 @@ func GetJob(c *gin.Context) {
 		return
 	}
 
-	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	sel, db := setJobPreload(fields, db)
-	var job models.Job
+	preloads := c.DefaultQuery("preloads", "")
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
-	if db.Select(sel).First(&job, id).Error != nil {
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(preloads, db)
+
+	var job models.Job
+	if err := db.Select("*").First(&job, id).Error; err != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
@@ -94,7 +84,7 @@ func GetJob(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := helper.FieldToMap(job, fields, nestFields)
+	fieldMap := helper.FieldToMap(job, fields)
 	c.JSON(200, fieldMap)
 }
 
