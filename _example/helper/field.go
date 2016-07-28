@@ -5,41 +5,55 @@ import (
 	"strings"
 )
 
-func contains(ss []string, s string) bool {
-	for _, v := range ss {
-		if v == s {
-			return true
-		}
-	}
-	return false
+func contains(ss map[string]interface{}, s string) bool {
+	_, ok := ss[s]
+
+	return ok
 }
 
-func ParseFields(fields string) ([]string, map[string][]string) {
-	fieldsParse := strings.Split(fields, ",")
-	roop := make([]string, len(fieldsParse))
-	copy(roop, fieldsParse)
-	nestFields := make(map[string][]string)
-	offset := 0
-	for k, v := range roop {
-		l := strings.Split(v, ".")
-		ok := false
-		if len(l) > 1 {
-			_, ok = nestFields[l[0]]
-			nestFields[l[0]] = append(nestFields[l[0]], l[1])
-		}
-		if ok {
-			fieldsParse = append(fieldsParse[:(k-offset)], fieldsParse[(k+1-offset):]...)
-			offset += 1
+func merge(m1, m2 map[string]interface{}) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	for k, v := range m1 {
+		result[k] = v
+	}
+
+	for k, v := range m2 {
+		result[k] = v
+	}
+
+	return result
+}
+
+func ParseFields(fields string) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	if fields == "*" {
+		result["*"] = nil
+		return result
+	}
+
+	for _, field := range strings.Split(fields, ",") {
+		parts := strings.SplitN(field, ".", 2)
+
+		if len(parts) == 2 {
+			if result[parts[0]] == nil {
+				result[parts[0]] = ParseFields(parts[1])
+			} else {
+				result[parts[0]] = merge(result[parts[0]].(map[string]interface{}), ParseFields(parts[1]))
+			}
 		} else {
-			fieldsParse[k-offset] = l[0]
+			result[parts[0]] = nil
 		}
 	}
-	return fieldsParse, nestFields
+
+	return result
 }
 
-func FieldToMap(model interface{}, fields []string, nestFields map[string][]string) map[string]interface{} {
+func FieldToMap(model interface{}, fields map[string]interface{}) map[string]interface{} {
 	u := make(map[string]interface{})
 	ts, vs := reflect.TypeOf(model), reflect.ValueOf(model)
+
 	for i := 0; i < ts.NumField(); i++ {
 		var jsonKey string
 		field := ts.Field(i)
@@ -51,30 +65,46 @@ func FieldToMap(model interface{}, fields []string, nestFields map[string][]stri
 			jsonKey = strings.Split(jsonTag, ",")[0]
 		}
 
-		if fields[0] == "*" || contains(fields, jsonKey) {
-			_, ok := nestFields[jsonKey]
-			if ok {
-				f, n := ParseFields(strings.Join(nestFields[jsonKey], ","))
-				if vs.Field(i).Kind() == reflect.Ptr {
-					if !vs.Field(i).IsNil() {
-						u[jsonKey] = FieldToMap(vs.Field(i).Elem().Interface(), f, n)
+		if contains(fields, "*") {
+			u[jsonKey] = vs.Field(i).Interface()
+			continue
+		}
+
+		if contains(fields, jsonKey) {
+			v := fields[jsonKey]
+
+			if vs.Field(i).Kind() == reflect.Ptr {
+				if !vs.Field(i).IsNil() {
+					if v == nil {
+						u[jsonKey] = vs.Field(i).Elem().Interface()
 					} else {
-						u[jsonKey] = nil
+						u[jsonKey] = FieldToMap(vs.Field(i).Elem().Interface(), v.(map[string]interface{}))
 					}
-				} else if vs.Field(i).Kind() == reflect.Slice {
-					var fieldMap []interface{}
-					s := reflect.ValueOf(vs.Field(i).Interface())
-					for i := 0; i < s.Len(); i++ {
-						fieldMap = append(fieldMap, FieldToMap(s.Index(i).Interface(), f, n))
-					}
-					u[jsonKey] = fieldMap
 				} else {
-					u[jsonKey] = FieldToMap(vs.Field(i).Interface(), f, n)
+					u[jsonKey] = nil
 				}
+			} else if vs.Field(i).Kind() == reflect.Slice {
+				var fieldMap []interface{}
+				s := reflect.ValueOf(vs.Field(i).Interface())
+
+				for i := 0; i < s.Len(); i++ {
+					if v == nil {
+						fieldMap = append(fieldMap, s.Index(i).Interface())
+					} else {
+						fieldMap = append(fieldMap, FieldToMap(s.Index(i).Interface(), v.(map[string]interface{})))
+					}
+				}
+
+				u[jsonKey] = fieldMap
 			} else {
-				u[jsonKey] = vs.Field(i).Interface()
+				if v == nil {
+					u[jsonKey] = vs.Field(i).Interface()
+				} else {
+					u[jsonKey] = FieldToMap(vs.Field(i).Interface(), v.(map[string]interface{}))
+				}
 			}
 		}
 	}
+
 	return u
 }

@@ -29,9 +29,9 @@ func Connect() *gorm.DB {
 		db.AutoMigrate(
 			&models.Email{},
 			&models.Job{},
-			&models.Profile{},
 			&models.User{},
 			&models.Company{},
+			&models.Profile{},
 		)
 	}
 	return db

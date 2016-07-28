@@ -24,16 +24,6 @@ PUT    /api/jobs/:id
 DELETE /api/jobs/:id
 ```
 
-### Profiles Resource
-
-```
-GET    /api/profiles
-GET    /api/profiles/:id
-POST   /api/profiles
-PUT    /api/profiles/:id
-DELETE /api/profiles/:id
-```
-
 ### Users Resource
 
 ```
@@ -52,6 +42,16 @@ GET    /api/companies/:id
 POST   /api/companies
 PUT    /api/companies/:id
 DELETE /api/companies/:id
+```
+
+### Profiles Resource
+
+```
+GET    /api/profiles
+GET    /api/profiles/:id
+POST   /api/profiles
+PUT    /api/profiles/:id
+DELETE /api/profiles/:id
 ```
 
 server runs at http://localhost:8080
