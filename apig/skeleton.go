@@ -3,13 +3,13 @@ package apig
 import (
 	"bytes"
 	"fmt"
-	"text/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
+	"text/template"
 
 	"github.com/wantedly/apig/util"
 )
@@ -18,7 +18,7 @@ func generateSkeleton(detail *Detail, outDir string) error {
 	ch := make(chan error)
 	go func() {
 		var wg sync.WaitGroup
-		r := regexp.MustCompile(`_templates/skeleton/*`)
+		r := regexp.MustCompile(`_templates/skeleton/.*\.tmpl$`)
 		for _, skeleton := range AssetNames() {
 			wg.Add(1)
 			go func(s string) {
