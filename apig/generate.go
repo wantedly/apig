@@ -404,9 +404,10 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		return 1
 	}
 
-	vcs := filepath.Base(filepath.Dir(filepath.Dir(importDir[0])))
-	user := filepath.Base(filepath.Dir(importDir[0]))
-	project := filepath.Base(importDir[0])
+	dirs := strings.SplitN(importDir[0], "/", 3)
+	vcs := dirs[0]
+	user := dirs[1]
+	project := dirs[2]
 	errCh = make(chan error)
 	go func() {
 		defer close(errCh)
@@ -447,7 +448,7 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		ImportDir: importDir[0],
 		VCS:       vcs,
 		User:      user,
-		Project:   filepath.Base(importDir[0]),
+		Project:   project,
 	}
 	if all {
 		if err := generateSkeleton(detail, outDir); err != nil {
