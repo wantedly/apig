@@ -19,7 +19,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	}
 
 	preloads := c.DefaultQuery("preloads", "")
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -53,7 +53,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 	var fieldMap []map[string]interface{}
 	for key, _ := range {{ pluralize (tolower .Model.Name) }} {
-		fieldMap = append(fieldMap, helper.FieldToMap({{ pluralize (tolower .Model.Name) }}[key], fields, nestFields))
+		fieldMap = append(fieldMap, helper.FieldToMap({{ pluralize (tolower .Model.Name) }}[key], fields))
 	}
 	c.JSON(200, fieldMap)
 }
@@ -67,7 +67,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 
 	id := c.Params.ByName("id")
 	preloads := c.DefaultQuery("preloads", "")
-	fields, nestFields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
@@ -84,7 +84,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := helper.FieldToMap({{ tolower .Model.Name }}, fields, nestFields)
+	fieldMap := helper.FieldToMap({{ tolower .Model.Name }}, fields)
 	c.JSON(200, fieldMap)
 }
 
