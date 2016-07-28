@@ -19,7 +19,7 @@ func Connect() *gorm.DB {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
 	db.LogMode(false)
-	if os.Getenv("DB") == "DEBUG" {
+	if gin.IsDebugging() {
 		db.LogMode(true)
 	}
 	return db
