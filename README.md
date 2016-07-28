@@ -4,7 +4,7 @@
 apig is an RESTful API server generator.
 
 * Input: Model definitions based on [gorm](https://github.com/jinzhu/gorm) annotated struct
-* Output: RESTful json api server using [gin](https://github.com/gin-gonic/gin) including tests and documents
+* Output: RESTful JSON API server using [gin](https://github.com/gin-gonic/gin) including tests and documents
 
 ## How to build and install
 
@@ -28,10 +28,10 @@ $ make install
 First, creating by `apig new` command.
 
 ```
-apig new -u wantedly -v gihub.com apig-sample
+$ apig new -u wantedly -v github.com apig-sample
 ```
 
-generates golang api server boilerplate under `$GOPATH/src/gihhub.com/wantedly/apig-sample`.
+generates Golang API server boilerplate under `$GOPATH/src/gihhub.com/wantedly/apig-sample`.
 You can omit `-u` and `-v` options. The default of `-u` is github username, and `-v` is `github.com`
 
 ### 2. Write model code
@@ -139,7 +139,7 @@ Aglio can be installed by
 $ npm install -g aglio
 ```
 
-You can build a html file or running server as the format of the document.
+You can generate HTML files and run live preview server.
 
 ```
 // html file
@@ -151,5 +151,5 @@ $ aglio -i index.apib --server
 
 `index.apib` includes other files in your blueprint.
 
-## LICENSE
+## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
