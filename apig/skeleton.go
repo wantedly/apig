@@ -14,7 +14,7 @@ import (
 	"github.com/wantedly/apig/util"
 )
 
-func GenerateSkeleton(detail *Detail, outDir string) error {
+func generateSkeleton(detail *Detail, outDir string) error {
 	ch := make(chan error)
 	go func() {
 		var wg sync.WaitGroup
@@ -81,7 +81,7 @@ func Skeleton(gopath, vcs, username, project string, namespace string) int {
 		fmt.Fprintf(os.Stderr, "%s is already exists", outDir)
 		return 1
 	}
-	if err := GenerateSkeleton(detail, outDir); err != nil {
+	if err := generateSkeleton(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}

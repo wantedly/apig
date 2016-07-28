@@ -324,7 +324,7 @@ func generateDB(detail *Detail, outDir string) error {
 	return nil
 }
 
-func Generate(outDir, modelDir, targetFile string) int {
+func Generate(outDir, modelDir, targetFile string, all bool) int {
 	outModelDir := filepath.Join(outDir, modelDir)
 	files, err := ioutil.ReadDir(outModelDir)
 	if err != nil {
@@ -448,6 +448,12 @@ func Generate(outDir, modelDir, targetFile string) int {
 		VCS:       vcs,
 		User:      user,
 		Project:   filepath.Base(importDir[0]),
+	}
+	if all {
+		if err := generateSkeleton(detail, outDir); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
 	}
 	if err := generateApibIndex(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
