@@ -8,3 +8,4 @@ install:
   - make deps
 script:
   - make test
+  - make integration-test
