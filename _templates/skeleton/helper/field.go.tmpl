@@ -5,6 +5,15 @@ import (
 	"strings"
 )
 
+type AssociationType int
+
+const (
+	none AssociationType = iota
+	belongsTo
+	hasMany
+	hasOne
+)
+
 func contains(ss map[string]interface{}, s string) bool {
 	_, ok := ss[s]
 
@@ -23,6 +32,61 @@ func merge(m1, m2 map[string]interface{}) map[string]interface{} {
 	}
 
 	return result
+}
+
+func QueryFields(model interface{}, fields map[string]interface{}) string {
+	var jsonTag, jsonKey string
+
+	ts, vs := reflect.TypeOf(model), reflect.ValueOf(model)
+
+	assocs := make(map[string]AssociationType)
+
+	for i := 0; i < ts.NumField(); i++ {
+		f := ts.Field(i)
+		jsonTag = f.Tag.Get("json")
+
+		if jsonTag == "" {
+			jsonKey = f.Name
+		} else {
+			jsonKey = strings.Split(jsonTag, ",")[0]
+		}
+
+		switch vs.Field(i).Kind() {
+		case reflect.Ptr:
+			if _, ok := ts.FieldByName(f.Name + "ID"); ok {
+				assocs[jsonKey] = belongsTo
+			} else {
+				assocs[jsonKey] = hasOne
+			}
+		case reflect.Slice:
+			assocs[jsonKey] = hasMany
+		default:
+			assocs[jsonKey] = none
+		}
+	}
+
+	result := []string{}
+
+	for k := range fields {
+		if k == "*" {
+			return "*"
+		}
+
+		if _, ok := assocs[k]; !ok {
+			continue
+		}
+
+		switch assocs[k] {
+		case none:
+			result = append(result, k)
+		case belongsTo:
+			result = append(result, k+"_id")
+		default:
+			result = append(result, "id")
+		}
+	}
+
+	return strings.Join(result, ",")
 }
 
 func ParseFields(fields string) map[string]interface{} {
