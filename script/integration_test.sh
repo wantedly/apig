@@ -7,7 +7,7 @@ cd _example
 ../bin/apig gen --all --namespace api
 
 if [ ! $(git status | grep 'nothing to commit') ]; then
-  echo "x Generator artifact and example application are different."
+  echo " x Generator artifact and example application are different."
   git --no-pager diff
   exit 1
 fi
