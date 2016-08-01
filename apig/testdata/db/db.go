@@ -25,7 +25,7 @@ func Connect() *gorm.DB {
 		db.LogMode(true)
 	}
 
-	if os.Getenv("AUTOMIGRATE") == "true" {
+	if os.Getenv("AUTOMIGRATE") == "1" {
 		db.AutoMigrate(
 			&models.User{},
 		)
