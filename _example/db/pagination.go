@@ -1,7 +1,6 @@
 package db
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -27,7 +26,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 
 	limit, err := strconv.Atoi(limit_query)
 	if err != nil {
-		return db, errors.New("invalid parameter.")
+		return db, err
 	}
 	p.Limit = int(math.Max(1, math.Min(10000, float64(limit))))
 
@@ -35,7 +34,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 		// pagination 1
 		last_id, err := strconv.Atoi(last_id_query)
 		if err != nil {
-			return db, errors.New("invalid parameter.")
+			return db, err
 		}
 		p.Last_ID = int(math.Max(0, float64(last_id)))
 		if p.Order == "asc" {
@@ -48,7 +47,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	// pagination 2
 	page, err := strconv.Atoi(page_query)
 	if err != nil {
-		return db, errors.New("invalid parameter.")
+		return db, err
 	}
 	p.Page = int(math.Max(1, float64(page)))
 	return db.Offset(limit * (p.Page - 1)).Limit(p.Limit), nil
