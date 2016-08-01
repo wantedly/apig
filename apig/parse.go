@@ -150,3 +150,57 @@ func parseImport(path string) ([]string, error) {
 	})
 	return importPaths, nil
 }
+
+func parseNamespace(path string) (string, error) {
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, path, nil, 0)
+
+	if err != nil {
+		return "", err
+	}
+
+	var namespace string
+
+	for _, decl := range f.Decls {
+		ast.Inspect(decl, func(node ast.Node) bool {
+			fn, ok := node.(*ast.FuncDecl)
+			if !ok {
+				return false
+			}
+
+			if fn.Name.Name != "Initialize" {
+				return false
+			}
+
+			for _, stmt := range fn.Body.List {
+				assign, ok := stmt.(*ast.AssignStmt)
+				if !ok {
+					continue
+				}
+
+				for _, expr := range assign.Rhs {
+					call, ok := expr.(*ast.CallExpr)
+					if !ok {
+						continue
+					}
+
+					for _, arg := range call.Args {
+						lit, ok := arg.(*ast.BasicLit)
+						if !ok {
+							continue
+						}
+
+						namespace, err = strconv.Unquote(lit.Value)
+						if err != nil {
+							continue
+						}
+					}
+				}
+			}
+
+			return true
+		})
+	}
+
+	return namespace, nil
+}

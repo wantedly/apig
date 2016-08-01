@@ -22,7 +22,7 @@ func fieldEquals(f1, f2 *Field) bool {
 }
 
 func TestParseModel(t *testing.T) {
-	path := filepath.Join("testdata", "models.go")
+	path := filepath.Join("testdata", "parse", "models.go")
 
 	models, err := parseModel(path)
 
@@ -71,7 +71,7 @@ func TestParseModel(t *testing.T) {
 }
 
 func TestParseImport(t *testing.T) {
-	path := filepath.Join("testdata", "router", "router.go")
+	path := filepath.Join("testdata", "parse", "router.go")
 
 	importPaths, err := parseImport(path)
 
@@ -87,5 +87,20 @@ func TestParseImport(t *testing.T) {
 	expect := "github.com/wantedly/api-server/controllers"
 	if importPath != expect {
 		t.Fatalf("Incorrect import path. expected: %s, actual: %s", expect, importPath)
+	}
+}
+
+func TestParseNamespace(t *testing.T) {
+	path := filepath.Join("testdata", "parse", "router.go")
+
+	namespace, err := parseNamespace(path)
+	if err != nil {
+		t.Fatalf("Failed to parse router. error: %s", err)
+	}
+
+	expected := "api"
+
+	if namespace != expected {
+		t.Fatalf("Incorrect namespace. expected: %s, actual: %s", expected, namespace)
 	}
 }
