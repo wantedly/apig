@@ -4,6 +4,87 @@ import (
 	"testing"
 )
 
+type User struct {
+	ID      uint     `json:"id"`
+	Jobs    []*Job   `json:"jobs"`
+	Name    string   `json:"name"`
+	Profile *Profile `json:"profile"`
+}
+
+type Profile struct {
+	ID      uint  `json:"id"`
+	UserID  uint  `json:"user_id"`
+	User    *User `json:"user"`
+	Engaged bool  `json:"engaged"`
+}
+
+type Job struct {
+	ID     uint  `json:"id"`
+	UserID uint  `json:"user_id"`
+	User   *User `json:"user"`
+	RoleCd uint  `json:"role_cd"`
+}
+
+func TestQueryFields_Wildcard(t *testing.T) {
+	fields := map[string]interface{}{"*": nil}
+	result := QueryFields(User{}, fields)
+	expected := "*"
+
+	if result != expected {
+		t.Fatalf("result should be %s. actual: %s", expected, result)
+	}
+}
+
+func TestQueryFields_Primitive(t *testing.T) {
+	fields := map[string]interface{}{"name": nil}
+	result := QueryFields(User{}, fields)
+	expected := "name"
+
+	if result != expected {
+		t.Fatalf("result should be %s. actual: %s", expected, result)
+	}
+}
+
+func TestQueryFields_Multiple(t *testing.T) {
+	fields := map[string]interface{}{"id": nil, "name": nil}
+	result := QueryFields(User{}, fields)
+	expected := "id,name"
+
+	if result != expected {
+		t.Fatalf("result should be %s. actual: %s", expected, result)
+	}
+}
+
+func TestQueryFields_BelongsTo(t *testing.T) {
+	fields := map[string]interface{}{"user": nil}
+	result := QueryFields(Profile{}, fields)
+	expected := "user_id"
+
+	if result != expected {
+		t.Fatalf("result should be %s. actual: %s", expected, result)
+	}
+}
+
+func TestQueryFields_HasOne(t *testing.T) {
+	fields := map[string]interface{}{"profile": nil}
+	result := QueryFields(User{}, fields)
+	expected := "id"
+
+	if result != expected {
+		t.Fatalf("result should be %s. actual: %s", expected, result)
+	}
+}
+
+func TestQueryFields_HasMany(t *testing.T) {
+	fields := map[string]interface{}{"jobs": nil}
+	result := QueryFields(User{}, fields)
+	expected := "id"
+
+	if result != expected {
+		t.Fatalf("result should be %s. actual: %s", expected, result)
+	}
+}
+
 func TestParseFields_Wildcard(t *testing.T) {
 	fields := "*"
 	result := ParseFields(fields)
