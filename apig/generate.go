@@ -433,12 +433,19 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		return 1
 	}
 
+	namespace, err := parseNamespace(filepath.Join(outDir, "router", "router.go"))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+
 	detail := &Detail{
 		Models:    models,
 		ImportDir: importDir[0],
 		VCS:       vcs,
 		User:      user,
 		Project:   project,
+		Namespace: namespace,
 	}
 	if all {
 		if err := generateSkeleton(detail, outDir); err != nil {

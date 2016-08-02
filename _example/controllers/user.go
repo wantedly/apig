@@ -20,6 +20,7 @@ func GetUsers(c *gin.Context) {
 
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.User{}, fields)
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -32,7 +33,7 @@ func GetUsers(c *gin.Context) {
 	db = dbpkg.SetPreloads(preloads, db)
 
 	var users []models.User
-	if err := db.Select("*").Find(&users).Error; err != nil {
+	if err := db.Select(queryFields).Find(&users).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -68,12 +69,13 @@ func GetUser(c *gin.Context) {
 	id := c.Params.ByName("id")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.User{}, fields)
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
 
 	var user models.User
-	if err := db.Select("*").First(&user, id).Error; err != nil {
+	if err := db.Select(queryFields).First(&user, id).Error; err != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
