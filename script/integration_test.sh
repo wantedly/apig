@@ -4,7 +4,7 @@ set -eu
 
 echo "===> Generating API server..."
 cd _example
-../bin/apig gen --all --namespace api
+../bin/apig gen --all
 
 if [ ! $(git status | grep 'nothing to commit') ]; then
   echo " x Generator artifact and example application are different."
