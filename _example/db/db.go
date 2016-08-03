@@ -27,10 +27,10 @@ func Connect() *gorm.DB {
 
 	if os.Getenv("AUTOMIGRATE") == "1" {
 		db.AutoMigrate(
-			&models.Profile{},
-			&models.Email{},
 			&models.Company{},
+			&models.Email{},
 			&models.Job{},
+			&models.Profile{},
 			&models.User{},
 		)
 	}
