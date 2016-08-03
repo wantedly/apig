@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 	"text/template"
@@ -126,6 +127,7 @@ func generateApibIndex(detail *Detail, outDir string) error {
 	}
 
 	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+
 		return err
 	}
 
@@ -322,7 +324,7 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		return 1
 	}
 
-	var models []*Model
+	var models Models
 	var wg sync.WaitGroup
 	modelMap := make(map[string]*Model)
 	errCh := make(chan error)
@@ -374,6 +376,8 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
+	sort.Sort(models)
 
 	importPaths, err := parseImport(filepath.Join(outDir, targetFile))
 	if err != nil {
