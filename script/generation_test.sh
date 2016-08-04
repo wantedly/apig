@@ -21,4 +21,4 @@ if [ $? -gt 0 ]; then
   exit 1
 fi
 
-echo " o Integration test PASSED!"
+echo " o Generation test PASSED!"

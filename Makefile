@@ -46,6 +46,6 @@ test:
 	go generate
 	go test -cover -v ./apig ./command
 
-.PHONY: integration-test
-integration-test: bin/$(BINARY)
-	script/integration_test.sh
+.PHONY: generation-test
+generation-test: bin/$(BINARY)
+	script/generation_test.sh
