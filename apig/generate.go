@@ -403,14 +403,18 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 	user := dirs[1]
 	project := dirs[2]
 	errCh = make(chan error)
+
+	for _, model := range models {
+		// Check association, stdout "model.Fields[0].Association.Type"
+		resolveAssociate(model, modelMap, make(map[string]bool))
+	}
+
 	go func() {
 		defer close(errCh)
 		for _, model := range models {
 			wg.Add(1)
 			go func(m *Model) {
 				defer wg.Done()
-				// Check association, stdout "model.Fields[0].Association.Type"
-				resolveAssociate(m, modelMap, make(map[string]bool))
 				d := &Detail{
 					Model:     m,
 					ImportDir: importDir[0],
