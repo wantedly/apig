@@ -13,6 +13,7 @@ if [ ! $(git status | grep 'nothing to commit') ]; then
 fi
 
 echo "===> Building API server..."
+go get ./...
 go build
 
 if [ $? -gt 0 ]; then
