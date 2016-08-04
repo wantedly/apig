@@ -22,4 +22,3 @@ if [[ $? -gt 0 ]]; then
 fi
 
 echo " o Generation test PASSED!"
-q
