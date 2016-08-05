@@ -210,3 +210,121 @@ func TestParseFields_Included(t *testing.T) {
 		t.Fatalf("result[profile] should be nil: %#v", result)
 	}
 }
+
+var profile = Profile{
+	ID:      1,
+	UserID:  1,
+	User:    nil,
+	Engaged: true,
+}
+
+var job = Job{
+	ID:     1,
+	UserID: 1,
+	User:   nil,
+	RoleCd: 1,
+}
+
+func TestFieldToMap_Wildcard(t *testing.T) {
+	user := User{
+		ID:      1,
+		Jobs:    []*Job{&job},
+		Name:    "Taro Yamada",
+		Profile: &profile,
+	}
+
+	fields := map[string]interface{}{
+		"*": nil,
+	}
+	result := FieldToMap(user, fields)
+
+	for _, key := range []string{"id", "jobs", "name", "profile"} {
+		if _, ok := result[key]; !ok {
+			t.Fatalf("%s should exist. actual: %#v", key, result)
+		}
+	}
+
+	if result["jobs"].([]*Job) == nil {
+		t.Fatalf("jobs should not be nil. actual: %#v", result["jobs"])
+	}
+
+	if result["profile"].(*Profile) == nil {
+		t.Fatalf("profile should not be nil. actual: %#v", result["profile"])
+	}
+}
+
+func TestFieldToMap_SpecifyField(t *testing.T) {
+	user := User{
+		ID:      1,
+		Jobs:    nil,
+		Name:    "Taro Yamada",
+		Profile: nil,
+	}
+
+	fields := map[string]interface{}{
+		"id":   nil,
+		"name": nil,
+	}
+	result := FieldToMap(user, fields)
+
+	for _, key := range []string{"id", "name"} {
+		if _, ok := result[key]; !ok {
+			t.Fatalf("%s should exist. actual: %#v", key, result)
+		}
+	}
+
+	for _, key := range []string{"jobs", "profile"} {
+		if _, ok := result[key]; ok {
+			t.Fatalf("%s should not exist. actual: %#v", key, result)
+		}
+	}
+}
+
+func TestFieldToMap_NestedField(t *testing.T) {
+	user := User{
+		ID:      1,
+		Jobs:    []*Job{&job},
+		Name:    "Taro Yamada",
+		Profile: &profile,
+	}
+
+	fields := map[string]interface{}{
+		"profile": map[string]interface{}{
+			"id": nil,
+		},
+		"name": nil,
+	}
+	result := FieldToMap(user, fields)
+
+	for _, key := range []string{"name", "profile"} {
+		if _, ok := result[key]; !ok {
+			t.Fatalf("%s should exist. actual: %#v", key, result)
+		}
+	}
+
+	for _, key := range []string{"id", "jobs"} {
+		if _, ok := result[key]; ok {
+			t.Fatalf("%s should not exist. actual: %#v", key, result)
+		}
+	}
+
+	if result["profile"].(map[string]interface{}) == nil {
+		t.Fatalf("profile should not be nil. actual: %#v", result)
+	}
+
+	if _, ok := result["profile"].(map[string]interface{})["id"]; !ok {
+		t.Fatalf("profile.id should exist. actual: %#v", result)
+	}
+
+	for _, key := range []string{"id"} {
+		if _, ok := result["profile"].(map[string]interface{})[key]; !ok {
+			t.Fatalf("profile.%s should exist. actual: %#v", key, result)
+		}
+	}
+
+	for _, key := range []string{"user_id", "user", "engaged"} {
+		if _, ok := result["profile"].(map[string]interface{})[key]; ok {
+			t.Fatalf("profile.%s should not exist. actual: %#v", key, result)
+		}
+	}
+}
