@@ -77,7 +77,7 @@ func (c *NewCommand) Synopsis() string {
 
 func (c *NewCommand) Help() string {
 	helpText := `
-Usage: apig new PROJECTNAME
+Usage: apig new [options] PROJECTNAME
 
   Generate go project and its boilerplate
 

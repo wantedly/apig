@@ -60,7 +60,7 @@ func (c *GenCommand) Synopsis() string {
 
 func (c *GenCommand) Help() string {
 	helpText := `
-Usage: apig gen
+Usage: apig [options] gen
 
   Generates controllers and more based on models
 
