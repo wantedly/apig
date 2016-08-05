@@ -82,8 +82,9 @@ Usage: apig new PROJECTNAME
   Generate go project and its boilerplate
 
 Options:
-  -vcs=name         Version controll system to use (default: github.com)
-  -user=name, -u    Username of VCS (default: username of github in .gitconfig)
+  -namespace=namepace, -n    Namespace of API (default: "" (blank string))
+  -user=name, -u             Username of VCS (default: username of github in .gitconfig)
+  -vcs=name                  Version controll system to use (default: github.com)
 
 `
 	return strings.TrimSpace(helpText)
