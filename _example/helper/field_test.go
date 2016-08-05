@@ -6,9 +6,9 @@ import (
 
 type User struct {
 	ID      uint     `json:"id"`
-	Jobs    []*Job   `json:"jobs"`
+	Jobs    []*Job   `json:"jobs,omitempty"`
 	Name    string   `json:"name"`
-	Profile *Profile `json:"profile"`
+	Profile *Profile `json:"profile,omitempty"`
 }
 
 type Profile struct {
@@ -250,6 +250,60 @@ func TestFieldToMap_Wildcard(t *testing.T) {
 
 	if result["profile"].(*Profile) == nil {
 		t.Fatalf("profile should not be nil. actual: %#v", result["profile"])
+	}
+}
+
+func TestFieldToMap_OmitEmpty(t *testing.T) {
+	user := User{
+		ID:      1,
+		Jobs:    nil,
+		Name:    "Taro Yamada",
+		Profile: nil,
+	}
+
+	fields := map[string]interface{}{
+		"*": nil,
+	}
+	result := FieldToMap(user, fields)
+
+	for _, key := range []string{"id", "name"} {
+		if _, ok := result[key]; !ok {
+			t.Fatalf("%s should exist. actual: %#v", key, result)
+		}
+	}
+
+	for _, key := range []string{"jobs", "profile"} {
+		if _, ok := result[key]; ok {
+			t.Fatalf("%s should not exist. actual: %#v", key, result)
+		}
+	}
+}
+
+func TestFieldToMap_OmitEmptyWithField(t *testing.T) {
+	user := User{
+		ID:      1,
+		Jobs:    nil,
+		Name:    "Taro Yamada",
+		Profile: nil,
+	}
+
+	fields := map[string]interface{}{
+		"id":   nil,
+		"name": nil,
+		"jobs": nil,
+	}
+	result := FieldToMap(user, fields)
+
+	for _, key := range []string{"id", "name", "jobs"} {
+		if _, ok := result[key]; !ok {
+			t.Fatalf("%s should exist. actual: %#v", key, result)
+		}
+	}
+
+	for _, key := range []string{"profile"} {
+		if _, ok := result[key]; ok {
+			t.Fatalf("%s should not exist. actual: %#v", key, result)
+		}
 	}
 }
 
