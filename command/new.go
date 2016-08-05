@@ -40,7 +40,6 @@ func (c *NewCommand) Run(args []string) int {
 func (c *NewCommand) parseArgs(args []string) error {
 	flag := flag.NewFlagSet("apig", flag.ContinueOnError)
 
-	flag.StringVar(&c.vcs, "v", defaultVCS, "VCS")
 	flag.StringVar(&c.vcs, "vcs", defaultVCS, "VCS")
 	flag.StringVar(&c.username, "u", "", "Username")
 	flag.StringVar(&c.username, "user", "", "Username")
@@ -83,7 +82,7 @@ Usage: apig new PROJECTNAME
   Generate go project and its boilerplate
 
 Options:
-  -vcs=name, -v     Version controll system to use (default: github.com)
+  -vcs=name         Version controll system to use (default: github.com)
   -user=name, -u    Username of VCS (default: username of github in .gitconfig)
 
 `
