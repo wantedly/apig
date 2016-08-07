@@ -118,19 +118,30 @@ func FieldToMap(model interface{}, fields map[string]interface{}) map[string]int
 	u := make(map[string]interface{})
 	ts, vs := reflect.TypeOf(model), reflect.ValueOf(model)
 
+	var jsonKey string
+	var omitEmpty bool
+
 	for i := 0; i < ts.NumField(); i++ {
-		var jsonKey string
 		field := ts.Field(i)
 		jsonTag := field.Tag.Get("json")
+		omitEmpty = false
 
 		if jsonTag == "" {
 			jsonKey = field.Name
 		} else {
-			jsonKey = strings.Split(jsonTag, ",")[0]
+			ss := strings.Split(jsonTag, ",")
+			jsonKey = ss[0]
+
+			if len(ss) > 1 && ss[1] == "omitempty" {
+				omitEmpty = true
+			}
 		}
 
 		if contains(fields, "*") {
-			u[jsonKey] = vs.Field(i).Interface()
+			if !omitEmpty || !vs.Field(i).IsNil() {
+				u[jsonKey] = vs.Field(i).Interface()
+			}
+
 			continue
 		}
 
