@@ -5,7 +5,7 @@ type Detail struct {
 	User      string
 	Project   string
 	Namespace string
-	Models    []*Model
+	Models    Models
 	Model     *Model
 	ImportDir string
 }

@@ -10,11 +10,11 @@ Create a new job
 + Request jobs (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.apig+json
+            Accept: application/vnd.wantedly+json
     + Attributes
 
         + user_id: 1 (number)
-        + user (users)
+        + user ()
         + company_id: 1 (number)
         + role_cd: 1 (number)
 
@@ -28,7 +28,7 @@ Returns job list.
 + Request jobs (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.apig+json
+            Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
@@ -50,7 +50,7 @@ Returns job.
 + Request jobs (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.apig+json
+            Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (jobs, fixed)
@@ -62,11 +62,11 @@ Update job.
 + Request jobs (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.apig+json
+            Accept: application/vnd.wantedly+json
     + Attributes
 
         + user_id: 1 (number)
-        + user (users)
+        + user ()
         + company_id: 1 (number)
         + role_cd: 1 (number)
 
@@ -80,7 +80,7 @@ Delete job.
 + Request jobs (application/json; charset=utf-8)
     + Headers
 
-            Accept: application/vnd.apig+json
+            Accept: application/vnd.wantedly+json
 
 + Response 204
 
@@ -89,6 +89,6 @@ Delete job.
 
 + id: 1 (number)
 + user_id: 1 (number)
-+ user (users)
++ user ()
 + company_id: 1 (number)
 + role_cd: 1 (number)

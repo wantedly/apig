@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 	"text/template"
@@ -126,6 +127,7 @@ func generateApibIndex(detail *Detail, outDir string) error {
 	}
 
 	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+
 		return err
 	}
 
@@ -322,7 +324,7 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		return 1
 	}
 
-	var models []*Model
+	var models Models
 	var wg sync.WaitGroup
 	modelMap := make(map[string]*Model)
 	errCh := make(chan error)
@@ -375,6 +377,8 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		return 1
 	}
 
+	sort.Sort(models)
+
 	importPaths, err := parseImport(filepath.Join(outDir, targetFile))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -399,14 +403,18 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 	user := dirs[1]
 	project := dirs[2]
 	errCh = make(chan error)
+
+	for _, model := range models {
+		// Check association, stdout "model.Fields[0].Association.Type"
+		resolveAssociate(model, modelMap, make(map[string]bool))
+	}
+
 	go func() {
 		defer close(errCh)
 		for _, model := range models {
 			wg.Add(1)
 			go func(m *Model) {
 				defer wg.Done()
-				// Check association, stdout "model.Fields[0].Association.Type"
-				resolveAssociate(m, modelMap, make(map[string]bool))
 				d := &Detail{
 					Model:     m,
 					ImportDir: importDir[0],

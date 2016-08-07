@@ -45,3 +45,7 @@ install:
 test:
 	go generate
 	go test -cover -v ./apig ./command
+
+.PHONY: generation-test
+generation-test: bin/$(BINARY)
+	script/generation_test.sh

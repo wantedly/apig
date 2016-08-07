@@ -22,6 +22,20 @@ func (m *Model) AllPreloadAssocs() []string {
 	return result
 }
 
+type Models []*Model // implements Sort interface
+
+func (m Models) Len() int {
+	return len(m)
+}
+
+func (m Models) Less(i, j int) bool {
+	return m[i].Name < m[j].Name
+}
+
+func (m Models) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+
 type Field struct {
 	Name        string
 	JSONName    string

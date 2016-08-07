@@ -21,17 +21,17 @@ func Connect() *gorm.DB {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
 	db.LogMode(false)
-	if os.Getenv("DB") == "DEBUG" {
+	if gin.IsDebugging() {
 		db.LogMode(true)
 	}
 
 	if os.Getenv("AUTOMIGRATE") == "1" {
 		db.AutoMigrate(
+			&models.Company{},
 			&models.Email{},
 			&models.Job{},
-			&models.User{},
-			&models.Company{},
 			&models.Profile{},
+			&models.User{},
 		)
 	}
 	return db
