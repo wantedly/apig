@@ -28,11 +28,11 @@ $ make install
 First, creating by `apig new` command.
 
 ```
-$ apig new -u wantedly -v github.com apig-sample
+$ apig new -u wantedly apig-sample
 ```
 
 generates Golang API server boilerplate under `$GOPATH/src/gihhub.com/wantedly/apig-sample`.
-You can omit `-u` and `-v` options. The default of `-u` is github username, and `-v` is `github.com`
+You can omit `-u, --user` and `--vcs` options. The default of `-u, -user` is github username, and `--vcs` is `github.com`
 
 ### 2. Write model code
 
