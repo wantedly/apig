@@ -406,10 +406,12 @@ func generateCommonFiles(detail *Detail, outDir string) error {
 				User:      detail.User,
 				Project:   detail.Project,
 			}
+
 			if err := generateApibModel(d, outDir); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				errCh <- err
 			}
+
 			if err := generateController(d, outDir); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				errCh <- err
