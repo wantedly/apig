@@ -209,7 +209,7 @@ func generateController(detail *Detail, outDir string) error {
 	return nil
 }
 
-func generateREADME(models []*Model, outDir string) error {
+func generateREADME(detail *Detail, outDir string) error {
 	body, err := Asset(filepath.Join(templateDir, "README.md.tmpl"))
 
 	if err != nil {
@@ -224,7 +224,7 @@ func generateREADME(models []*Model, outDir string) error {
 
 	var buf bytes.Buffer
 
-	if err := tmpl.Execute(&buf, models); err != nil {
+	if err := tmpl.Execute(&buf, detail); err != nil {
 		return err
 	}
 
@@ -487,22 +487,27 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 			return 1
 		}
 	}
+
 	if err := generateApibIndex(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	if err := generateRouter(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	if err := generateDB(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
-	if err := generateREADME(models, outDir); err != nil {
+
+	if err := generateREADME(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	fmt.Println("===> Generated...")
 	return 0
 }

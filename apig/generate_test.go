@@ -143,7 +143,7 @@ func TestGenerateREADME(t *testing.T) {
 	}
 	defer os.RemoveAll(outDir)
 
-	if err := generateREADME([]*Model{userModel}, outDir); err != nil {
+	if err := generateREADME(detail, outDir); err != nil {
 		t.Fatalf("Error should not be raised: %s", err)
 	}
 
