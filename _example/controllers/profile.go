@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	dbpkg "github.com/wantedly/apig/_example/db"
 	"github.com/wantedly/apig/_example/helper"
@@ -20,6 +21,7 @@ func GetProfiles(c *gin.Context) {
 
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	ids := c.DefaultQuery("ids", "")
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -30,6 +32,10 @@ func GetProfiles(c *gin.Context) {
 	}
 
 	db = dbpkg.SetPreloads(preloads, db)
+
+	if ids != "" {
+		db = db.Where("id IN (?)", strings.Split(ids, ","))
+	}
 
 	var profiles []models.Profile
 	if err := db.Select("*").Find(&profiles).Error; err != nil {
