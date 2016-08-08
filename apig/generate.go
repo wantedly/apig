@@ -2,6 +2,7 @@ package apig
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -368,6 +369,27 @@ func collectModels(outModelDir string) (Models, error) {
 	return models, nil
 }
 
+func detectImportDir(targetPath string) (string, error) {
+	importPaths, err := parseImport(targetPath)
+	if err != nil {
+		return "", err
+	}
+
+	importDir := formatImportDir(importPaths)
+	if err != nil {
+		return "", err
+	}
+
+	switch {
+	case len(importDir) > 1:
+		return "", errors.New("Conflict import path. Please check 'main.go'.")
+	case len(importDir) == 0:
+		return "", errors.New("Can't refer import path. Please check 'main.go'.")
+	}
+
+	return importDir[0], nil
+}
+
 func Generate(outDir, modelDir, targetFile string, all bool) int {
 	outModelDir := filepath.Join(outDir, modelDir)
 
@@ -385,29 +407,14 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		modelMap[m.Name] = m
 	}
 
-	importPaths, err := parseImport(filepath.Join(outDir, targetFile))
+	importDir, err := detectImportDir(filepath.Join(outDir, targetFile))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		return 1
-	}
-	importDir := formatImportDir(importPaths)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return 1
-	}
-	switch {
-	case len(importDir) > 1:
-		fmt.Fprintln(os.Stderr, "Conflict import path. Please check 'main.go'.")
-		return 1
-	case len(importDir) == 0:
-		fmt.Fprintln(os.Stderr, "Can't refer import path. Please check 'main.go'.")
 		return 1
 	}
 
-	dirs := strings.SplitN(importDir[0], "/", 3)
-	vcs := dirs[0]
-	user := dirs[1]
-	project := dirs[2]
+	dirs := strings.SplitN(importDir, "/", 3)
+	vcs, user, project := dirs[0], dirs[1], dirs[2]
 	errCh := make(chan error)
 
 	var wg sync.WaitGroup
@@ -425,7 +432,7 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 				defer wg.Done()
 				d := &Detail{
 					Model:     m,
-					ImportDir: importDir[0],
+					ImportDir: importDir,
 					VCS:       vcs,
 					User:      user,
 					Project:   project,
@@ -457,7 +464,7 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 
 	detail := &Detail{
 		Models:    models,
-		ImportDir: importDir[0],
+		ImportDir: importDir,
 		VCS:       vcs,
 		User:      user,
 		Project:   project,
