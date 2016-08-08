@@ -6,6 +6,20 @@ apig is an RESTful API server generator.
 * Input: Model definitions based on [gorm](https://github.com/jinzhu/gorm) annotated struct
 * Output: RESTful JSON API server using [gin](https://github.com/gin-gonic/gin) including tests and documents
 
+## Contents
+
+* [How to build and install](#how-to-build-and-install)
+* [How to use](#how-to-use)
+  + [1. Generate boilerplate](#1-generate-boilerplate)
+  + [2. Write model code](#2-write-model-code)
+  + [3. Generate controllers, tests, documents etc. based on models.](#3-generate-controllers-tests-documents-etc-based-on-models)
+  + [4. Build and run server](#4-build-and-run-server)
+* [Usage](#usage)
+  + [`new` command](#new-command)
+  + [`gen` command](#gen-command)
+  + [API Document](#api-document)
+* [License](#license)
+
 ## How to build and install
 
 Prepare Go 1.6 or higher.
