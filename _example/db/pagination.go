@@ -10,6 +10,12 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+const (
+	defaultLimit = "25"
+	defaultPage  = "1"
+	defaultOrder = "desc"
+)
+
 type Pagination struct {
 	Limit  int
 	Page   int
@@ -19,10 +25,10 @@ type Pagination struct {
 
 func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	db := DBInstance(c)
-	limitQuery := c.DefaultQuery("limit", "25")
-	pageQuery := c.DefaultQuery("page", "1")
+	limitQuery := c.DefaultQuery("limit", defaultLimit)
+	pageQuery := c.DefaultQuery("page", defaultPage)
 	lastIDQuery := c.Query("last_id")
-	p.Order = c.DefaultQuery("order", "desc")
+	p.Order = c.DefaultQuery("order", defaultOrder)
 
 	limit, err := strconv.Atoi(limitQuery)
 	if err != nil {
