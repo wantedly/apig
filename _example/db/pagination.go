@@ -37,7 +37,6 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	p.Limit = int(math.Max(1, math.Min(10000, float64(limit))))
 
 	if lastIDQuery != "" {
-		// pagination 1
 		lastID, err := strconv.Atoi(lastIDQuery)
 		if err != nil {
 			return db, err
@@ -50,7 +49,6 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 		return db.Where("id < ?", p.LastID).Limit(p.Limit).Order("id desc"), nil
 	}
 
-	// pagination 2
 	page, err := strconv.Atoi(pageQuery)
 	if err != nil {
 		return db, err
