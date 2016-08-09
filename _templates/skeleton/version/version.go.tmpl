@@ -11,6 +11,7 @@ import (
 func New(c *gin.Context) (string, error) {
 	header := c.Request.Header["Accept"][0]
 	header = strings.Join(strings.Fields(header), "")
+
 	var ver string
 
 	if strings.Contains(header, "version=") {
@@ -30,6 +31,7 @@ func New(c *gin.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return ver, nil
 }
 
@@ -46,6 +48,7 @@ func Range(left string, op string, right string) bool {
 	case "==":
 		return (compare(left, right) == 0)
 	}
+
 	return false
 }
 
@@ -64,19 +67,24 @@ func compare(left string, right string) int {
 	lItems := len(lArr)
 	rItems := len(rArr)
 	min := int(math.Min(float64(lItems), float64(rItems)))
+
 	for i := 0; i < min; i++ {
 		l, _ := strconv.Atoi(lArr[i])
 		r, _ := strconv.Atoi(rArr[i])
+
 		if l != r {
 			if l > r {
 				return 1
 			}
+
 			return -1
 		}
 	}
+
 	if lItems == rItems {
 		return 0
 	}
+
 	if lItems < rItems {
 		return 1
 	}
