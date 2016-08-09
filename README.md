@@ -8,6 +8,7 @@ apig is an RESTful API server generator.
 
 ## Contents
 
+* [Contents](#contents)
 * [How to build and install](#how-to-build-and-install)
 * [How to use](#how-to-use)
   + [1. Generate boilerplate](#1-generate-boilerplate)
@@ -18,6 +19,11 @@ apig is an RESTful API server generator.
   + [`new` command](#new-command)
   + [`gen` command](#gen-command)
   + [API Document](#api-document)
+* [API server specification](#api-server-specification)
+  + [Endpoints](#endpoints)
+  + [Available URL parameters](#available-url-parameters)
+  + [Pagination](#pagination)
+  + [Versioning](#versioning)
 * [License](#license)
 
 ## How to build and install
@@ -164,6 +170,118 @@ $ aglio -i index.apib --server
 ```
 
 `index.apib` includes other files in your blueprint.
+
+## API server specification
+
+### Endpoints
+
+Each resource has 5 RESTful API endpoints.
+Resource name is written in the plural form.
+
+|Endpoint|Description|Example (User resource)|
+|--------|-----------|-------|
+|`GET /<resources>`|List items|`GET /users` List users|
+|`POST /<resources>`|Create new item|`POST /users` Create new user|
+|`GET /<resources>/{id}`|Retrive the item|`GET /users/1` Get the user which ID is 1|
+|`PUT /<resources>/{id}`|Update the item|`PUT /users/1` Update the user which ID is 1|
+|`DELETE /<resources>/{id}`|Delete the item|`DELETE /users/1` Delete the user which ID is 1|
+
+### Available URL parameters
+
+#### `GET /<resources>` and `GET /<resources>/{id}`
+
+|Parameter|Description|Default|Example|
+|---------|-----------|-------|-------|
+|`fields=`|Fields to receive|All fields|`name,emails.address`|
+|`preloads=`|Nested resources to preload|(empty)|`emails,profile`|
+
+#### `GET /<resources>` only
+
+|Parameter|Description|Default|Example|
+|---------|-----------|-------|-------|
+|`ids=`|Item IDs|(empty)|`1,2,5`|
+|`limit=`|Maximum number of items|`25`|`50`|
+|`page=`|Page to receive|`1`|`3`|
+|`last_id=`|Beginning ID of items|(empty)|`1`|
+|`order=`|Order of items|`desc`|`asc`|
+|`v=`|API version|(empty)|`1.2.0`|
+
+### Pagination
+
+API server supports 2 pagination types.
+
+#### Offset-based pagination
+
+Retrive items by specifying page number and the number of items per page.
+
+For example:
+
+```
+http://example.com/api/users?limit=5&page=2
+```
+
+```
++---------+---------+---------+---------+---------+---------+---------+
+| ID: 5   | ID: 6   | ID: 7   | ID: 8   | ID: 9   | ID: 10  | ID: 11  |
++---------+---------+---------+---------+---------+---------+---------+
+          |                                                 |
+ Page 1 ->|<-------------------- Page 2 ------------------->|<- Page 3
+```
+
+Response header includes `Link` header.
+
+```
+Link:   <http://example.com/api/users?limit=5&page=3>; rel="next",
+        <http://example.com/api/users?limit=5&page=1>; rel="prev"
+```
+
+#### ID/Time-based pagination
+
+Retrive items by specifying range from a certain point.
+
+For example:
+
+```
+http://example.com/api/users?limit=5&last_id=100&order=desc
+```
+
+```
++---------+---------+---------+---------+---------+---------+---------+
+| ID: 94  | ID: 95  | ID: 96  | ID: 97  | ID: 98  | ID: 99  | ID: 100 |
++---------+---------+---------+---------+---------+---------+---------+
+          |               5 items (ID < 100)                |
+          |<------------------------------------------------|
+```
+
+Response header includes `Link` header.
+
+```
+Link:   <http://example.com/api/users?limit=5&last_id=95&order=desc>; rel="next"
+```
+
+### Versioning
+
+API server uses [Semantic Versioning](http://semver.org) for API versioning.
+
+There are 2 methods to specify API version.
+
+#### Request header
+
+Generally we recommend to include API version in request HTTP header.
+
+```
+Accepts: application/json; version=1.0.0
+```
+
+#### URL parameter
+
+To debug on browser or temporary use, you can also include API version in URL parameter.
+
+```
+http://example.com/api/users?v=1.0.0
+```
+
+This method is prior to request header.
 
 ## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
