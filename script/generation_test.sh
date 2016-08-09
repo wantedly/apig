@@ -6,9 +6,9 @@ echo "===> Generating API server..."
 cd _example
 ../bin/apig gen --all
 
-if [[ ! $(git status | grep 'nothing to commit') ]]; then
+if [[ ! $(git status . | grep 'nothing to commit') ]]; then
   echo " x Generator artifact and example application are different."
-  git --no-pager diff
+  git --no-pager diff .
   exit 1
 fi
 
