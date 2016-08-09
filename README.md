@@ -267,21 +267,22 @@ There are 2 methods to specify API version.
 
 #### Request header
 
-Generally we recommend to include API version in request HTTP header.
+Generally we recommend to include API version in `Accept` header.
 
 ```
-Accepts: application/json; version=1.0.0
+Accept: application/json; version=1.0.0
 ```
 
 #### URL parameter
 
-To debug on browser or temporary use, you can also include API version in URL parameter.
+You can also include API version in URL parameter.
+This is userful for debug on browser or temporary use,
 
 ```
 http://example.com/api/users?v=1.0.0
 ```
 
-This method is prior to request header.
+This method is prior to request header method.
 
 ## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
