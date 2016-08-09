@@ -39,9 +39,9 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 		p.LastID = int(math.Max(0, float64(lastID)))
 		if p.Order == "asc" {
 			return db.Where("id > ?", p.LastID).Limit(p.Limit).Order("id asc"), nil
-		} else {
-			return db.Where("id < ?", p.LastID).Limit(p.Limit).Order("id desc"), nil
 		}
+
+		return db.Where("id < ?", p.LastID).Limit(p.Limit).Order("id desc"), nil
 	}
 
 	// pagination 2
