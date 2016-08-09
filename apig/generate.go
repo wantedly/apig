@@ -325,7 +325,6 @@ func collectModels(outModelDir string) (Models, error) {
 
 	var models Models
 	var wg sync.WaitGroup
-	modelMap := make(map[string]*Model)
 	errCh := make(chan error, 1)
 	done := make(chan bool, 1)
 
@@ -350,7 +349,6 @@ func collectModels(outModelDir string) (Models, error) {
 
 			for _, model := range ms {
 				models = append(models, model)
-				modelMap[model.Name] = model
 			}
 		}(file)
 	}
