@@ -13,12 +13,10 @@ func New(c *gin.Context) (string, error) {
 	header = strings.Join(strings.Fields(header), "")
 	var ver string
 
-	// header version
 	if strings.Contains(header, "version=") {
 		ver = strings.Split(strings.SplitAfter(header, "version=")[1], ";")[0]
 	}
 
-	// query v
 	v := c.Query("v")
 	if v != "" {
 		ver = v
