@@ -11,41 +11,41 @@ import (
 )
 
 type Pagination struct {
-	Limit   int
-	Page    int
-	Last_ID int
-	Order   string
+	Limit  int
+	Page   int
+	LastID int
+	Order  string
 }
 
 func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	db := DBInstance(c)
-	limit_query := c.DefaultQuery("limit", "25")
-	page_query := c.DefaultQuery("page", "1")
-	last_id_query := c.Query("last_id")
+	limitQuery := c.DefaultQuery("limit", "25")
+	pageQuery := c.DefaultQuery("page", "1")
+	lastIDQuery := c.Query("last_id")
 	p.Order = c.DefaultQuery("order", "desc")
 
-	limit, err := strconv.Atoi(limit_query)
+	limit, err := strconv.Atoi(limitQuery)
 	if err != nil {
 		return db, err
 	}
 	p.Limit = int(math.Max(1, math.Min(10000, float64(limit))))
 
-	if last_id_query != "" {
+	if lastIDQuery != "" {
 		// pagination 1
-		last_id, err := strconv.Atoi(last_id_query)
+		lastID, err := strconv.Atoi(lastIDQuery)
 		if err != nil {
 			return db, err
 		}
-		p.Last_ID = int(math.Max(0, float64(last_id)))
+		p.LastID = int(math.Max(0, float64(lastID)))
 		if p.Order == "asc" {
-			return db.Where("id > ?", p.Last_ID).Limit(p.Limit).Order("id asc"), nil
+			return db.Where("id > ?", p.LastID).Limit(p.Limit).Order("id asc"), nil
 		} else {
-			return db.Where("id < ?", p.Last_ID).Limit(p.Limit).Order("id desc"), nil
+			return db.Where("id < ?", p.LastID).Limit(p.Limit).Order("id desc"), nil
 		}
 	}
 
 	// pagination 2
-	page, err := strconv.Atoi(page_query)
+	page, err := strconv.Atoi(pageQuery)
 	if err != nil {
 		return db, err
 	}
@@ -55,7 +55,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 
 func (p *Pagination) SetHeaderLink(c *gin.Context, index int) {
 	var link string
-	if p.Last_ID != 0 {
+	if p.LastID != 0 {
 		link = fmt.Sprintf("<http://%v%v?limit=%v&last_id=%v&order=%v>; rel=\"next\"", c.Request.Host, c.Request.URL.Path, p.Limit, index, p.Order)
 	} else {
 		if p.Page == 1 {
