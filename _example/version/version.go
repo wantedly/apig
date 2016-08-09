@@ -81,7 +81,7 @@ func compare(left string, right string) int {
 	}
 	if lItems < rItems {
 		return 1
-	} else {
-		return -1
 	}
+
+	return -1
 }
