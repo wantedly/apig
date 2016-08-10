@@ -85,6 +85,7 @@ It creates all necessary codes to provide RESTful endpoints of models.
 Finally, just build as normal go code.
 
 ```bash
+$ go get ./...
 $ go build -o bin/server
 ```
 
