@@ -14,6 +14,8 @@ Go 1.5 is acceptable, but `GO15VENDOREXPERIMENT=1` must be set.
 After installing required version of Go, you can build and install `apig` by
 
 ```bash
+$ go get -d -u github.com/wantedly/apig
+$ cd $GOPATH/src/github.com/wantedly/apig
 $ make
 $ make install
 ```
