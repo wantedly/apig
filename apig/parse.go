@@ -11,10 +11,8 @@ import (
 )
 
 func parseField(field *ast.Field) (*Field, error) {
-	fieldNames := []string{}
-
-	for _, name := range field.Names {
-		fieldNames = append(fieldNames, name.Name)
+	if len(field.Names) != 1 {
+		return nil, errors.New("Failed to read model files. Please fix struct.")
 	}
 
 	var fieldType string
@@ -59,12 +57,8 @@ func parseField(field *ast.Field) (*Field, error) {
 
 	fieldTag = field.Tag.Value
 
-	if len(fieldNames) != 1 {
-		return nil, errors.New("Failed to read model files. Please fix struct " + fieldNames[0])
-	}
-
 	fs := Field{
-		Name:     fieldNames[0],
+		Name:     field.Names[0].Name,
 		JSONName: jsonName,
 		Type:     fieldType,
 		Tag:      fieldTag,
