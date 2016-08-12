@@ -15,8 +15,9 @@ func parseField(field *ast.Field) (*Field, error) {
 		return nil, errors.New("Failed to read model files. Please fix struct.")
 	}
 
+	fieldName := field.Names[0].Name
+
 	var fieldType string
-	var fieldTag string
 
 	switch x := field.Type.(type) {
 	case *ast.Ident: // e.g. string
@@ -47,18 +48,25 @@ func parseField(field *ast.Field) (*Field, error) {
 		}
 	}
 
-	s, err := strconv.Unquote(field.Tag.Value)
+	var jsonName string
+	var fieldTag string
 
-	if err != nil {
-		s = field.Tag.Value
+	if field.Tag == nil {
+		jsonName = fieldName
+		fieldTag = ""
+	} else {
+		s, err := strconv.Unquote(field.Tag.Value)
+
+		if err != nil {
+			s = field.Tag.Value
+		}
+
+		jsonName = strings.Split((reflect.StructTag)(s).Get("json"), ",")[0]
+		fieldTag = field.Tag.Value
 	}
 
-	jsonName := strings.Split((reflect.StructTag)(s).Get("json"), ",")[0]
-
-	fieldTag = field.Tag.Value
-
 	fs := Field{
-		Name:     field.Names[0].Name,
+		Name:     fieldName,
 		JSONName: jsonName,
 		Type:     fieldType,
 		Tag:      fieldTag,

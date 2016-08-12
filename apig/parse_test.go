@@ -58,7 +58,7 @@ func TestParseModel(t *testing.T) {
 		},
 		&Field{
 			Name:     "UpdatedAt",
-			JSONName: "updated_at",
+			JSONName: "UpdatedAt",
 			Type:     "*time.Time",
 		},
 	}
