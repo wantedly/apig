@@ -1,17 +1,16 @@
 package apig
 
 import (
-	"fmt"
+	"errors"
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
-func parseField(field *ast.Field) *Field {
+func parseField(field *ast.Field) (*Field, error) {
 	fieldNames := []string{}
 
 	for _, name := range field.Names {
@@ -61,8 +60,7 @@ func parseField(field *ast.Field) *Field {
 	fieldTag = field.Tag.Value
 
 	if len(fieldNames) != 1 {
-		fmt.Fprintf(os.Stderr, "Failed to read model files. Please fix struct %s", fieldNames[0])
-		os.Exit(1)
+		return nil, errors.New("Failed to read model files. Please fix struct " + fieldNames[0])
 	}
 
 	fs := Field{
@@ -71,7 +69,8 @@ func parseField(field *ast.Field) *Field {
 		Type:     fieldType,
 		Tag:      fieldTag,
 	}
-	return &fs
+
+	return &fs, nil
 }
 
 func parseModel(path string) ([]*Model, error) {
@@ -103,7 +102,12 @@ func parseModel(path string) ([]*Model, error) {
 					switch x3 := x2.Type.(type) {
 					case *ast.StructType:
 						for _, field := range x3.Fields.List {
-							fs := parseField(field)
+							fs, err := parseField(field)
+
+							if err != nil {
+								return false
+							}
+
 							fields = append(fields, fs)
 						}
 					}
