@@ -3,15 +3,15 @@
 Simple Rest API using gin(framework) & gorm(orm)
 
 ## Endpoint list
-{{ range . }}
+{{ range .Models }}
 ### {{ pluralize .Name }} Resource
 
 ```
-GET    /api/{{ pluralize (tolower .Name) }}
-GET    /api/{{ pluralize (tolower .Name) }}/:id
-POST   /api/{{ pluralize (tolower .Name) }}
-PUT    /api/{{ pluralize (tolower .Name) }}/:id
-DELETE /api/{{ pluralize (tolower .Name) }}/:id
+GET    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}
+GET    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/:id
+POST   {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}
+PUT    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/:id
+DELETE {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/:id
 ```
 {{ end }}
 server runs at http://localhost:8080

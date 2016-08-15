@@ -49,6 +49,7 @@ var detail = &Detail{
 	Model:     userModel,
 	Models:    []*Model{userModel},
 	ImportDir: "github.com/wantedly/api-server",
+	Namespace: "",
 }
 
 func compareFiles(f1, f2 string) bool {
@@ -143,7 +144,7 @@ func TestGenerateREADME(t *testing.T) {
 	}
 	defer os.RemoveAll(outDir)
 
-	if err := generateREADME([]*Model{userModel}, outDir); err != nil {
+	if err := generateREADME(detail, outDir); err != nil {
 		t.Fatalf("Error should not be raised: %s", err)
 	}
 

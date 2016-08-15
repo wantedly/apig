@@ -7,11 +7,11 @@ Simple Rest API using gin(framework) & gorm(orm)
 ### Users Resource
 
 ```
-GET    /api/users
-GET    /api/users/:id
-POST   /api/users
-PUT    /api/users/:id
-DELETE /api/users/:id
+GET    /users
+GET    /users/:id
+POST   /users
+PUT    /users/:id
+DELETE /users/:id
 ```
 
 server runs at http://localhost:8080
