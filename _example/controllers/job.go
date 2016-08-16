@@ -61,7 +61,12 @@ func GetJobs(c *gin.Context) {
 	for _, job := range jobs {
 		fieldMap = append(fieldMap, helper.FieldToMap(job, fields))
 	}
-	c.JSON(200, fieldMap)
+	_, ok := c.GetQuery("pretty")
+	if ok {
+		c.IndentedJSON(200, fieldMap)
+	} else {
+		c.JSON(200, fieldMap)
+	}
 }
 
 func GetJob(c *gin.Context) {
@@ -91,7 +96,12 @@ func GetJob(c *gin.Context) {
 	}
 
 	fieldMap := helper.FieldToMap(job, fields)
-	c.JSON(200, fieldMap)
+	_, ok := c.GetQuery("pretty")
+	if ok {
+		c.IndentedJSON(200, fieldMap)
+	} else {
+		c.JSON(200, fieldMap)
+	}
 }
 
 func CreateJob(c *gin.Context) {
