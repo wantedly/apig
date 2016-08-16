@@ -61,6 +61,7 @@ func GetUsers(c *gin.Context) {
 	for _, user := range users {
 		fieldMap = append(fieldMap, helper.FieldToMap(user, fields))
 	}
+
 	_, ok := c.GetQuery("pretty")
 	if ok {
 		c.IndentedJSON(200, fieldMap)
@@ -96,6 +97,7 @@ func GetUser(c *gin.Context) {
 	}
 
 	fieldMap := helper.FieldToMap(user, fields)
+
 	_, ok := c.GetQuery("pretty")
 	if ok {
 		c.IndentedJSON(200, fieldMap)

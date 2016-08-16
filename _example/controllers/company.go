@@ -61,6 +61,7 @@ func GetCompanies(c *gin.Context) {
 	for _, company := range companies {
 		fieldMap = append(fieldMap, helper.FieldToMap(company, fields))
 	}
+
 	_, ok := c.GetQuery("pretty")
 	if ok {
 		c.IndentedJSON(200, fieldMap)
@@ -96,6 +97,7 @@ func GetCompany(c *gin.Context) {
 	}
 
 	fieldMap := helper.FieldToMap(company, fields)
+
 	_, ok := c.GetQuery("pretty")
 	if ok {
 		c.IndentedJSON(200, fieldMap)

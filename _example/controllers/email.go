@@ -61,6 +61,7 @@ func GetEmails(c *gin.Context) {
 	for _, email := range emails {
 		fieldMap = append(fieldMap, helper.FieldToMap(email, fields))
 	}
+
 	_, ok := c.GetQuery("pretty")
 	if ok {
 		c.IndentedJSON(200, fieldMap)
@@ -96,6 +97,7 @@ func GetEmail(c *gin.Context) {
 	}
 
 	fieldMap := helper.FieldToMap(email, fields)
+
 	_, ok := c.GetQuery("pretty")
 	if ok {
 		c.IndentedJSON(200, fieldMap)
