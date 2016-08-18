@@ -197,6 +197,7 @@ Resource name is written in the plural form.
 |---------|-----------|-------|-------|
 |`fields=`|Fields to receive|All fields|`name,emails.address`|
 |`preloads=`|Nested resources to preload|(empty)|`emails,profile`|
+|`pretty=`|Prettify JSON response|`false`|`true`|
 
 #### `GET /<resources>` only
 
