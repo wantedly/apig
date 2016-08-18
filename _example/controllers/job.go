@@ -155,7 +155,10 @@ func UpdateJob(c *gin.Context) {
 		return
 	}
 
-	db.Save(&job)
+	if err := db.Save(&job).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
@@ -180,7 +183,11 @@ func DeleteJob(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&job)
+
+	if err := db.Delete(&job).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.

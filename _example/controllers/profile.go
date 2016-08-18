@@ -155,7 +155,10 @@ func UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	db.Save(&profile)
+	if err := db.Save(&profile).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
@@ -180,7 +183,11 @@ func DeleteProfile(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&profile)
+
+	if err := db.Delete(&profile).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
