@@ -116,7 +116,7 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
 	c.Bind(&{{ tolower .Model.Name }})
-	if db.Create(&{{ tolower .Model.Name }}).Error != nil {
+	if err := db.Create(&{{ tolower .Model.Name }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

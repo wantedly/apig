@@ -116,7 +116,7 @@ func CreateUser(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	var user models.User
 	c.Bind(&user)
-	if db.Create(&user).Error != nil {
+	if err := db.Create(&user).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

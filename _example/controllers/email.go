@@ -116,7 +116,7 @@ func CreateEmail(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	var email models.Email
 	c.Bind(&email)
-	if db.Create(&email).Error != nil {
+	if err := db.Create(&email).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

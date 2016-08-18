@@ -116,7 +116,7 @@ func CreateJob(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	var job models.Job
 	c.Bind(&job)
-	if db.Create(&job).Error != nil {
+	if err := db.Create(&job).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

@@ -116,7 +116,7 @@ func CreateProfile(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	var profile models.Profile
 	c.Bind(&profile)
-	if db.Create(&profile).Error != nil {
+	if err := db.Create(&profile).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

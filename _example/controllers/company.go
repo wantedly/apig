@@ -116,7 +116,7 @@ func CreateCompany(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	var company models.Company
 	c.Bind(&company)
-	if db.Create(&company).Error != nil {
+	if err := db.Create(&company).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
