@@ -115,7 +115,12 @@ func CreateProfile(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	var profile models.Profile
-	c.Bind(&profile)
+
+	if err := c.Bind(&profile); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := db.Create(&profile).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -144,7 +149,12 @@ func UpdateProfile(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&profile)
+
+	if err := c.Bind(&profile); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	db.Save(&profile)
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {

@@ -115,7 +115,12 @@ func CreateEmail(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	var email models.Email
-	c.Bind(&email)
+
+	if err := c.Bind(&email); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := db.Create(&email).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -144,7 +149,12 @@ func UpdateEmail(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&email)
+
+	if err := c.Bind(&email); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	db.Save(&email)
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
