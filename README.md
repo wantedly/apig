@@ -22,6 +22,7 @@ apig is an RESTful API server generator.
 * [API server specification](#api-server-specification)
   + [Endpoints](#endpoints)
   + [Available URL parameters](#available-url-parameters)
+  + [Data Type](#data-type)
   + [Pagination](#pagination)
   + [Versioning](#versioning)
 * [License](#license)
@@ -236,7 +237,7 @@ curl -X POST http://localhost:8080/users \
 
 #### Response
 
-Return `application/json` response.
+Response data type is always `application/json`.
 
 ### Pagination
 
