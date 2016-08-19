@@ -60,6 +60,8 @@ func compareFiles(f1, f2 string) bool {
 }
 
 func TestGenerateApibIndex(t *testing.T) {
+	stdout, _ = os.Create(os.DevNull)
+
 	outDir, err := ioutil.TempDir("", "generateApibIndex")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
@@ -86,6 +88,8 @@ func TestGenerateApibIndex(t *testing.T) {
 }
 
 func TestGenerateApibModel(t *testing.T) {
+	stdout, _ = os.Create(os.DevNull)
+
 	outDir, err := ioutil.TempDir("", "generateApibModel")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
@@ -112,6 +116,8 @@ func TestGenerateApibModel(t *testing.T) {
 }
 
 func TestGenerateController(t *testing.T) {
+	stdout, _ = os.Create(os.DevNull)
+
 	outDir, err := ioutil.TempDir("", "generateController")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
@@ -164,6 +170,8 @@ func TestGenerateRootController(t *testing.T) {
 }
 
 func TestGenerateREADME(t *testing.T) {
+	stdout, _ = os.Create(os.DevNull)
+
 	outDir, err := ioutil.TempDir("", "generateREADME")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
@@ -190,6 +198,8 @@ func TestGenerateREADME(t *testing.T) {
 }
 
 func TestGenerateRouter(t *testing.T) {
+	stdout, _ = os.Create(os.DevNull)
+
 	outDir, err := ioutil.TempDir("", "generateRouter")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
@@ -216,6 +226,8 @@ func TestGenerateRouter(t *testing.T) {
 }
 
 func TestGenerateDB(t *testing.T) {
+	stdout, _ = os.Create(os.DevNull)
+
 	outDir, err := ioutil.TempDir("", "generateDB")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
