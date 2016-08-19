@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func APIIndex(c *gin.Context) {
+func APIEndpoints(c *gin.Context) {
 	reqScheme := c.Request.URL.Scheme
 	reqHost := c.Request.Host
 	baseURL := fmt.Sprintf("%s://%s", reqScheme, reqHost)
