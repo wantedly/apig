@@ -7,6 +7,8 @@ import (
 )
 
 func Initialize(r *gin.Engine) {
+	r.GET("/", controllers.APIEndpoints)
+
 	api := r.Group("{{ .Namespace }}")
 	{
 {{ range .Models }}
