@@ -19,9 +19,10 @@ func GetProfiles(c *gin.Context) {
 		return
 	}
 
+	ids := c.DefaultQuery("ids", "")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	ids := c.DefaultQuery("ids", "")
+	queryFields := helper.QueryFields(models.Profile{}, fields)
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -38,7 +39,7 @@ func GetProfiles(c *gin.Context) {
 	}
 
 	var profiles []models.Profile
-	if err := db.Select("*").Find(&profiles).Error; err != nil {
+	if err := db.Select(queryFields).Find(&profiles).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -80,12 +81,13 @@ func GetProfile(c *gin.Context) {
 	id := c.Params.ByName("id")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.Profile{}, fields)
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
 
 	var profile models.Profile
-	if err := db.Select("*").First(&profile, id).Error; err != nil {
+	if err := db.Select(queryFields).First(&profile, id).Error; err != nil {
 		content := gin.H{"error": "profile with id#" + id + " not found"}
 		c.JSON(404, content)
 		return

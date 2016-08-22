@@ -19,9 +19,10 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		return
 	}
 
+	ids := c.DefaultQuery("ids", "")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	ids := c.DefaultQuery("ids", "")
+	queryFields := helper.QueryFields(models.{{ .Model.Name }}{}, fields)
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -38,7 +39,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	}
 
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
-	if err := db.Select("*").Find(&{{ pluralize (tolower .Model.Name) }}).Error; err != nil {
+	if err := db.Select(queryFields).Find(&{{ pluralize (tolower .Model.Name) }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -80,12 +81,13 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 	id := c.Params.ByName("id")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.{{ .Model.Name }}{}, fields)
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
 
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
-	if err := db.Select("*").First(&{{ tolower .Model.Name }}, id).Error; err != nil {
+	if err := db.Select(queryFields).First(&{{ tolower .Model.Name }}, id).Error; err != nil {
 		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
