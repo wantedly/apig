@@ -1,25 +1,23 @@
 package apig
 
 import (
-	"fmt"
+	"errors"
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
-func parseField(field *ast.Field) *Field {
-	fieldNames := []string{}
-
-	for _, name := range field.Names {
-		fieldNames = append(fieldNames, name.Name)
+func parseField(field *ast.Field) (*Field, error) {
+	if len(field.Names) != 1 {
+		return nil, errors.New("Failed to read model files. Please fix struct.")
 	}
 
+	fieldName := field.Names[0].Name
+
 	var fieldType string
-	var fieldTag string
 
 	switch x := field.Type.(type) {
 	case *ast.Ident: // e.g. string
@@ -50,28 +48,31 @@ func parseField(field *ast.Field) *Field {
 		}
 	}
 
-	s, err := strconv.Unquote(field.Tag.Value)
+	var jsonName string
+	var fieldTag string
 
-	if err != nil {
-		s = field.Tag.Value
-	}
+	if field.Tag == nil {
+		jsonName = fieldName
+		fieldTag = ""
+	} else {
+		s, err := strconv.Unquote(field.Tag.Value)
 
-	jsonName := strings.Split((reflect.StructTag)(s).Get("json"), ",")[0]
+		if err != nil {
+			s = field.Tag.Value
+		}
 
-	fieldTag = field.Tag.Value
-
-	if len(fieldNames) != 1 {
-		fmt.Fprintf(os.Stderr, "Failed to read model files. Please fix struct %s", fieldNames[0])
-		os.Exit(1)
+		jsonName = strings.Split((reflect.StructTag)(s).Get("json"), ",")[0]
+		fieldTag = field.Tag.Value
 	}
 
 	fs := Field{
-		Name:     fieldNames[0],
+		Name:     fieldName,
 		JSONName: jsonName,
 		Type:     fieldType,
 		Tag:      fieldTag,
 	}
-	return &fs
+
+	return &fs, nil
 }
 
 func parseModel(path string) ([]*Model, error) {
@@ -103,7 +104,12 @@ func parseModel(path string) ([]*Model, error) {
 					switch x3 := x2.Type.(type) {
 					case *ast.StructType:
 						for _, field := range x3.Fields.List {
-							fs := parseField(field)
+							fs, err := parseField(field)
+
+							if err != nil {
+								return false
+							}
+
 							fields = append(fields, fs)
 						}
 					}
