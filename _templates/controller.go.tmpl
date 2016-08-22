@@ -61,7 +61,13 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	for _, {{ tolower .Model.Name }} := range {{ pluralize (tolower .Model.Name) }} {
 		fieldMap = append(fieldMap, helper.FieldToMap({{ tolower .Model.Name }}, fields))
 	}
-	c.JSON(200, fieldMap)
+
+	_, ok := c.GetQuery("pretty")
+	if ok {
+		c.IndentedJSON(200, fieldMap)
+	} else {
+		c.JSON(200, fieldMap)
+	}
 }
 
 func Get{{ .Model.Name }}(c *gin.Context) {
@@ -91,7 +97,13 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 	}
 
 	fieldMap := helper.FieldToMap({{ tolower .Model.Name }}, fields)
-	c.JSON(200, fieldMap)
+
+	_, ok := c.GetQuery("pretty")
+	if ok {
+		c.IndentedJSON(200, fieldMap)
+	} else {
+		c.JSON(200, fieldMap)
+	}
 }
 
 func Create{{ .Model.Name }}(c *gin.Context) {

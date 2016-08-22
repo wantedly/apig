@@ -5,16 +5,16 @@ import (
 )
 
 type User struct {
-	ID        uint       `gorm:"primary_key;AUTO_INCREMENT" json:"id,omitempty"`
-	Name      string     `json:"name,omitempty"`
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-	UpdatedAt *time.Time `json:"updated_at,omitempty"`
+	ID        uint       `gorm:"primary_key;AUTO_INCREMENT" json:"id,omitempty" form:"id"`
+	Name      string     `json:"name,omitempty" form:"name"`
+	CreatedAt *time.Time `json:"created_at,omitempty" form:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty" form:"updated_at"`
 }
 
 type Job struct {
-	ID          uint       `gorm:"primary_key;AUTO_INCREMENT" json:"id,omitempty"`
-	Name        string     `json:"name,omitempty"`
-	Description string     `json:"description,omitempty"`
-	CreatedAt   *time.Time `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time `json:"updated_at,omitempty"`
+	ID          uint       `gorm:"primary_key;AUTO_INCREMENT" json:"id,omitempty" form:"id"`
+	Name        string     `json:"name,omitempty" form:"name"`
+	Description string     `json:"description,omitempty" form:"description"`
+	CreatedAt   *time.Time `json:"created_at,omitempty" form:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at,omitempty" form:"updated_at"`
 }

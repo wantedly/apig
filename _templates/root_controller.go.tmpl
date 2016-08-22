@@ -1,0 +1,21 @@
+package controllers
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func APIEndpoints(c *gin.Context) {
+	reqScheme := c.Request.URL.Scheme
+	reqHost := c.Request.Host
+	baseURL := fmt.Sprintf("%s://%s", reqScheme, reqHost)
+
+	resources := map[string]string{
+{{ range .Models }}		"{{ pluralize (tolower .Name) }}_url": baseURL + "{{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}",
+		"{{ tolower .Name }}_url":  baseURL + "{{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/{id}",
+{{ end }}	}
+
+	c.IndentedJSON(http.StatusOK, resources)
+}
