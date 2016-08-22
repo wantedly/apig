@@ -239,7 +239,7 @@ func generateRootController(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 
 	return nil
 }

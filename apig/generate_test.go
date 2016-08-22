@@ -144,6 +144,8 @@ func TestGenerateController(t *testing.T) {
 }
 
 func TestGenerateRootController(t *testing.T) {
+	stdout, _ = os.Create(os.DevNull)
+
 	outDir, err := ioutil.TempDir("", "generateRootController")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
