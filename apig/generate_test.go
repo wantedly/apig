@@ -49,6 +49,7 @@ var detail = &Detail{
 	Model:     userModel,
 	Models:    []*Model{userModel},
 	ImportDir: "github.com/wantedly/api-server",
+	Namespace: "",
 }
 
 func compareFiles(f1, f2 string) bool {
@@ -136,6 +137,32 @@ func TestGenerateController(t *testing.T) {
 	}
 }
 
+func TestGenerateRootController(t *testing.T) {
+	outDir, err := ioutil.TempDir("", "generateRootController")
+	if err != nil {
+		t.Fatal("Failed to create tempdir")
+	}
+	defer os.RemoveAll(outDir)
+
+	if err := generateRootController(detail, outDir); err != nil {
+		t.Fatalf("Error should not be raised: %s", err)
+	}
+
+	path := filepath.Join(outDir, "controllers", "root.go")
+	_, err = os.Stat(path)
+	if err != nil {
+		t.Fatalf("Controller file is not generated: %s", path)
+	}
+
+	fixture := filepath.Join("testdata", "controllers", "root.go")
+
+	if !compareFiles(path, fixture) {
+		c1, _ := ioutil.ReadFile(fixture)
+		c2, _ := ioutil.ReadFile(path)
+		t.Fatalf("Failed to generate controller correctly.\nexpected:\n%s\nactual:\n%s", string(c1), string(c2))
+	}
+}
+
 func TestGenerateREADME(t *testing.T) {
 	outDir, err := ioutil.TempDir("", "generateREADME")
 	if err != nil {
@@ -143,7 +170,7 @@ func TestGenerateREADME(t *testing.T) {
 	}
 	defer os.RemoveAll(outDir)
 
-	if err := generateREADME([]*Model{userModel}, outDir); err != nil {
+	if err := generateREADME(detail, outDir); err != nil {
 		t.Fatalf("Error should not be raised: %s", err)
 	}
 

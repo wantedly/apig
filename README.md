@@ -22,6 +22,7 @@ apig is an RESTful API server generator.
 * [API server specification](#api-server-specification)
   + [Endpoints](#endpoints)
   + [Available URL parameters](#available-url-parameters)
+  + [Data Type](#data-type)
   + [Pagination](#pagination)
   + [Versioning](#versioning)
 * [License](#license)
@@ -34,6 +35,8 @@ Go 1.5 is acceptable, but `GO15VENDOREXPERIMENT=1` must be set.
 After installing required version of Go, you can build and install `apig` by
 
 ```bash
+$ go get -d -u github.com/wantedly/apig
+$ cd $GOPATH/src/github.com/wantedly/apig
 $ make
 $ make install
 ```
@@ -65,11 +68,11 @@ package models
 import "time"
 
 type User struct {
-	ID        uint       `gorm:"primary_key;AUTO_INCREMENT" json:"id"`
-	Name      string     `json:"name"`
-	Emails    []Email    `json:"emails"`
-	CreatedAt *time.Time `json:"created_at"`
-	UpdatedAt *time.Time `json:"updated_at"`
+	ID        uint       `gorm:"primary_key;AUTO_INCREMENT" json:"id" form:"id"`
+	Name      string     `json:"name" form:"name"`
+	Emails    []Email    `json:"emails" form:"emails"`
+	CreatedAt *time.Time `json:"created_at" form:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at" form:"updated_at"`
 }
 ```
 
@@ -78,10 +81,10 @@ type User struct {
 package models
 
 type Email struct {
-	ID      uint   `gorm:"primary_key;AUTO_INCREMENT" json:"id"`
-	UserID  uint   `json:"user_id"`
-	Address string `json:"address"`
-	User    *User  `json:"user`
+	ID      uint   `gorm:"primary_key;AUTO_INCREMENT" json:"id" form:"id"`
+	UserID  uint   `json:"user_id" form:"user_id"`
+	Address string `json:"address" form:"address"`
+	User    *User  `json:"user form:"user`
 }
 ```
 
@@ -103,6 +106,7 @@ It creates all necessary codes to provide RESTful endpoints of models.
 Finally, just build as normal go code.
 
 ```bash
+$ go get ./...
 $ go build -o bin/server
 ```
 
@@ -194,6 +198,7 @@ Resource name is written in the plural form.
 |---------|-----------|-------|-------|
 |`fields=`|Fields to receive|All fields|`name,emails.address`|
 |`preloads=`|Nested resources to preload|(empty)|`emails,profile`|
+|`pretty=`|Prettify JSON response|`false`|`true`|
 
 #### `GET /<resources>` only
 
@@ -205,6 +210,38 @@ Resource name is written in the plural form.
 |`last_id=`|Beginning ID of items|(empty)|`1`|
 |`order=`|Order of items|`desc`|`asc`|
 |`v=`|API version|(empty)|`1.2.0`|
+
+### Data Type
+
+#### Request
+
+API server accepts the form of `JSON` or `Form`.
+
+`application/json`
+
+```
+curl -X POST http://localhost:8080/resources \
+     -H "Content-type: application/json" \
+     -d '{"field":"value"}'
+```
+
+`application/x-www-form-urlencoded`
+
+```
+curl -X POST http://localhost:8080/users \
+     -d 'field=value'
+```
+
+`multipart/form-data`
+
+```
+curl -X POST http://localhost:8080/users \
+     -F 'field=value'
+```
+
+#### Response
+
+Response data type is always `application/json`.
 
 ### Pagination
 

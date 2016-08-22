@@ -61,7 +61,13 @@ func GetProfiles(c *gin.Context) {
 	for _, profile := range profiles {
 		fieldMap = append(fieldMap, helper.FieldToMap(profile, fields))
 	}
-	c.JSON(200, fieldMap)
+
+	_, ok := c.GetQuery("pretty")
+	if ok {
+		c.IndentedJSON(200, fieldMap)
+	} else {
+		c.JSON(200, fieldMap)
+	}
 }
 
 func GetProfile(c *gin.Context) {
@@ -91,7 +97,13 @@ func GetProfile(c *gin.Context) {
 	}
 
 	fieldMap := helper.FieldToMap(profile, fields)
-	c.JSON(200, fieldMap)
+
+	_, ok := c.GetQuery("pretty")
+	if ok {
+		c.IndentedJSON(200, fieldMap)
+	} else {
+		c.JSON(200, fieldMap)
+	}
 }
 
 func CreateProfile(c *gin.Context) {

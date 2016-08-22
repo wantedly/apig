@@ -5,24 +5,24 @@ import (
 )
 
 type User struct {
-	ID      uint     `json:"id"`
-	Jobs    []*Job   `json:"jobs,omitempty"`
-	Name    string   `json:"name"`
-	Profile *Profile `json:"profile,omitempty"`
+	ID      uint     `json:"id" form:"id"`
+	Jobs    []*Job   `json:"jobs,omitempty" form:"jobs"`
+	Name    string   `json:"name" form:"name"`
+	Profile *Profile `json:"profile,omitempty" form:"profile"`
 }
 
 type Profile struct {
-	ID      uint  `json:"id"`
-	UserID  uint  `json:"user_id"`
-	User    *User `json:"user"`
-	Engaged bool  `json:"engaged"`
+	ID      uint  `json:"id" form:"id"`
+	UserID  uint  `json:"user_id" form:"user_id"`
+	User    *User `json:"user" form:"user"`
+	Engaged bool  `json:"engaged" form:"engaged"`
 }
 
 type Job struct {
-	ID     uint  `json:"id"`
-	UserID uint  `json:"user_id"`
-	User   *User `json:"user"`
-	RoleCd uint  `json:"role_cd"`
+	ID     uint  `json:"id" form:"id"`
+	UserID uint  `json:"user_id" form:"user_id"`
+	User   *User `json:"user" form:"user"`
+	RoleCd uint  `json:"role_cd" form:"role_cd"`
 }
 
 func TestQueryFields_Wildcard(t *testing.T) {
