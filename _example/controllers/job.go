@@ -19,9 +19,10 @@ func GetJobs(c *gin.Context) {
 		return
 	}
 
+	ids := c.DefaultQuery("ids", "")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	ids := c.DefaultQuery("ids", "")
+	queryFields := helper.QueryFields(models.Job{}, fields)
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -38,7 +39,7 @@ func GetJobs(c *gin.Context) {
 	}
 
 	var jobs []models.Job
-	if err := db.Select("*").Find(&jobs).Error; err != nil {
+	if err := db.Select(queryFields).Find(&jobs).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -80,12 +81,13 @@ func GetJob(c *gin.Context) {
 	id := c.Params.ByName("id")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.Job{}, fields)
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
 
 	var job models.Job
-	if err := db.Select("*").First(&job, id).Error; err != nil {
+	if err := db.Select(queryFields).First(&job, id).Error; err != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
