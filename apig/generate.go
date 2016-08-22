@@ -208,6 +208,42 @@ func generateController(detail *Detail, outDir string) error {
 	return nil
 }
 
+func generateRootController(detail *Detail, outDir string) error {
+	body, err := Asset(filepath.Join(templateDir, "root_controller.go.tmpl"))
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("root_controller").Funcs(funcMap).Parse(string(body))
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+
+	if err := tmpl.Execute(&buf, detail); err != nil {
+		return err
+	}
+
+	dstPath := filepath.Join(outDir, "controllers", "root.go")
+
+	if !util.FileExists(filepath.Dir(dstPath)) {
+		if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
+			return err
+		}
+	}
+
+	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	fmt.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+
+	return nil
+}
+
 func generateREADME(detail *Detail, outDir string) error {
 	body, err := Asset(filepath.Join(templateDir, "README.md.tmpl"))
 
