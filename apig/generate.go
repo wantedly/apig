@@ -13,6 +13,7 @@ import (
 
 	"github.com/gedex/inflector"
 	"github.com/serenize/snaker"
+	"github.com/wantedly/apig/msg"
 	"github.com/wantedly/apig/util"
 )
 
@@ -131,7 +132,7 @@ func generateApibIndex(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+	msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 
 	return nil
 }
@@ -167,7 +168,7 @@ func generateApibModel(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+	msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 
 	return nil
 }
@@ -203,7 +204,7 @@ func generateController(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+	msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 
 	return nil
 }
@@ -239,7 +240,7 @@ func generateRootController(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+	msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 
 	return nil
 }
@@ -275,7 +276,7 @@ func generateREADME(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
+	msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
 
 	return nil
 }
@@ -311,7 +312,7 @@ func generateRouter(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
+	msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
 
 	return nil
 }
@@ -347,7 +348,7 @@ func generateDB(detail *Detail, outDir string) error {
 		return err
 	}
 
-	fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
+	msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "update", dstPath)
 
 	return nil
 }

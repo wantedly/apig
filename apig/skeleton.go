@@ -11,6 +11,7 @@ import (
 	"sync"
 	"text/template"
 
+	"github.com/wantedly/apig/msg"
 	"github.com/wantedly/apig/util"
 )
 
@@ -59,7 +60,7 @@ func generateSkeleton(detail *Detail, outDir string) error {
 					ch <- err
 				}
 
-				fmt.Fprintf(stdout, "\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+				msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
 			}(skeleton)
 		}
 		wg.Wait()
@@ -86,7 +87,6 @@ func Skeleton(gopath, vcs, username, project string, namespace string) int {
 		return 1
 	}
 
-	fmt.Fprintf(stdout, `===> Created %s
-`, outDir)
+	msg.Printf("===> Created %s", outDir)
 	return 0
 }

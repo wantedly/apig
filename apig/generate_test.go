@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/wantedly/apig/msg"
 )
 
 var userModel = &Model{
@@ -60,11 +62,11 @@ func compareFiles(f1, f2 string) bool {
 }
 
 func setup() {
-	stdout, _ = os.Create(os.DevNull)
+	msg.Mute = true
 }
 
 func teardown() {
-	stdout = os.Stdout
+	msg.Mute = false
 }
 
 func TestMain(m *testing.M) {
