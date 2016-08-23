@@ -117,8 +117,13 @@ func CreateJob(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	var job models.Job
-	c.Bind(&job)
-	if db.Create(&job).Error != nil {
+
+	if err := c.Bind(&job); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Create(&job).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -146,8 +151,16 @@ func UpdateJob(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&job)
-	db.Save(&job)
+
+	if err := c.Bind(&job); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Save(&job).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
@@ -172,7 +185,11 @@ func DeleteJob(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&job)
+
+	if err := db.Delete(&job).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.

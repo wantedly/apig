@@ -117,8 +117,13 @@ func CreateUser(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	var user models.User
-	c.Bind(&user)
-	if db.Create(&user).Error != nil {
+
+	if err := c.Bind(&user); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Create(&user).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -146,8 +151,16 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&user)
-	db.Save(&user)
+
+	if err := c.Bind(&user); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Save(&user).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
@@ -172,7 +185,11 @@ func DeleteUser(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&user)
+
+	if err := db.Delete(&user).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.

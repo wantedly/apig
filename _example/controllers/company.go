@@ -117,8 +117,13 @@ func CreateCompany(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	var company models.Company
-	c.Bind(&company)
-	if db.Create(&company).Error != nil {
+
+	if err := c.Bind(&company); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Create(&company).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -146,8 +151,16 @@ func UpdateCompany(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&company)
-	db.Save(&company)
+
+	if err := c.Bind(&company); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Save(&company).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
@@ -172,7 +185,11 @@ func DeleteCompany(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&company)
+
+	if err := db.Delete(&company).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.

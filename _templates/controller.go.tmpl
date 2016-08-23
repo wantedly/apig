@@ -117,8 +117,13 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
-	c.Bind(&{{ tolower .Model.Name }})
-	if db.Create(&{{ tolower .Model.Name }}).Error != nil {
+
+	if err := c.Bind(&{{ tolower .Model.Name }}); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Create(&{{ tolower .Model.Name }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -146,8 +151,16 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&{{ tolower .Model.Name }})
-	db.Save(&{{ tolower .Model.Name }})
+
+	if err := c.Bind(&{{ tolower .Model.Name }}); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Save(&{{ tolower .Model.Name }}).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
@@ -172,7 +185,11 @@ func Delete{{ .Model.Name }}(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&{{ tolower .Model.Name }})
+
+	if err := db.Delete(&{{ tolower .Model.Name }}).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.

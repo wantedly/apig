@@ -117,8 +117,13 @@ func CreateProfile(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	var profile models.Profile
-	c.Bind(&profile)
-	if db.Create(&profile).Error != nil {
+
+	if err := c.Bind(&profile); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Create(&profile).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -146,8 +151,16 @@ func UpdateProfile(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	c.Bind(&profile)
-	db.Save(&profile)
+
+	if err := c.Bind(&profile); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Save(&profile).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
@@ -172,7 +185,11 @@ func DeleteProfile(c *gin.Context) {
 		c.JSON(404, content)
 		return
 	}
-	db.Delete(&profile)
+
+	if err := db.Delete(&profile).Error; err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
