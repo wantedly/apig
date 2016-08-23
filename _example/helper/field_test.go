@@ -25,6 +25,15 @@ type Job struct {
 	RoleCd uint  `json:"role_cd" form:"role_cd"`
 }
 
+type Company struct {
+	ID           uint              `json:"id,omitempty" form:"id"`
+	Name         string            `json:"name,omitempty" form:"name"`
+	List         bool              `json:"list,omitempty" form:"list"`
+	Subsidiary   []*Company        `json:"company,omitempty" form:"company"`
+	Organization map[string]string `json:"organization,omitempty" form:"organization"`
+	User         *User             `json:"user,omitempty" form:"user"`
+}
+
 func TestQueryFields_Wildcard(t *testing.T) {
 	fields := map[string]interface{}{"*": nil}
 	result := QueryFields(User{}, fields)
@@ -301,6 +310,28 @@ func TestFieldToMap_OmitEmptyWithField(t *testing.T) {
 	}
 
 	for _, key := range []string{"profile"} {
+		if _, ok := result[key]; ok {
+			t.Fatalf("%s should not exist. actual: %#v", key, result)
+		}
+	}
+}
+
+func TestFieldToMap_OmitEmptyAllTypes(t *testing.T) {
+	company := Company{
+		ID:           0,
+		Name:         "",
+		List:         false,
+		Subsidiary:   []*Company{},
+		Organization: make(map[string]string),
+		User:         nil,
+	}
+
+	fields := map[string]interface{}{
+		"*": nil,
+	}
+	result := FieldToMap(company, fields)
+
+	for _, key := range []string{"id", "name", "list", "subsidiary", "organization", "user"} {
 		if _, ok := result[key]; ok {
 			t.Fatalf("%s should not exist. actual: %#v", key, result)
 		}
