@@ -9,11 +9,13 @@ import (
 
 func APIEndpoints(c *gin.Context) {
 	var reqScheme string
+
 	if c.Request.TLS != nil {
 		reqScheme = "https"
 	} else {
 		reqScheme = "http"
 	}
+
 	reqHost := c.Request.Host
 	baseURL := fmt.Sprintf("%s://%s", reqScheme, reqHost)
 
