@@ -8,8 +8,6 @@ import (
 )
 
 func TestGenerateSkeleton(t *testing.T) {
-	stdout, _ = os.Create(os.DevNull)
-
 	tempDir, err := ioutil.TempDir("", "copyStaticFiles")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
