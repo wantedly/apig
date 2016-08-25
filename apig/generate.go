@@ -229,6 +229,7 @@ func generateRootController(detail *Detail, outDir string) error {
 	}
 
 	src, err := format.Source(buf.Bytes())
+
 	if err != nil {
 		return err
 	}
