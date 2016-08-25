@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/wantedly/apig/msg"
 )
 
 var userModel = &Model{
@@ -57,6 +59,21 @@ func compareFiles(f1, f2 string) bool {
 	c2, _ := ioutil.ReadFile(f2)
 
 	return bytes.Compare(c1, c2) == 0
+}
+
+func setup() {
+	msg.Mute = true
+}
+
+func teardown() {
+	msg.Mute = false
+}
+
+func TestMain(m *testing.M) {
+	setup()
+	code := m.Run()
+	teardown()
+	os.Exit(code)
 }
 
 func TestGenerateApibIndex(t *testing.T) {
