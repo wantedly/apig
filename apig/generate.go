@@ -3,6 +3,7 @@ package apig
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -228,6 +229,12 @@ func generateRootController(detail *Detail, outDir string) error {
 		return err
 	}
 
+	src, err := format.Source(buf.Bytes())
+
+	if err != nil {
+		return err
+	}
+
 	dstPath := filepath.Join(outDir, "controllers", "root.go")
 
 	if !util.FileExists(filepath.Dir(dstPath)) {
@@ -236,7 +243,7 @@ func generateRootController(detail *Detail, outDir string) error {
 		}
 	}
 
-	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+	if err := ioutil.WriteFile(dstPath, src, 0644); err != nil {
 		return err
 	}
 
@@ -497,6 +504,10 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
 		}
+	}
+	if err := generateRootController(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
 	}
 	if err := generateApibIndex(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)

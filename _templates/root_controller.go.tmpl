@@ -8,13 +8,20 @@ import (
 )
 
 func APIEndpoints(c *gin.Context) {
-	reqScheme := c.Request.URL.Scheme
+	var reqScheme string
+
+	if c.Request.TLS != nil {
+		reqScheme = "https"
+	} else {
+		reqScheme = "http"
+	}
+
 	reqHost := c.Request.Host
 	baseURL := fmt.Sprintf("%s://%s", reqScheme, reqHost)
 
 	resources := map[string]string{
-{{ range .Models }}		"{{ pluralize (tolower .Name) }}_url": baseURL + "{{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}",
-		"{{ tolower .Name }}_url":  baseURL + "{{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/{id}",
+{{ range .Models }}		"{{ pluralize (toSnakeCase .Name) }}_url": baseURL + "{{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (toSnakeCase .Name) }}",
+		"{{ toSnakeCase .Name }}_url":  baseURL + "{{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (toSnakeCase .Name) }}/{id}",
 {{ end }}	}
 
 	c.IndentedJSON(http.StatusOK, resources)
