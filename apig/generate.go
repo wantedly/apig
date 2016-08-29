@@ -193,6 +193,12 @@ func generateController(detail *Detail, outDir string) error {
 		return err
 	}
 
+	src, err := format.Source(buf.Bytes())
+
+	if err != nil {
+		return err
+	}
+
 	dstPath := filepath.Join(outDir, "controllers", snaker.CamelToSnake(detail.Model.Name)+".go")
 
 	if !util.FileExists(filepath.Dir(dstPath)) {
@@ -201,7 +207,7 @@ func generateController(detail *Detail, outDir string) error {
 		}
 	}
 
-	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+	if err := ioutil.WriteFile(dstPath, src, 0644); err != nil {
 		return err
 	}
 
@@ -307,6 +313,12 @@ func generateRouter(detail *Detail, outDir string) error {
 		return err
 	}
 
+	src, err := format.Source(buf.Bytes())
+
+	if err != nil {
+		return err
+	}
+
 	dstPath := filepath.Join(outDir, "router", "router.go")
 
 	if !util.FileExists(filepath.Dir(dstPath)) {
@@ -315,7 +327,7 @@ func generateRouter(detail *Detail, outDir string) error {
 		}
 	}
 
-	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+	if err := ioutil.WriteFile(dstPath, src, 0644); err != nil {
 		return err
 	}
 
@@ -343,6 +355,12 @@ func generateDB(detail *Detail, outDir string) error {
 		return err
 	}
 
+	src, err := format.Source(buf.Bytes())
+
+	if err != nil {
+		return err
+	}
+
 	dstPath := filepath.Join(outDir, "db", "db.go")
 
 	if !util.FileExists(filepath.Dir(dstPath)) {
@@ -351,7 +369,7 @@ func generateDB(detail *Detail, outDir string) error {
 		}
 	}
 
-	if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+	if err := ioutil.WriteFile(dstPath, src, 0644); err != nil {
 		return err
 	}
 
