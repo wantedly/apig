@@ -184,7 +184,11 @@ func FieldToMap(model interface{}, fields map[string]interface{}) map[string]int
 					if v == nil {
 						fieldMap = append(fieldMap, s.Index(i).Interface())
 					} else {
-						fieldMap = append(fieldMap, FieldToMap(s.Index(i).Interface(), v.(map[string]interface{})))
+						if s.Index(i).Kind() == reflect.Ptr {
+							fieldMap = append(fieldMap, FieldToMap(s.Index(i).Elem().Interface(), v.(map[string]interface{})))
+						} else {
+							fieldMap = append(fieldMap, FieldToMap(s.Index(i).Interface(), v.(map[string]interface{})))
+						}
 					}
 				}
 
