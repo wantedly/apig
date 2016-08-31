@@ -186,6 +186,10 @@ func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]in
 						u[jsonKey] = vs.Field(i).Elem().Interface()
 					} else {
 						u[jsonKey], err = FieldToMap(vs.Field(i).Elem().Interface(), v.(map[string]interface{}))
+
+						if err != nil {
+							return nil, err
+						}
 					}
 				} else {
 					if v == nil {
@@ -206,15 +210,18 @@ func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]in
 
 						if s.Index(i).Kind() == reflect.Ptr {
 							nestFieldMap, err = FieldToMap(s.Index(i).Elem().Interface(), v.(map[string]interface{}))
+
+							if err != nil {
+								return nil, err
+							}
 						} else {
 							nestFieldMap, err = FieldToMap(s.Index(i).Interface(), v.(map[string]interface{}))
-						}
 
+							if err != nil {
+								return nil, err
+							}
+						}
 						fieldMap = append(fieldMap, nestFieldMap)
-
-						if err != nil {
-							return nil, err
-						}
 					}
 
 				}
@@ -226,15 +233,15 @@ func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]in
 				} else {
 					nestFieldMap := make(map[string]interface{})
 					nestFieldMap, err = FieldToMap(vs.Field(i).Interface(), v.(map[string]interface{}))
+
+					if err != nil {
+						return nil, err
+					}
+
 					u[jsonKey] = nestFieldMap
 				}
 			}
-
-			if err != nil {
-				return nil, err
-			}
 		}
-
 	}
 
 	return u, nil
