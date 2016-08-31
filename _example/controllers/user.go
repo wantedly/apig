@@ -58,7 +58,7 @@ func GetUsers(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMapArr := []map[string]interface{}{}
+	fieldMaps := []map[string]interface{}{}
 	for _, user := range users {
 		fieldMap, err := helper.FieldToMap(user, fields)
 
@@ -67,14 +67,14 @@ func GetUsers(c *gin.Context) {
 			return
 		}
 
-		fieldMapArr = append(fieldMapArr, fieldMap)
+		fieldMaps = append(fieldMaps, fieldMap)
 	}
 
 	_, ok := c.GetQuery("pretty")
 	if ok {
-		c.IndentedJSON(200, fieldMapArr)
+		c.IndentedJSON(200, fieldMaps)
 	} else {
-		c.JSON(200, fieldMapArr)
+		c.JSON(200, fieldMaps)
 	}
 }
 
