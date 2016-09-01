@@ -75,8 +75,7 @@ func GetUsers(c *gin.Context) {
 		fieldMaps = append(fieldMaps, fieldMap)
 	}
 
-	_, ok := c.GetQuery("pretty")
-	if ok {
+	if _, ok := c.GetQuery("pretty"); ok {
 		c.IndentedJSON(200, fieldMaps)
 	} else {
 		c.JSON(200, fieldMaps)
@@ -117,8 +116,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	_, ok := c.GetQuery("pretty")
-	if ok {
+	if _, ok := c.GetQuery("pretty"); ok {
 		c.IndentedJSON(200, fieldMap)
 	} else {
 		c.JSON(200, fieldMap)
