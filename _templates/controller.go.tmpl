@@ -38,18 +38,18 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		db = db.Where("id IN (?)", strings.Split(ids, ","))
 	}
 
-	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
-	if err := db.Select(queryFields).Find(&{{ pluralize (tolower .Model.Name) }}).Error; err != nil {
+	var {{ pluralize (toLower .Model.Name) }} []models.{{ .Model.Name }}
+	if err := db.Select(queryFields).Find(&{{ pluralize (toLower .Model.Name) }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
 	// paging
 	var index int
-	if len({{ pluralize (tolower .Model.Name) }}) < 1 {
+	if len({{ pluralize (toLower .Model.Name) }}) < 1 {
 		index = 0
 	} else {
-		index = int({{ pluralize (tolower .Model.Name) }}[len({{ pluralize (tolower .Model.Name) }})-1].ID)
+		index = int({{ pluralize (toLower .Model.Name) }}[len({{ pluralize (toLower .Model.Name) }})-1].ID)
 	}
 	pagination.SetHeaderLink(c, index)
 
@@ -59,8 +59,8 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	}
 
 	fieldMap := []map[string]interface{}{}
-	for _, {{ tolower .Model.Name }} := range {{ pluralize (tolower .Model.Name) }} {
-		fieldMap = append(fieldMap, helper.FieldToMap({{ tolower .Model.Name }}, fields))
+	for _, {{ toLower .Model.Name }} := range {{ pluralize (toLower .Model.Name) }} {
+		fieldMap = append(fieldMap, helper.FieldToMap({{ toLower .Model.Name }}, fields))
 	}
 
 	_, ok := c.GetQuery("pretty")
@@ -86,9 +86,9 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
 
-	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
-	if err := db.Select(queryFields).First(&{{ tolower .Model.Name }}, id).Error; err != nil {
-		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
+	var {{ toLower .Model.Name }} models.{{ .Model.Name }}
+	if err := db.Select(queryFields).First(&{{ toLower .Model.Name }}, id).Error; err != nil {
+		content := gin.H{"error": "{{ toLower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
@@ -98,7 +98,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := helper.FieldToMap({{ tolower .Model.Name }}, fields)
+	fieldMap := helper.FieldToMap({{ toLower .Model.Name }}, fields)
 
 	_, ok := c.GetQuery("pretty")
 	if ok {
@@ -116,14 +116,14 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 	}
 
 	db := dbpkg.DBInstance(c)
-	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+	var {{ toLower .Model.Name }} models.{{ .Model.Name }}
 
-	if err := c.Bind(&{{ tolower .Model.Name }}); err != nil {
+	if err := c.Bind(&{{ toLower .Model.Name }}); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := db.Create(&{{ tolower .Model.Name }}).Error; err != nil {
+	if err := db.Create(&{{ toLower .Model.Name }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -133,7 +133,7 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(201, {{ tolower .Model.Name }})
+	c.JSON(201, {{ toLower .Model.Name }})
 }
 
 func Update{{ .Model.Name }}(c *gin.Context) {
@@ -145,19 +145,19 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
-	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
+	var {{ toLower .Model.Name }} models.{{ .Model.Name }}
+	if db.First(&{{ toLower .Model.Name }}, id).Error != nil {
+		content := gin.H{"error": "{{ toLower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
 
-	if err := c.Bind(&{{ tolower .Model.Name }}); err != nil {
+	if err := c.Bind(&{{ toLower .Model.Name }}); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := db.Save(&{{ tolower .Model.Name }}).Error; err != nil {
+	if err := db.Save(&{{ toLower .Model.Name }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -167,7 +167,7 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(200, {{ tolower .Model.Name }})
+	c.JSON(200, {{ toLower .Model.Name }})
 }
 
 func Delete{{ .Model.Name }}(c *gin.Context) {
@@ -179,14 +179,14 @@ func Delete{{ .Model.Name }}(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
-	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
+	var {{ toLower .Model.Name }} models.{{ .Model.Name }}
+	if db.First(&{{ toLower .Model.Name }}, id).Error != nil {
+		content := gin.H{"error": "{{ toLower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
 
-	if err := db.Delete(&{{ tolower .Model.Name }}).Error; err != nil {
+	if err := db.Delete(&{{ toLower .Model.Name }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}

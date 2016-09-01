@@ -26,7 +26,7 @@ var funcMap = template.FuncMap{
 	"pluralize":        inflector.Pluralize,
 	"requestParams":    requestParams,
 	"title":            strings.Title,
-	"tolower":          strings.ToLower,
+	"toLower":          strings.ToLower,
 	"toSnakeCase":      snaker.CamelToSnake,
 }
 
