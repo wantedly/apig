@@ -40,9 +40,23 @@ func GetEmails(c *gin.Context) {
 	}
 
 	var emails []models.Email
+
 	if err := db.Select(queryFields).Find(&emails).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
+	}
+
+	fieldMaps := []map[string]interface{}{}
+
+	for _, email := range emails {
+		fieldMap, err := helper.FieldToMap(email, fields)
+
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		fieldMaps = append(fieldMaps, fieldMap)
 	}
 
 	index := 0
@@ -61,18 +75,6 @@ func GetEmails(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMaps := []map[string]interface{}{}
-	for _, email := range emails {
-		fieldMap, err := helper.FieldToMap(email, fields)
-
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		fieldMaps = append(fieldMaps, fieldMap)
-	}
-
 	if _, ok := c.GetQuery("pretty"); ok {
 		c.IndentedJSON(200, fieldMaps)
 	} else {
@@ -82,6 +84,7 @@ func GetEmails(c *gin.Context) {
 
 func GetEmail(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -94,17 +97,12 @@ func GetEmail(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
-
 	var email models.Email
+
 	if err := db.Select(queryFields).First(&email, id).Error; err != nil {
 		content := gin.H{"error": "email with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
-	}
-
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
-		// conditional branch by version.
-		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
 	fieldMap, err := helper.FieldToMap(email, fields)
@@ -112,6 +110,11 @@ func GetEmail(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
+	}
+
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
 	if _, ok := c.GetQuery("pretty"); ok {
@@ -123,6 +126,7 @@ func GetEmail(c *gin.Context) {
 
 func CreateEmail(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -151,6 +155,7 @@ func CreateEmail(c *gin.Context) {
 
 func UpdateEmail(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -159,6 +164,7 @@ func UpdateEmail(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var email models.Email
+
 	if db.First(&email, id).Error != nil {
 		content := gin.H{"error": "email with id#" + id + " not found"}
 		c.JSON(404, content)
@@ -185,6 +191,7 @@ func UpdateEmail(c *gin.Context) {
 
 func DeleteEmail(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -193,6 +200,7 @@ func DeleteEmail(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var email models.Email
+
 	if db.First(&email, id).Error != nil {
 		content := gin.H{"error": "email with id#" + id + " not found"}
 		c.JSON(404, content)

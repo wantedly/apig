@@ -40,9 +40,23 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	}
 
 	var {{ pluralize (tolower .Model.Name) }} []models.{{ .Model.Name }}
+
 	if err := db.Select(queryFields).Find(&{{ pluralize (tolower .Model.Name) }}).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
+	}
+
+	fieldMaps := []map[string]interface{}{}
+
+	for _, {{ tolower .Model.Name }} := range {{ pluralize (tolower .Model.Name) }} {
+		fieldMap, err := helper.FieldToMap({{ tolower .Model.Name }}, fields)
+
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		fieldMaps = append(fieldMaps, fieldMap)
 	}
 
 	index := 0
@@ -61,18 +75,6 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMaps := []map[string]interface{}{}
-	for _, {{ tolower .Model.Name }} := range {{ pluralize (tolower .Model.Name) }} {
-		fieldMap, err := helper.FieldToMap({{ tolower .Model.Name }}, fields)
-
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		fieldMaps = append(fieldMaps, fieldMap)
-	}
-
 	if _, ok := c.GetQuery("pretty"); ok {
 		c.IndentedJSON(200, fieldMaps)
 	} else {
@@ -82,6 +84,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 func Get{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -94,17 +97,12 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
-
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+
 	if err := db.Select(queryFields).First(&{{ tolower .Model.Name }}, id).Error; err != nil {
 		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
-	}
-
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
-		// conditional branch by version.
-		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
 	fieldMap, err := helper.FieldToMap({{ tolower .Model.Name }}, fields)
@@ -112,6 +110,11 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
+	}
+
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
 	if _, ok := c.GetQuery("pretty"); ok {
@@ -123,6 +126,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 
 func Create{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -151,6 +155,7 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 
 func Update{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -159,6 +164,7 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+
 	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
 		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
@@ -185,6 +191,7 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 
 func Delete{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -193,6 +200,7 @@ func Delete{{ .Model.Name }}(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var {{ tolower .Model.Name }} models.{{ .Model.Name }}
+
 	if db.First(&{{ tolower .Model.Name }}, id).Error != nil {
 		content := gin.H{"error": "{{ tolower .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
