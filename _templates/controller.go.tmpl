@@ -105,16 +105,12 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-<<<<<<< HEAD
-	fieldMap := helper.FieldToMap({{ toLowerCamelCase .Model.Name }}, fields)
-=======
-	fieldMap, err := helper.FieldToMap({{ tolower .Model.Name }}, fields)
+	fieldMap, err := helper.FieldToMap({{ toLowerCamelCase .Model.Name }}, fields)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
->>>>>>> master
 
 	_, ok := c.GetQuery("pretty")
 	if ok {
