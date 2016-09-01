@@ -1,8 +1,11 @@
 package helper
 
 import (
+	"errors"
 	"reflect"
 	"strings"
+
+	"github.com/serenize/snaker"
 )
 
 type AssociationType int
@@ -132,9 +135,21 @@ func isEmptyValue(v reflect.Value) bool {
 	return false
 }
 
-func FieldToMap(model interface{}, fields map[string]interface{}) map[string]interface{} {
+func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]interface{}, error) {
 	u := make(map[string]interface{})
 	ts, vs := reflect.TypeOf(model), reflect.ValueOf(model)
+
+	if vs.Kind() != reflect.Struct {
+		return nil, errors.New("Invalid Parameter. The specified parameter does not have a structure.")
+	}
+
+	if !contains(fields, "*") {
+		for field, _ := range fields {
+			if !vs.FieldByName(snaker.SnakeToCamel(field)).IsValid() {
+				return nil, errors.New("Invalid Parameter. The specified field does not exist.")
+			}
+		}
+	}
 
 	var jsonKey string
 	var omitEmpty bool
@@ -171,10 +186,20 @@ func FieldToMap(model interface{}, fields map[string]interface{}) map[string]int
 					if v == nil {
 						u[jsonKey] = vs.Field(i).Elem().Interface()
 					} else {
-						u[jsonKey] = FieldToMap(vs.Field(i).Elem().Interface(), v.(map[string]interface{}))
+						k, err := FieldToMap(vs.Field(i).Elem().Interface(), v.(map[string]interface{}))
+
+						if err != nil {
+							return nil, err
+						}
+
+						u[jsonKey] = k
 					}
 				} else {
-					u[jsonKey] = nil
+					if v == nil {
+						u[jsonKey] = nil
+					} else {
+						return nil, errors.New("Invalid Parameter. The structure is null.")
+					}
 				}
 			} else if vs.Field(i).Kind() == reflect.Slice {
 				var fieldMap []interface{}
@@ -184,10 +209,23 @@ func FieldToMap(model interface{}, fields map[string]interface{}) map[string]int
 					if v == nil {
 						fieldMap = append(fieldMap, s.Index(i).Interface())
 					} else {
+
 						if s.Index(i).Kind() == reflect.Ptr {
-							fieldMap = append(fieldMap, FieldToMap(s.Index(i).Elem().Interface(), v.(map[string]interface{})))
+							k, err := FieldToMap(s.Index(i).Elem().Interface(), v.(map[string]interface{}))
+
+							if err != nil {
+								return nil, err
+							}
+
+							fieldMap = append(fieldMap, k)
 						} else {
-							fieldMap = append(fieldMap, FieldToMap(s.Index(i).Interface(), v.(map[string]interface{})))
+							k, err := FieldToMap(s.Index(i).Interface(), v.(map[string]interface{}))
+
+							if err != nil {
+								return nil, err
+							}
+
+							fieldMap = append(fieldMap, k)
 						}
 					}
 				}
@@ -197,11 +235,17 @@ func FieldToMap(model interface{}, fields map[string]interface{}) map[string]int
 				if v == nil {
 					u[jsonKey] = vs.Field(i).Interface()
 				} else {
-					u[jsonKey] = FieldToMap(vs.Field(i).Interface(), v.(map[string]interface{}))
+					k, err := FieldToMap(vs.Field(i).Interface(), v.(map[string]interface{}))
+
+					if err != nil {
+						return nil, err
+					}
+
+					u[jsonKey] = k
 				}
 			}
 		}
 	}
 
-	return u
+	return u, nil
 }

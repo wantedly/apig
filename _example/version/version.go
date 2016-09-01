@@ -9,7 +9,12 @@ import (
 )
 
 func New(c *gin.Context) (string, error) {
-	header := c.Request.Header["Accept"][0]
+	var header string
+
+	if len(c.Request.Header["Accept"]) > 0 {
+		header = c.Request.Header["Accept"][0]
+	}
+
 	header = strings.Join(strings.Fields(header), "")
 
 	var ver string
