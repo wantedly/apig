@@ -58,16 +58,23 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := []map[string]interface{}{}
+	fieldMaps := []map[string]interface{}{}
 	for _, {{ tolower .Model.Name }} := range {{ pluralize (tolower .Model.Name) }} {
-		fieldMap = append(fieldMap, helper.FieldToMap({{ tolower .Model.Name }}, fields))
+		fieldMap, err := helper.FieldToMap({{ tolower .Model.Name }}, fields)
+
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		fieldMaps = append(fieldMaps, fieldMap)
 	}
 
 	_, ok := c.GetQuery("pretty")
 	if ok {
-		c.IndentedJSON(200, fieldMap)
+		c.IndentedJSON(200, fieldMaps)
 	} else {
-		c.JSON(200, fieldMap)
+		c.JSON(200, fieldMaps)
 	}
 }
 
@@ -98,7 +105,12 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMap := helper.FieldToMap({{ tolower .Model.Name }}, fields)
+	fieldMap, err := helper.FieldToMap({{ tolower .Model.Name }}, fields)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	_, ok := c.GetQuery("pretty")
 	if ok {
