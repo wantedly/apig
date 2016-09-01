@@ -7,11 +7,11 @@ Simple Rest API using gin(framework) & gorm(orm)
 ### {{ pluralize .Name }} Resource
 
 ```
-GET    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}
-GET    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/:id
-POST   {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}
-PUT    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/:id
-DELETE {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (tolower .Name) }}/:id
+GET    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (toLower .Name) }}
+GET    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (toLower .Name) }}/:id
+POST   {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (toLower .Name) }}
+PUT    {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (toLower .Name) }}/:id
+DELETE {{ if ($.Namespace) ne "" }}/{{ $.Namespace }}{{ end }}/{{ pluralize (toLower .Name) }}/:id
 ```
 {{ end }}
 server runs at http://localhost:8080
