@@ -88,7 +88,7 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 
 	var {{ toLowerCamelCase .Model.Name }} models.{{ .Model.Name }}
 	if err := db.Select(queryFields).First(&{{ toLowerCamelCase .Model.Name }}, id).Error; err != nil {
-		content := gin.H{"error": "{{ toLowerCamelCase .Model.Name }} with id#" + id + " not found"}
+		content := gin.H{"error": "{{ toSnakeCase .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
@@ -147,7 +147,7 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var {{ toLowerCamelCase .Model.Name }} models.{{ .Model.Name }}
 	if db.First(&{{ toLowerCamelCase .Model.Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ toLowerCamelCase .Model.Name }} with id#" + id + " not found"}
+		content := gin.H{"error": "{{ toSnakeCase .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
@@ -181,7 +181,7 @@ func Delete{{ .Model.Name }}(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var {{ toLowerCamelCase .Model.Name }} models.{{ .Model.Name }}
 	if db.First(&{{ toLowerCamelCase .Model.Name }}, id).Error != nil {
-		content := gin.H{"error": "{{ toLowerCamelCase .Model.Name }} with id#" + id + " not found"}
+		content := gin.H{"error": "{{ toSnakeCase .Model.Name }} with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
 	}
