@@ -25,9 +25,9 @@ var funcMap = template.FuncMap{
 	"apibType":         apibType,
 	"pluralize":        inflector.Pluralize,
 	"requestParams":    requestParams,
+	"title":            strings.Title,
 	"tolower":          strings.ToLower,
 	"toSnakeCase":      snaker.CamelToSnake,
-	"title":            strings.Title,
 }
 
 var managedFields = []string{
