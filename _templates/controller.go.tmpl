@@ -45,11 +45,9 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		return
 	}
 
-	// paging
-	var index int
-	if len({{ pluralize (tolower .Model.Name) }}) < 1 {
-		index = 0
-	} else {
+	index := 0
+
+	if len({{ pluralize (tolower .Model.Name) }}) > 0 {
 		index = int({{ pluralize (tolower .Model.Name) }}[len({{ pluralize (tolower .Model.Name) }})-1].ID)
 	}
 

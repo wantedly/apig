@@ -45,11 +45,9 @@ func GetProfiles(c *gin.Context) {
 		return
 	}
 
-	// paging
-	var index int
-	if len(profiles) < 1 {
-		index = 0
-	} else {
+	index := 0
+
+	if len(profiles) > 0 {
 		index = int(profiles[len(profiles)-1].ID)
 	}
 

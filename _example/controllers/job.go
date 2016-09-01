@@ -45,11 +45,9 @@ func GetJobs(c *gin.Context) {
 		return
 	}
 
-	// paging
-	var index int
-	if len(jobs) < 1 {
-		index = 0
-	} else {
+	index := 0
+
+	if len(jobs) > 0 {
 		index = int(jobs[len(jobs)-1].ID)
 	}
 

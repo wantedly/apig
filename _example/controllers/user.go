@@ -45,11 +45,9 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	// paging
-	var index int
-	if len(users) < 1 {
-		index = 0
-	} else {
+	index := 0
+
+	if len(users) > 0 {
 		index = int(users[len(users)-1].ID)
 	}
 

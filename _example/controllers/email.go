@@ -45,11 +45,9 @@ func GetEmails(c *gin.Context) {
 		return
 	}
 
-	// paging
-	var index int
-	if len(emails) < 1 {
-		index = 0
-	} else {
+	index := 0
+
+	if len(emails) > 0 {
 		index = int(emails[len(emails)-1].ID)
 	}
 

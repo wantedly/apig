@@ -45,11 +45,9 @@ func GetCompanies(c *gin.Context) {
 		return
 	}
 
-	// paging
-	var index int
-	if len(companies) < 1 {
-		index = 0
-	} else {
+	index := 0
+
+	if len(companies) > 0 {
 		index = int(companies[len(companies)-1].ID)
 	}
 
