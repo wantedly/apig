@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -24,6 +25,10 @@ type Pagination struct {
 }
 
 func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
+	if p == nil {
+		return nil, errors.New("Pagination struct got nil.")
+	}
+
 	db := DBInstance(c)
 	limitQuery := c.DefaultQuery("limit", defaultLimit)
 	pageQuery := c.DefaultQuery("page", defaultPage)
@@ -32,6 +37,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	p.Order = c.DefaultQuery("order", defaultOrder)
 
 	limit, err := strconv.Atoi(limitQuery)
+
 	if err != nil {
 		return db, err
 	}
@@ -40,6 +46,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 
 	if lastIDQuery != "" {
 		lastID, err := strconv.Atoi(lastIDQuery)
+
 		if err != nil {
 			return db, err
 		}
@@ -54,6 +61,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	}
 
 	page, err := strconv.Atoi(pageQuery)
+
 	if err != nil {
 		return db, err
 	}
@@ -63,7 +71,11 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	return db.Offset(limit * (p.Page - 1)).Limit(p.Limit), nil
 }
 
-func (p *Pagination) SetHeaderLink(c *gin.Context, index int) {
+func (p *Pagination) SetHeaderLink(c *gin.Context, index int) error {
+	if p == nil {
+		return errors.New("Pagination struct got nil.")
+	}
+
 	var link string
 
 	if p.LastID != 0 {
@@ -80,4 +92,5 @@ func (p *Pagination) SetHeaderLink(c *gin.Context, index int) {
 	}
 
 	c.Header("Link", link)
+	return nil
 }

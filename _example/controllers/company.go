@@ -14,6 +14,7 @@ import (
 
 func GetCompanies(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -51,7 +52,11 @@ func GetCompanies(c *gin.Context) {
 	} else {
 		index = int(companies[len(companies)-1].ID)
 	}
-	pagination.SetHeaderLink(c, index)
+
+	if err := pagination.SetHeaderLink(c, index); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
