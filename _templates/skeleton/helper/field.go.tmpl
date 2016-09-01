@@ -143,9 +143,11 @@ func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]in
 		return nil, errors.New("Invalid Parameter. The specified parameter does not have a structure.")
 	}
 
-	for field, _ := range fields {
-		if !vs.FieldByName(snaker.SnakeToCamel(field)).IsValid() {
-			return nil, errors.New("Invalid Parameter. The specified field does not exist.")
+	if !contains(fields, "*") {
+		for field, _ := range fields {
+			if !vs.FieldByName(snaker.SnakeToCamel(field)).IsValid() {
+				return nil, errors.New("Invalid Parameter. The specified field does not exist.")
+			}
 		}
 	}
 
