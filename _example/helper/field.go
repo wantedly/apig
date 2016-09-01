@@ -178,18 +178,19 @@ func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]in
 
 		if contains(fields, jsonKey) {
 			v := fields[jsonKey]
-			var err error
 
 			if vs.Field(i).Kind() == reflect.Ptr {
 				if !vs.Field(i).IsNil() {
 					if v == nil {
 						u[jsonKey] = vs.Field(i).Elem().Interface()
 					} else {
-						u[jsonKey], err = FieldToMap(vs.Field(i).Elem().Interface(), v.(map[string]interface{}))
+						k, err := FieldToMap(vs.Field(i).Elem().Interface(), v.(map[string]interface{}))
 
 						if err != nil {
 							return nil, err
 						}
+
+						u[jsonKey] = k
 					}
 				} else {
 					if v == nil {
@@ -206,24 +207,25 @@ func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]in
 					if v == nil {
 						fieldMap = append(fieldMap, s.Index(i).Interface())
 					} else {
-						nestFieldMap := make(map[string]interface{})
 
 						if s.Index(i).Kind() == reflect.Ptr {
-							nestFieldMap, err = FieldToMap(s.Index(i).Elem().Interface(), v.(map[string]interface{}))
+							k, err := FieldToMap(s.Index(i).Elem().Interface(), v.(map[string]interface{}))
 
 							if err != nil {
 								return nil, err
 							}
+
+							fieldMap = append(fieldMap, k)
 						} else {
-							nestFieldMap, err = FieldToMap(s.Index(i).Interface(), v.(map[string]interface{}))
+							k, err := FieldToMap(s.Index(i).Interface(), v.(map[string]interface{}))
 
 							if err != nil {
 								return nil, err
 							}
-						}
-						fieldMap = append(fieldMap, nestFieldMap)
-					}
 
+							fieldMap = append(fieldMap, k)
+						}
+					}
 				}
 
 				u[jsonKey] = fieldMap
@@ -231,14 +233,13 @@ func FieldToMap(model interface{}, fields map[string]interface{}) (map[string]in
 				if v == nil {
 					u[jsonKey] = vs.Field(i).Interface()
 				} else {
-					nestFieldMap := make(map[string]interface{})
-					nestFieldMap, err = FieldToMap(vs.Field(i).Interface(), v.(map[string]interface{}))
+					k, err := FieldToMap(vs.Field(i).Interface(), v.(map[string]interface{}))
 
 					if err != nil {
 						return nil, err
 					}
 
-					u[jsonKey] = nestFieldMap
+					u[jsonKey] = k
 				}
 			}
 		}
