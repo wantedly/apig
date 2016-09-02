@@ -48,8 +48,8 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 	fieldMaps := []map[string]interface{}{}
 
-	for _, {{ tolower .Model.Name }} := range {{ pluralize (tolower .Model.Name) }} {
-		fieldMap, err := helper.FieldToMap({{ tolower .Model.Name }}, fields)
+	for _, {{ toLowerCamelCase .Model.Name }} := range {{ pluralize (toLowerCamelCase .Model.Name) }} {
+		fieldMap, err := helper.FieldToMap({{ toLowerCamelCase .Model.Name }}, fields)
 
 		if err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
@@ -61,8 +61,8 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 	index := 0
 
-	if len({{ pluralize (tolower .Model.Name) }}) > 0 {
-		index = int({{ pluralize (tolower .Model.Name) }}[len({{ pluralize (tolower .Model.Name) }})-1].ID)
+	if len({{ pluralize (toLowerCamelCase .Model.Name) }}) > 0 {
+		index = int({{ pluralize (toLowerCamelCase .Model.Name) }}[len({{ pluralize (toLowerCamelCase .Model.Name) }})-1].ID)
 	}
 
 	if err := pagination.SetHeaderLink(c, index); err != nil {
