@@ -8,12 +8,10 @@ import (
 )
 
 func APIEndpoints(c *gin.Context) {
-	var reqScheme string
+	reqScheme := "http"
 
 	if c.Request.TLS != nil {
 		reqScheme = "https"
-	} else {
-		reqScheme = "http"
 	}
 
 	reqHost := c.Request.Host

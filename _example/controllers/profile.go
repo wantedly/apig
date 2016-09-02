@@ -40,16 +40,28 @@ func GetProfiles(c *gin.Context) {
 	}
 
 	var profiles []models.Profile
+
 	if err := db.Select(queryFields).Find(&profiles).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	// paging
-	var index int
-	if len(profiles) < 1 {
-		index = 0
-	} else {
+	fieldMaps := []map[string]interface{}{}
+
+	for _, profile := range profiles {
+		fieldMap, err := helper.FieldToMap(profile, fields)
+
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		fieldMaps = append(fieldMaps, fieldMap)
+	}
+
+	index := 0
+
+	if len(profiles) > 0 {
 		index = int(profiles[len(profiles)-1].ID)
 	}
 
@@ -63,20 +75,7 @@ func GetProfiles(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMaps := []map[string]interface{}{}
-	for _, profile := range profiles {
-		fieldMap, err := helper.FieldToMap(profile, fields)
-
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		fieldMaps = append(fieldMaps, fieldMap)
-	}
-
-	_, ok := c.GetQuery("pretty")
-	if ok {
+	if _, ok := c.GetQuery("pretty"); ok {
 		c.IndentedJSON(200, fieldMaps)
 	} else {
 		c.JSON(200, fieldMaps)
@@ -85,6 +84,7 @@ func GetProfiles(c *gin.Context) {
 
 func GetProfile(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -97,17 +97,12 @@ func GetProfile(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	db = dbpkg.SetPreloads(preloads, db)
-
 	var profile models.Profile
+
 	if err := db.Select(queryFields).First(&profile, id).Error; err != nil {
 		content := gin.H{"error": "profile with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
-	}
-
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
-		// conditional branch by version.
-		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
 	fieldMap, err := helper.FieldToMap(profile, fields)
@@ -117,8 +112,12 @@ func GetProfile(c *gin.Context) {
 		return
 	}
 
-	_, ok := c.GetQuery("pretty")
-	if ok {
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
+	}
+
+	if _, ok := c.GetQuery("pretty"); ok {
 		c.IndentedJSON(200, fieldMap)
 	} else {
 		c.JSON(200, fieldMap)
@@ -127,6 +126,7 @@ func GetProfile(c *gin.Context) {
 
 func CreateProfile(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -155,6 +155,7 @@ func CreateProfile(c *gin.Context) {
 
 func UpdateProfile(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -163,6 +164,7 @@ func UpdateProfile(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var profile models.Profile
+
 	if db.First(&profile, id).Error != nil {
 		content := gin.H{"error": "profile with id#" + id + " not found"}
 		c.JSON(404, content)
@@ -189,6 +191,7 @@ func UpdateProfile(c *gin.Context) {
 
 func DeleteProfile(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -197,6 +200,7 @@ func DeleteProfile(c *gin.Context) {
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
 	var profile models.Profile
+
 	if db.First(&profile, id).Error != nil {
 		content := gin.H{"error": "profile with id#" + id + " not found"}
 		c.JSON(404, content)
