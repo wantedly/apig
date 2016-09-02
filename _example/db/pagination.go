@@ -76,16 +76,20 @@ func (p *Pagination) SetHeaderLink(c *gin.Context, index int) error {
 		return errors.New("Pagination struct got nil.")
 	}
 
-	var link string
+	reqScheme := "http"
 
-	if p.LastID != 0 {
-		link = fmt.Sprintf("<http://%v%v?limit=%v&last_id=%v&order=%v>; rel=\"next\"", c.Request.Host, c.Request.URL.Path, p.Limit, index, p.Order)
-	} else {
+	if c.Request.TLS != nil {
+		reqScheme = "https"
+	}
+
+	link := fmt.Sprintf("<%s://%v%v?limit=%v&last_id=%v&order=%v>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, p.Limit, index, p.Order)
+
+	if p.LastID == 0 {
 		if p.Page == 1 {
-			link = fmt.Sprintf("<http://%v%v?limit=%v&page=%v>; rel=\"next\"", c.Request.Host, c.Request.URL.Path, p.Limit, p.Page+1)
+			link = fmt.Sprintf("<%s://%v%v?limit=%v&page=%v>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, p.Limit, p.Page+1)
 		} else {
 			link = fmt.Sprintf(
-				"<http://%v%v?limit=%v&page=%v>; rel=\"next\",<http://%v%v?limit=%v&page=%v>; rel=\"prev\"",
+				"<%s://%v%v?limit=%v&page=%v>; rel=\"next\",<http://%v%v?limit=%v&page=%v>; rel=\"prev\"", reqScheme,
 				c.Request.Host, c.Request.URL.Path, p.Limit, p.Page+1, c.Request.Host, c.Request.URL.Path, p.Limit, p.Page-1,
 			)
 		}

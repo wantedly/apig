@@ -25,9 +25,10 @@ var funcMap = template.FuncMap{
 	"apibType":         apibType,
 	"pluralize":        inflector.Pluralize,
 	"requestParams":    requestParams,
-	"tolower":          strings.ToLower,
-	"toSnakeCase":      snaker.CamelToSnake,
 	"title":            strings.Title,
+	"toLower":          strings.ToLower,
+	"toLowerCamelCase": camelToLowerCamel,
+	"toSnakeCase":      snaker.CamelToSnake,
 }
 
 var managedFields = []string{
@@ -99,6 +100,13 @@ func requestParams(fields []*Field) []*Field {
 	}
 
 	return params
+}
+
+func camelToLowerCamel(s string) string {
+	ss := strings.Split(s, "")
+	ss[0] = strings.ToLower(ss[0])
+
+	return strings.Join(ss, "")
 }
 
 func generateApibIndex(detail *Detail, outDir string) error {
