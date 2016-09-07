@@ -387,6 +387,49 @@ func generateDB(detail *Detail, outDir string) error {
 	return nil
 }
 
+func generateCommonFiles(detail *Detail, outDir string) error {
+	var wg sync.WaitGroup
+	errCh := make(chan error, 1)
+	done := make(chan bool, 1)
+
+	for _, model := range detail.Models {
+		wg.Add(1)
+		go func(m *Model) {
+			defer wg.Done()
+			d := &Detail{
+				Model:     m,
+				ImportDir: detail.ImportDir,
+				VCS:       detail.VCS,
+				User:      detail.User,
+				Project:   detail.Project,
+			}
+
+			if err := generateApibModel(d, outDir); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				errCh <- err
+			}
+
+			if err := generateController(d, outDir); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				errCh <- err
+			}
+		}(model)
+	}
+
+	wg.Wait()
+	close(done)
+
+	select {
+	case <-done:
+	case err := <-errCh:
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func collectModels(outModelDir string) (Models, error) {
 	files, err := ioutil.ReadDir(outModelDir)
 	if err != nil {
@@ -471,6 +514,11 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		modelMap[m.Name] = m
 	}
 
+	for _, model := range models {
+		// Check association, stdout "model.Fields[0].Association.Type"
+		resolveAssociate(model, modelMap, make(map[string]bool))
+	}
+
 	importDir, err := detectImportDir(filepath.Join(outDir, targetFile))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -478,49 +526,12 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 	}
 
 	dirs := strings.SplitN(importDir, "/", 3)
-	vcs := dirs[0]
-	user := dirs[1]
-	project := dirs[2]
-	errCh := make(chan error)
 
-	var wg sync.WaitGroup
-
-	for _, model := range models {
-		// Check association, stdout "model.Fields[0].Association.Type"
-		resolveAssociate(model, modelMap, make(map[string]bool))
-	}
-
-	go func() {
-		defer close(errCh)
-		for _, model := range models {
-			wg.Add(1)
-			go func(m *Model) {
-				defer wg.Done()
-				d := &Detail{
-					Model:     m,
-					ImportDir: importDir,
-					VCS:       vcs,
-					User:      user,
-					Project:   project,
-				}
-				if err := generateApibModel(d, outDir); err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					errCh <- err
-				}
-				if err := generateController(d, outDir); err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					errCh <- err
-				}
-			}(model)
-		}
-		wg.Wait()
-	}()
-
-	err = <-errCh
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	if len(dirs) < 3 {
+		fmt.Fprintln(os.Stderr, "Invalid import path: "+importDir)
 		return 1
 	}
+	vcs, user, project := dirs[0], dirs[1], dirs[2]
 
 	namespace, err := parseNamespace(filepath.Join(outDir, "router", "router.go"))
 	if err != nil {
@@ -536,6 +547,12 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		Project:   project,
 		Namespace: namespace,
 	}
+
+	if err := generateCommonFiles(detail, outDir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+
 	if all {
 		if err := generateSkeleton(detail, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
