@@ -559,26 +559,32 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 			return 1
 		}
 	}
+
 	if err := generateRootController(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	if err := generateApibIndex(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	if err := generateRouter(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	if err := generateDB(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	if err := generateREADME(detail, outDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+
 	fmt.Println("===> Generated...")
 	return 0
 }
