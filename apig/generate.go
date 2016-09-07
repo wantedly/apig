@@ -386,68 +386,70 @@ func generateDB(detail *Detail, outDir string) error {
 	return nil
 }
 
-func Generate(outDir, modelDir, targetFile string, all bool) int {
-	outModelDir := filepath.Join(outDir, modelDir)
+func collectModels(outModelDir string) (Models, error) {
 	files, err := ioutil.ReadDir(outModelDir)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return 1
+		return nil, err
 	}
 
 	var models Models
 	var wg sync.WaitGroup
-	modelMap := make(map[string]*Model)
-	errCh := make(chan error)
-	modelsCh := make(chan []*Model)
-	doneCh := make(chan struct{})
-	go func() {
-		defer close(doneCh)
-		for _, file := range files {
-			wg.Add(1)
-			go func(f os.FileInfo) {
-				defer wg.Done()
-				if f.IsDir() {
-					return
-				}
-				if !strings.HasSuffix(f.Name(), ".go") {
-					return
-				}
+	errCh := make(chan error, 1)
+	done := make(chan bool, 1)
 
-				modelPath := filepath.Join(outModelDir, f.Name())
-				ms, err := parseModel(modelPath)
-				if err != nil {
-					errCh <- err
-				}
-				modelsCh <- ms
-			}(file)
-		}
-		wg.Wait()
-	}()
-
-	go func() {
-		defer close(errCh)
-	loop:
-		for {
-			select {
-			case ms := <-modelsCh:
-				for _, model := range ms {
-					models = append(models, model)
-					modelMap[model.Name] = model
-				}
-			case <-doneCh:
-				errCh <- nil
-				break loop
+	for _, file := range files {
+		wg.Add(1)
+		go func(f os.FileInfo) {
+			defer wg.Done()
+			if f.IsDir() {
+				return
 			}
-		}
-	}()
 
-	err = <-errCh
+			if !strings.HasSuffix(f.Name(), ".go") {
+				return
+			}
+
+			modelPath := filepath.Join(outModelDir, f.Name())
+			ms, err := parseModel(modelPath)
+			if err != nil {
+				errCh <- err
+			}
+
+			for _, m := range ms {
+				models = append(models, m)
+			}
+		}(file)
+	}
+
+	wg.Wait()
+	close(done)
+
+	select {
+	case <-done:
+	case err := <-errCh:
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return models, nil
+}
+
+func Generate(outDir, modelDir, targetFile string, all bool) int {
+	outModelDir := filepath.Join(outDir, modelDir)
+
+	models, err := collectModels(outModelDir)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
 
 	sort.Sort(models)
+	modelMap := map[string]*Model{}
+
+	for _, m := range models {
+		modelMap[m.Name] = m
+	}
 
 	importPaths, err := parseImport(filepath.Join(outDir, targetFile))
 	if err != nil {
@@ -472,7 +474,9 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 	vcs := dirs[0]
 	user := dirs[1]
 	project := dirs[2]
-	errCh = make(chan error)
+	errCh := make(chan error)
+
+	var wg sync.WaitGroup
 
 	for _, model := range models {
 		// Check association, stdout "model.Fields[0].Association.Type"
