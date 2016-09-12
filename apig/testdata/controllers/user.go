@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 
 	dbpkg "github.com/wantedly/api-server/db"
 	"github.com/wantedly/api-server/helper"
@@ -20,7 +19,6 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	ids := c.DefaultQuery("ids", "")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.User{}, fields)
@@ -34,11 +32,7 @@ func GetUsers(c *gin.Context) {
 	}
 
 	db = dbpkg.SetPreloads(preloads, db)
-
-	if ids != "" {
-		db = db.Where("id IN (?)", strings.Split(ids, ","))
-	}
-
+	db = dbpkg.FilterFields(c, models.User{}, db)
 	var users []models.User
 
 	if err := db.Select(queryFields).Find(&users).Error; err != nil {

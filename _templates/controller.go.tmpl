@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 
 	dbpkg "{{ .ImportDir }}/db"
 	"{{ .ImportDir }}/helper"
@@ -20,7 +19,6 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		return
 	}
 
-	ids := c.DefaultQuery("ids", "")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.{{ .Model.Name }}{}, fields)
@@ -34,11 +32,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	}
 
 	db = dbpkg.SetPreloads(preloads, db)
-
-	if ids != "" {
-		db = db.Where("id IN (?)", strings.Split(ids, ","))
-	}
-
+	db = dbpkg.FilterFields(c, models.{{ .Model.Name }}{}, db)
 	var {{ pluralize (toLowerCamelCase .Model.Name) }} []models.{{ .Model.Name }}
 
 	if err := db.Select(queryFields).Find(&{{ pluralize (toLowerCamelCase .Model.Name) }}).Error; err != nil {
