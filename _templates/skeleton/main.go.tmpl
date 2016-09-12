@@ -17,7 +17,7 @@ func main() {
 	if p := os.Getenv("PORT"); p != "" {
 		if _, err := strconv.Atoi(p); err == nil {
 			port = p
- 		}
+		}
 	}
 
 	s.Run(":" + port)
