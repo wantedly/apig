@@ -204,6 +204,7 @@ Resource name is written in the plural form.
 
 |Parameter|Description|Default|Example|
 |---------|-----------|-------|-------|
+|`stream=`|Return JSON in streaming format|`false`|`true`|
 |`ids=`|Item IDs|(empty)|`1,2,5`|
 |`limit=`|Maximum number of items|`25`|`50`|
 |`page=`|Page to receive|`1`|`3`|
