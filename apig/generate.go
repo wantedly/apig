@@ -495,7 +495,11 @@ func detectImportDir(targetPath string) (string, error) {
 		return "", errors.New("Can't refer import path. Please check 'main.go'.")
 	}
 
-	return importDir[0], nil
+	if importDir[0] != "." {
+		return "", errors.New("Unexpected import path. Please check 'main.go'.")
+	}
+
+	return importDir[1], nil
 }
 
 func Generate(outDir, modelDir, targetFile string, all bool) int {
