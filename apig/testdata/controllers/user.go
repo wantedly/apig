@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -46,19 +47,6 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	fieldMaps := []map[string]interface{}{}
-
-	for _, user := range users {
-		fieldMap, err := helper.FieldToMap(user, fields)
-
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		fieldMaps = append(fieldMaps, fieldMap)
-	}
-
 	index := 0
 
 	if len(users) > 0 {
@@ -75,10 +63,42 @@ func GetUsers(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	if _, ok := c.GetQuery("pretty"); ok {
-		c.IndentedJSON(200, fieldMaps)
+	if _, ok := c.GetQuery("stream"); ok {
+		enc := json.NewEncoder(c.Writer)
+		c.Status(200)
+
+		for _, user := range users {
+			fieldMap, err := helper.FieldToMap(user, fields)
+
+			if err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+
+			if err := enc.Encode(fieldMap); err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+		}
 	} else {
-		c.JSON(200, fieldMaps)
+		fieldMaps := []map[string]interface{}{}
+
+		for _, user := range users {
+			fieldMap, err := helper.FieldToMap(user, fields)
+
+			if err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+
+			fieldMaps = append(fieldMaps, fieldMap)
+		}
+
+		if _, ok := c.GetQuery("pretty"); ok {
+			c.IndentedJSON(200, fieldMaps)
+		} else {
+			c.JSON(200, fieldMaps)
+		}
 	}
 }
 
