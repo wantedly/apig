@@ -7,11 +7,9 @@ func formatImportDir(paths []string) []string {
 	flag := map[string]bool{}
 	for i := 0; i < len(paths); i++ {
 		dir := filepath.Dir(paths[i])
-		if dir != "." {
-			if !flag[dir] {
-				flag[dir] = true
-				results = append(results, dir)
-			}
+		if !flag[dir] {
+			flag[dir] = true
+			results = append(results, dir)
 		}
 	}
 	return results

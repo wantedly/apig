@@ -487,11 +487,11 @@ func detectImportDir(targetPath string) (string, error) {
 
 	importDir := formatImportDir(importPaths)
 
-	if len(importDir) > 1 {
+	if len(importDir) > 2 {
 		return "", errors.New("Conflict import path. Please check 'main.go'.")
 	}
 
-	if len(importDir) == 0 {
+	if len(importDir) < 2 {
 		return "", errors.New("Can't refer import path. Please check 'main.go'.")
 	}
 
