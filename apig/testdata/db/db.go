@@ -17,10 +17,13 @@ import (
 func Connect() *gorm.DB {
 	dir := filepath.Dir("db/database.db")
 	db, err := gorm.Open("sqlite3", dir+"/database.db")
+
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
+
 	db.LogMode(false)
+
 	if gin.IsDebugging() {
 		db.LogMode(true)
 	}
@@ -30,6 +33,7 @@ func Connect() *gorm.DB {
 			&models.User{},
 		)
 	}
+
 	return db
 }
 
