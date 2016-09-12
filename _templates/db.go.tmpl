@@ -17,7 +17,6 @@ import (
 func Connect() *gorm.DB {
 	dir := filepath.Dir("db/database.db")
 	db, err := gorm.Open("sqlite3", dir+"/database.db")
-
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
