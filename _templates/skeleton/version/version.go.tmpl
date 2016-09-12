@@ -26,7 +26,6 @@ func New(c *gin.Context) (string, error) {
 	}
 
 	_, err := strconv.Atoi(strings.Join(strings.Split(ver, "."), ""))
-
 	if err != nil {
 		return "", err
 	}
