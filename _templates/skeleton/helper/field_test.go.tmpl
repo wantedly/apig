@@ -245,7 +245,11 @@ func TestFieldToMap_Wildcard(t *testing.T) {
 	fields := map[string]interface{}{
 		"*": nil,
 	}
-	result := FieldToMap(user, fields)
+	result, err := FieldToMap(user, fields)
+
+	if err != nil {
+		t.Fatalf("FieldToMap return an error. detail: %#v", err.Error())
+	}
 
 	for _, key := range []string{"id", "jobs", "name", "profile"} {
 		if _, ok := result[key]; !ok {
@@ -273,7 +277,11 @@ func TestFieldToMap_OmitEmpty(t *testing.T) {
 	fields := map[string]interface{}{
 		"*": nil,
 	}
-	result := FieldToMap(user, fields)
+	result, err := FieldToMap(user, fields)
+
+	if err != nil {
+		t.Fatalf("FieldToMap return an error. detail: %#v", err.Error())
+	}
 
 	for _, key := range []string{"id", "name"} {
 		if _, ok := result[key]; !ok {
@@ -301,7 +309,11 @@ func TestFieldToMap_OmitEmptyWithField(t *testing.T) {
 		"name": nil,
 		"jobs": nil,
 	}
-	result := FieldToMap(user, fields)
+	result, err := FieldToMap(user, fields)
+
+	if err != nil {
+		t.Fatalf("FieldToMap return an error. detail: %#v", err.Error())
+	}
 
 	for _, key := range []string{"id", "name", "jobs"} {
 		if _, ok := result[key]; !ok {
@@ -329,7 +341,11 @@ func TestFieldToMap_OmitEmptyAllTypes(t *testing.T) {
 	fields := map[string]interface{}{
 		"*": nil,
 	}
-	result := FieldToMap(company, fields)
+	result, err := FieldToMap(company, fields)
+
+	if err != nil {
+		t.Fatalf("FieldToMap return an error. detail: %#v", err.Error())
+	}
 
 	for _, key := range []string{"id", "name", "list", "subsidiary", "organization", "user"} {
 		if _, ok := result[key]; ok {
@@ -350,7 +366,11 @@ func TestFieldToMap_SpecifyField(t *testing.T) {
 		"id":   nil,
 		"name": nil,
 	}
-	result := FieldToMap(user, fields)
+	result, err := FieldToMap(user, fields)
+
+	if err != nil {
+		t.Fatalf("FieldToMap return an error. detail: %#v", err.Error())
+	}
 
 	for _, key := range []string{"id", "name"} {
 		if _, ok := result[key]; !ok {
@@ -379,7 +399,11 @@ func TestFieldToMap_NestedField(t *testing.T) {
 		},
 		"name": nil,
 	}
-	result := FieldToMap(user, fields)
+	result, err := FieldToMap(user, fields)
+
+	if err != nil {
+		t.Fatalf("FieldToMap return an error. detail: %#v", err.Error())
+	}
 
 	for _, key := range []string{"name", "profile"} {
 		if _, ok := result[key]; !ok {
