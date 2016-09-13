@@ -1,11 +1,11 @@
 # Group {{ pluralize .Model.Name }}
-Welcome to the {{ pluralize (toLower .Model.Name) }} API. This API provides access to the {{ pluralize (toLower .Model.Name) }} service.
+Welcome to the {{ pluralize (toSnakeCase .Model.Name) }} API. This API provides access to the {{ pluralize (toSnakeCase .Model.Name) }} service.
 
-## {{ pluralize (toLower .Model.Name) }} [/{{ pluralize (toSnakeCase .Model.Name) }}]
+## {{ pluralize (toSnakeCase .Model.Name) }} [/{{ pluralize (toSnakeCase .Model.Name) }}]
 
-### Create {{ toLower .Model.Name }} [POST]
+### Create {{ toSnakeCase .Model.Name }} [POST]
 
-Create a new {{ toLower .Model.Name }}
+Create a new {{ toSnakeCase .Model.Name }}
 
 + Request {{ toSnakeCase .Model.Name }} (application/json; charset=utf-8)
     + Headers
@@ -18,9 +18,9 @@ Create a new {{ toLower .Model.Name }}
 + Response 201 (application/json; charset=utf-8)
     + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
-### Get {{ pluralize (toLower .Model.Name) }} [GET]
+### Get {{ pluralize (toSnakeCase .Model.Name) }} [GET]
 
-Returns {{ article (toLower .Model.Name) }} list.
+Returns {{ article (toSnakeCase .Model.Name) }} list.
 
 + Request (application/json; charset=utf-8)
     + Headers
@@ -31,18 +31,18 @@ Returns {{ article (toLower .Model.Name) }} list.
     + Attributes (array, fixed)
         + ({{ toSnakeCase .Model.Name }})
 
-## {{ toLower .Model.Name }} details [/{{ pluralize (toSnakeCase .Model.Name) }}/{id}]
+## {{ toSnakeCase .Model.Name }} details [/{{ pluralize (toSnakeCase .Model.Name) }}/{id}]
 
 + Parameters
-    + id: `1` (enum[string]) - The ID of the desired {{ toLower .Model.Name }}.
+    + id: `1` (enum[string]) - The ID of the desired {{ toSnakeCase .Model.Name }}.
         + Members
             + `1`
             + `2`
             + `3`
 
-### Get {{ toLower .Model.Name }} [GET]
+### Get {{ toSnakeCase .Model.Name }} [GET]
 
-Returns {{ article (toLower .Model.Name) }}.
+Returns {{ article (toSnakeCase .Model.Name) }}.
 
 + Request (application/json; charset=utf-8)
     + Headers
@@ -52,9 +52,9 @@ Returns {{ article (toLower .Model.Name) }}.
 + Response 200 (application/json; charset=utf-8)
     + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
-### Update {{ toLower .Model.Name }} [PUT]
+### Update {{ toSnakeCase .Model.Name }} [PUT]
 
-Update {{ article (toLower .Model.Name) }}.
+Update {{ article (toSnakeCase .Model.Name) }}.
 
 + Request {{ toSnakeCase .Model.Name }} (application/json; charset=utf-8)
     + Headers
@@ -67,9 +67,9 @@ Update {{ article (toLower .Model.Name) }}.
 + Response 200 (application/json; charset=utf-8)
     + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
-### Delete {{ toLower .Model.Name }} [DELETE]
+### Delete {{ toSnakeCase .Model.Name }} [DELETE]
 
-Delete {{ article (toLower .Model.Name) }}.
+Delete {{ article (toSnakeCase .Model.Name) }}.
 
 + Request (application/json; charset=utf-8)
     + Headers
