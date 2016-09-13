@@ -19,7 +19,7 @@ Create a new job
         + role_cd: 1 (number)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (jobs)
+    + Attributes (jobs, fixed)
 
 ### Get jobs [GET]
 
@@ -71,7 +71,7 @@ Update job.
         + role_cd: 1 (number)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (jobs)
+    + Attributes (jobs, fixed)
 
 ### Delete job [DELETE]
 
@@ -85,7 +85,7 @@ Delete job.
 + Response 204
 
 # Data Structures
-## jobs (object, fixed)
+## jobs (object)
 
 + id: 1 (number)
 + user_id: 1 (number)

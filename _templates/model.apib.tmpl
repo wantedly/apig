@@ -16,7 +16,7 @@ Create a new {{ toLower .Model.Name }}
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }})
+    + Attributes ({{ pluralize (toLower .Model.Name) }}, fixed)
 
 ### Get {{ pluralize (toLower .Model.Name) }} [GET]
 
@@ -65,7 +65,7 @@ Update {{ toLower .Model.Name }}.
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }})
+    + Attributes ({{ pluralize (toLower .Model.Name) }}, fixed)
 
 ### Delete {{ toLower .Model.Name }} [DELETE]
 
@@ -79,6 +79,6 @@ Delete {{ toLower .Model.Name }}.
 + Response 204
 
 # Data Structures
-## {{ pluralize (toLower .Model.Name) }} (object, fixed)
+## {{ pluralize (toLower .Model.Name) }} (object)
 {{ range $key, $value := .Model.Fields }}
 + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}

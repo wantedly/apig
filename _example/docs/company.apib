@@ -18,7 +18,7 @@ Create a new company
         + jobs (array[*jobs])
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (companies)
+    + Attributes (companies, fixed)
 
 ### Get companies [GET]
 
@@ -69,7 +69,7 @@ Update company.
         + jobs (array[*jobs])
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (companies)
+    + Attributes (companies, fixed)
 
 ### Delete company [DELETE]
 
@@ -83,7 +83,7 @@ Delete company.
 + Response 204
 
 # Data Structures
-## companies (object, fixed)
+## companies (object)
 
 + id: 1 (number)
 + name: NAME (string)

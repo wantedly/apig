@@ -16,7 +16,7 @@ Create a new user
         + name: NAME (string)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (users)
+    + Attributes (users, fixed)
 
 ### Get users [GET]
 
@@ -65,7 +65,7 @@ Update user.
         + name: NAME (string)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (users)
+    + Attributes (users, fixed)
 
 ### Delete user [DELETE]
 
@@ -79,7 +79,7 @@ Delete user.
 + Response 204
 
 # Data Structures
-## users (object, fixed)
+## users (object)
 
 + id: 1 (number)
 + name: NAME (string)

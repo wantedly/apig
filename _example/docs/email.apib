@@ -18,7 +18,7 @@ Create a new email
         + user ()
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (emails)
+    + Attributes (emails, fixed)
 
 ### Get emails [GET]
 
@@ -69,7 +69,7 @@ Update email.
         + user ()
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (emails)
+    + Attributes (emails, fixed)
 
 ### Delete email [DELETE]
 
@@ -83,7 +83,7 @@ Delete email.
 + Response 204
 
 # Data Structures
-## emails (object, fixed)
+## emails (object)
 
 + id: 1 (number)
 + address: ADDRESS (string)
