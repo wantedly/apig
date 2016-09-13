@@ -1,7 +1,7 @@
 # Group {{ pluralize .Model.Name }}
 Welcome to the {{ pluralize (toLower .Model.Name) }} API. This API provides access to the {{ pluralize (toLower .Model.Name) }} service.
 
-## {{ pluralize (tolower .Model.Name) }} [/{{ pluralize (toSnakeCase .Model.Name) }}]
+## {{ pluralize (toLower .Model.Name) }} [/{{ pluralize (toSnakeCase .Model.Name) }}]
 
 ### Create {{ toLower .Model.Name }} [POST]
 
@@ -31,7 +31,7 @@ Returns {{ toLower .Model.Name }} list.
     + Attributes (array, fixed)
         + ({{ pluralize (toLower .Model.Name) }})
 
-## {{ tolower .Model.Name }} details [/{{ pluralize (toSnakeCase .Model.Name) }}/{id}]
+## {{ toLower .Model.Name }} details [/{{ pluralize (toSnakeCase .Model.Name) }}/{id}]
 
 + Parameters
     + id: `1` (enum[string]) - The ID of the desired {{ toLower .Model.Name }}.
