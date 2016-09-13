@@ -205,7 +205,7 @@ Resource name is written in the plural form.
 |Parameter|Description|Default|Example|
 |---------|-----------|-------|-------|
 |`stream=`|Return JSON in streaming format|`false`|`true`|
-|`ids=`|Item IDs|(empty)|`1,2,5`|
+|`q[field_name]=`|A unique query parameter for each field for filtering|(empty)|`q[id]=1,2,5`, `q[admin]=true&q[registered]=true`|
 |`limit=`|Maximum number of items|`25`|`50`|
 |`page=`|Page to receive|`1`|`3`|
 |`last_id=`|Beginning ID of items|(empty)|`1`|

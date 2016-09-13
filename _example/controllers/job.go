@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	dbpkg "github.com/wantedly/apig/_example/db"
 	"github.com/wantedly/apig/_example/helper"
@@ -21,7 +20,6 @@ func GetJobs(c *gin.Context) {
 		return
 	}
 
-	ids := c.DefaultQuery("ids", "")
 	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Job{}, fields)
@@ -35,11 +33,7 @@ func GetJobs(c *gin.Context) {
 	}
 
 	db = dbpkg.SetPreloads(preloads, db)
-
-	if ids != "" {
-		db = db.Where("id IN (?)", strings.Split(ids, ","))
-	}
-
+	db = dbpkg.FilterFields(c, models.Job{}, db)
 	var jobs []models.Job
 
 	if err := db.Select(queryFields).Find(&jobs).Error; err != nil {
