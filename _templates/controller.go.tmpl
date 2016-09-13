@@ -33,6 +33,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	}
 
 	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.{{ .Model.Name }}{}, db)
 	var {{ pluralize (toLowerCamelCase .Model.Name) }} []models.{{ .Model.Name }}
 

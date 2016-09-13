@@ -33,6 +33,7 @@ func GetEmails(c *gin.Context) {
 	}
 
 	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.Email{}, db)
 	var emails []models.Email
 

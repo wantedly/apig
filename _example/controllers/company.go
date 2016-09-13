@@ -33,6 +33,7 @@ func GetCompanies(c *gin.Context) {
 	}
 
 	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.Company{}, db)
 	var companies []models.Company
 
