@@ -7,7 +7,7 @@ Welcome to the {{ pluralize (toLower .Model.Name) }} API. This API provides acce
 
 Create a new {{ toLower .Model.Name }}
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request {{ toSnakeCase .Model.Name }} (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
@@ -22,7 +22,7 @@ Create a new {{ toLower .Model.Name }}
 
 Returns {{ toLower .Model.Name }} list.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
@@ -44,7 +44,7 @@ Returns {{ toLower .Model.Name }} list.
 
 Returns {{ toLower .Model.Name }}.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
@@ -56,7 +56,7 @@ Returns {{ toLower .Model.Name }}.
 
 Update {{ toLower .Model.Name }}.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request {{ toSnakeCase .Model.Name }} (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
@@ -71,7 +71,7 @@ Update {{ toLower .Model.Name }}.
 
 Delete {{ toLower .Model.Name }}.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
