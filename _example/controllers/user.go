@@ -20,10 +20,6 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	preloads := c.DefaultQuery("preloads", "")
-	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	queryFields := helper.QueryFields(models.User{}, fields)
-
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
 
@@ -32,10 +28,13 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
 	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.User{}, db)
-	var users []models.User
+
+	users := []models.User{}
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.User{}, fields)
 
 	if err := db.Select(queryFields).Find(&users).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -105,14 +104,13 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+
+	user := models.User{}
 	id := c.Params.ByName("id")
-	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.User{}, fields)
-
-	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(preloads, db)
-	var user models.User
 
 	if err := db.Select(queryFields).First(&user, id).Error; err != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
@@ -148,7 +146,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	db := dbpkg.DBInstance(c)
-	var user models.User
+	user := models.User{}
 
 	if err := c.Bind(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -178,7 +176,7 @@ func UpdateUser(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var user models.User
+	user := models.User{}
 
 	if db.First(&user, id).Error != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
@@ -214,7 +212,7 @@ func DeleteUser(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var user models.User
+	user := models.User{}
 
 	if db.First(&user, id).Error != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}

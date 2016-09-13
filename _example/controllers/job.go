@@ -20,10 +20,6 @@ func GetJobs(c *gin.Context) {
 		return
 	}
 
-	preloads := c.DefaultQuery("preloads", "")
-	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	queryFields := helper.QueryFields(models.Job{}, fields)
-
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
 
@@ -32,10 +28,13 @@ func GetJobs(c *gin.Context) {
 		return
 	}
 
-	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
 	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.Job{}, db)
-	var jobs []models.Job
+
+	jobs := []models.Job{}
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.Job{}, fields)
 
 	if err := db.Select(queryFields).Find(&jobs).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -105,14 +104,13 @@ func GetJob(c *gin.Context) {
 		return
 	}
 
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+
+	job := models.Job{}
 	id := c.Params.ByName("id")
-	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Job{}, fields)
-
-	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(preloads, db)
-	var job models.Job
 
 	if err := db.Select(queryFields).First(&job, id).Error; err != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
@@ -148,7 +146,7 @@ func CreateJob(c *gin.Context) {
 	}
 
 	db := dbpkg.DBInstance(c)
-	var job models.Job
+	job := models.Job{}
 
 	if err := c.Bind(&job); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -178,7 +176,7 @@ func UpdateJob(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var job models.Job
+	job := models.Job{}
 
 	if db.First(&job, id).Error != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
@@ -214,7 +212,7 @@ func DeleteJob(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var job models.Job
+	job := models.Job{}
 
 	if db.First(&job, id).Error != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
