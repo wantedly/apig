@@ -10,7 +10,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-func FilterFields(c *gin.Context, model interface{}, db *gorm.DB) *gorm.DB {
+func filterToMap(c *gin.Context, model interface{}) map[string]string {
 	var jsonTag, jsonKey string
 	filters := make(map[string]string)
 	ts := reflect.TypeOf(model)
@@ -25,6 +25,12 @@ func FilterFields(c *gin.Context, model interface{}, db *gorm.DB) *gorm.DB {
 
 		filters[jsonKey] = c.Query("q[" + jsonKey + "]")
 	}
+
+	return filters
+}
+
+func FilterFields(c *gin.Context, model interface{}, db *gorm.DB) *gorm.DB {
+	filters := filterToMap(c, model)
 
 	for k, v := range filters {
 		if v != "" {
