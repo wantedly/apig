@@ -24,6 +24,7 @@ const templateDir = "_templates"
 var funcMap = template.FuncMap{
 	"apibDefaultValue": apibDefaultValue,
 	"apibType":         apibType,
+	"article":          article,
 	"pluralize":        inflector.Pluralize,
 	"requestParams":    requestParams,
 	"title":            strings.Title,
@@ -79,6 +80,15 @@ func apibType(field *Field) string {
 	}
 
 	return ""
+}
+
+func article(s string) string {
+	switch {
+	case strings.HasPrefix(s, "a"), strings.HasPrefix(s, "i"), strings.HasPrefix(s, "u"), strings.HasPrefix(s, "e"), strings.HasPrefix(s, "o"):
+		return "an " + s
+	default:
+		return "a " + s
+	}
 }
 
 func requestParams(fields []*Field) []*Field {

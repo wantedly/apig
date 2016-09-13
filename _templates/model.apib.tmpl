@@ -20,7 +20,7 @@ Create a new {{ toLower .Model.Name }}
 
 ### Get {{ pluralize (toLower .Model.Name) }} [GET]
 
-Returns a {{ toLower .Model.Name }} list.
+Returns {{ article (toLower .Model.Name) }} list.
 
 + Request (application/json; charset=utf-8)
     + Headers
@@ -42,7 +42,7 @@ Returns a {{ toLower .Model.Name }} list.
 
 ### Get {{ toLower .Model.Name }} [GET]
 
-Returns a {{ toLower .Model.Name }}.
+Returns {{ article (toLower .Model.Name) }}.
 
 + Request (application/json; charset=utf-8)
     + Headers
@@ -54,7 +54,7 @@ Returns a {{ toLower .Model.Name }}.
 
 ### Update {{ toLower .Model.Name }} [PUT]
 
-Update a {{ toLower .Model.Name }}.
+Update {{ article (toLower .Model.Name) }}.
 
 + Request {{ toSnakeCase .Model.Name }} (application/json; charset=utf-8)
     + Headers
@@ -69,7 +69,7 @@ Update a {{ toLower .Model.Name }}.
 
 ### Delete {{ toLower .Model.Name }} [DELETE]
 
-Delete a {{ toLower .Model.Name }}.
+Delete {{ article (toLower .Model.Name) }}.
 
 + Request (application/json; charset=utf-8)
     + Headers
