@@ -124,8 +124,16 @@ After that, you can run the server just executing the command:
 $ bin/server
 ```
 
-The server runs at http://localhost:8080
+The server runs at http://localhost:8080.
 
+By default, use the port 8080.
+If you change the port, set environment variables.
+
+```
+$ PORT=3000 bin/server
+```
+
+The server runs at http://localhost:3000.
 
 ## Usage
 
@@ -204,7 +212,9 @@ Resource name is written in the plural form.
 
 |Parameter|Description|Default|Example|
 |---------|-----------|-------|-------|
-|`ids=`|Item IDs|(empty)|`1,2,5`|
+|`stream=`|Return JSON in streaming format|`false`|`true`|
+|`q[field_name]=`|A unique query parameter for each field for filtering|(empty)|`q[id]=1,2,5`, `q[admin]=true&q[registered]=true`|
+|`sort=`|Retrieves a list in order of priority. `+` or (none) : ascending. `-` : descending|(empty)|`id`, `-age`, `id,-created_at`|
 |`limit=`|Maximum number of items|`25`|`50`|
 |`page=`|Page to receive|`1`|`3`|
 |`last_id=`|Beginning ID of items|(empty)|`1`|

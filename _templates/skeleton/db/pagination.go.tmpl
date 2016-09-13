@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -24,6 +25,10 @@ type Pagination struct {
 }
 
 func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
+	if p == nil {
+		return nil, errors.New("Pagination struct got nil.")
+	}
+
 	db := DBInstance(c)
 	limitQuery := c.DefaultQuery("limit", defaultLimit)
 	pageQuery := c.DefaultQuery("page", defaultPage)
@@ -32,6 +37,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	p.Order = c.DefaultQuery("order", defaultOrder)
 
 	limit, err := strconv.Atoi(limitQuery)
+
 	if err != nil {
 		return db, err
 	}
@@ -40,6 +46,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 
 	if lastIDQuery != "" {
 		lastID, err := strconv.Atoi(lastIDQuery)
+
 		if err != nil {
 			return db, err
 		}
@@ -54,6 +61,7 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	}
 
 	page, err := strconv.Atoi(pageQuery)
+
 	if err != nil {
 		return db, err
 	}
@@ -63,21 +71,30 @@ func (p *Pagination) Paginate(c *gin.Context) (*gorm.DB, error) {
 	return db.Offset(limit * (p.Page - 1)).Limit(p.Limit), nil
 }
 
-func (p *Pagination) SetHeaderLink(c *gin.Context, index int) {
-	var link string
+func (p *Pagination) SetHeaderLink(c *gin.Context, index int) error {
+	if p == nil {
+		return errors.New("Pagination struct got nil.")
+	}
 
-	if p.LastID != 0 {
-		link = fmt.Sprintf("<http://%v%v?limit=%v&last_id=%v&order=%v>; rel=\"next\"", c.Request.Host, c.Request.URL.Path, p.Limit, index, p.Order)
-	} else {
+	reqScheme := "http"
+
+	if c.Request.TLS != nil {
+		reqScheme = "https"
+	}
+
+	link := fmt.Sprintf("<%s://%v%v?limit=%v&last_id=%v&order=%v>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, p.Limit, index, p.Order)
+
+	if p.LastID == 0 {
 		if p.Page == 1 {
-			link = fmt.Sprintf("<http://%v%v?limit=%v&page=%v>; rel=\"next\"", c.Request.Host, c.Request.URL.Path, p.Limit, p.Page+1)
+			link = fmt.Sprintf("<%s://%v%v?limit=%v&page=%v>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, p.Limit, p.Page+1)
 		} else {
 			link = fmt.Sprintf(
-				"<http://%v%v?limit=%v&page=%v>; rel=\"next\",<http://%v%v?limit=%v&page=%v>; rel=\"prev\"",
+				"<%s://%v%v?limit=%v&page=%v>; rel=\"next\",<http://%v%v?limit=%v&page=%v>; rel=\"prev\"", reqScheme,
 				c.Request.Host, c.Request.URL.Path, p.Limit, p.Page+1, c.Request.Host, c.Request.URL.Path, p.Limit, p.Page-1,
 			)
 		}
 	}
 
 	c.Header("Link", link)
+	return nil
 }

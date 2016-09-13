@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
-	"strings"
 
 	dbpkg "github.com/wantedly/apig/_example/db"
 	"github.com/wantedly/apig/_example/helper"
@@ -14,15 +14,11 @@ import (
 
 func GetJobs(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
-	ids := c.DefaultQuery("ids", "")
-	preloads := c.DefaultQuery("preloads", "")
-	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	queryFields := helper.QueryFields(models.Job{}, fields)
 
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
@@ -32,77 +28,94 @@ func GetJobs(c *gin.Context) {
 		return
 	}
 
-	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	db = dbpkg.SortRecords(c.Query("sort"), db)
+	db = dbpkg.FilterFields(c, models.Job{}, db)
 
-	if ids != "" {
-		db = db.Where("id IN (?)", strings.Split(ids, ","))
-	}
+	jobs := []models.Job{}
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.Job{}, fields)
 
-	var jobs []models.Job
 	if err := db.Select(queryFields).Find(&jobs).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	// paging
-	var index int
-	if len(jobs) < 1 {
-		index = 0
-	} else {
+	index := 0
+
+	if len(jobs) > 0 {
 		index = int(jobs[len(jobs)-1].ID)
 	}
-	pagination.SetHeaderLink(c, index)
+
+	if err := pagination.SetHeaderLink(c, index); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
 		// conditional branch by version.
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	fieldMaps := []map[string]interface{}{}
-	for _, job := range jobs {
-		fieldMap, err := helper.FieldToMap(job, fields)
+	if _, ok := c.GetQuery("stream"); ok {
+		enc := json.NewEncoder(c.Writer)
+		c.Status(200)
 
-		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
+		for _, job := range jobs {
+			fieldMap, err := helper.FieldToMap(job, fields)
+
+			if err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+
+			if err := enc.Encode(fieldMap); err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+		}
+	} else {
+		fieldMaps := []map[string]interface{}{}
+
+		for _, job := range jobs {
+			fieldMap, err := helper.FieldToMap(job, fields)
+
+			if err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+
+			fieldMaps = append(fieldMaps, fieldMap)
 		}
 
-		fieldMaps = append(fieldMaps, fieldMap)
-	}
-
-	_, ok := c.GetQuery("pretty")
-	if ok {
-		c.IndentedJSON(200, fieldMaps)
-	} else {
-		c.JSON(200, fieldMaps)
+		if _, ok := c.GetQuery("pretty"); ok {
+			c.IndentedJSON(200, fieldMaps)
+		} else {
+			c.JSON(200, fieldMaps)
+		}
 	}
 }
 
 func GetJob(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+
+	job := models.Job{}
 	id := c.Params.ByName("id")
-	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Job{}, fields)
 
-	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(preloads, db)
-
-	var job models.Job
 	if err := db.Select(queryFields).First(&job, id).Error; err != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
 		c.JSON(404, content)
 		return
-	}
-
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
-		// conditional branch by version.
-		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
 	fieldMap, err := helper.FieldToMap(job, fields)
@@ -112,8 +125,12 @@ func GetJob(c *gin.Context) {
 		return
 	}
 
-	_, ok := c.GetQuery("pretty")
-	if ok {
+	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+		// conditional branch by version.
+		// 1.0.0 <= this version < 2.0.0 !!
+	}
+
+	if _, ok := c.GetQuery("pretty"); ok {
 		c.IndentedJSON(200, fieldMap)
 	} else {
 		c.JSON(200, fieldMap)
@@ -122,13 +139,14 @@ func GetJob(c *gin.Context) {
 
 func CreateJob(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
 	db := dbpkg.DBInstance(c)
-	var job models.Job
+	job := models.Job{}
 
 	if err := c.Bind(&job); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -150,6 +168,7 @@ func CreateJob(c *gin.Context) {
 
 func UpdateJob(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -157,7 +176,8 @@ func UpdateJob(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var job models.Job
+	job := models.Job{}
+
 	if db.First(&job, id).Error != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
 		c.JSON(404, content)
@@ -184,6 +204,7 @@ func UpdateJob(c *gin.Context) {
 
 func DeleteJob(c *gin.Context) {
 	ver, err := version.New(c)
+
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -191,7 +212,8 @@ func DeleteJob(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var job models.Job
+	job := models.Job{}
+
 	if db.First(&job, id).Error != nil {
 		content := gin.H{"error": "job with id#" + id + " not found"}
 		c.JSON(404, content)

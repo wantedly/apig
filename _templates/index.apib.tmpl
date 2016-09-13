@@ -3,4 +3,4 @@ HOST: http://localhost:8080
 
 # {{ title .Project }} API
 {{ range .Models }}
-<!-- include({{ tolower .Name }}.apib) -->{{ end }}
+<!-- include({{ toSnakeCase .Name }}.apib) -->{{ end }}

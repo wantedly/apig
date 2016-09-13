@@ -20,7 +20,9 @@ func Connect() *gorm.DB {
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
+
 	db.LogMode(false)
+
 	if gin.IsDebugging() {
 		db.LogMode(true)
 	}
@@ -30,6 +32,7 @@ func Connect() *gorm.DB {
 			&models.{{ .Name }}{},{{ end }}
 		)
 	}
+
 	return db
 }
 

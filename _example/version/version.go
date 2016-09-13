@@ -9,17 +9,15 @@ import (
 )
 
 func New(c *gin.Context) (string, error) {
-	header := c.Request.Header["Accept"][0]
+	ver := ""
+	header := c.Request.Header.Get("Accept")
 	header = strings.Join(strings.Fields(header), "")
-
-	var ver string
 
 	if strings.Contains(header, "version=") {
 		ver = strings.Split(strings.SplitAfter(header, "version=")[1], ";")[0]
 	}
 
-	v := c.Query("v")
-	if v != "" {
+	if v := c.Query("v"); v != "" {
 		ver = v
 	}
 
@@ -56,6 +54,7 @@ func compare(left string, right string) int {
 	// l > r : 1
 	// l == r : 0
 	// l < r : -1
+
 	if left == "-1" {
 		return 1
 	} else if right == "-1" {
