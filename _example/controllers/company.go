@@ -20,10 +20,6 @@ func GetCompanies(c *gin.Context) {
 		return
 	}
 
-	preloads := c.DefaultQuery("preloads", "")
-	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	queryFields := helper.QueryFields(models.Company{}, fields)
-
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
 
@@ -32,9 +28,13 @@ func GetCompanies(c *gin.Context) {
 		return
 	}
 
-	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.Company{}, db)
-	var companies []models.Company
+
+	companies := []models.Company{}
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.Company{}, fields)
 
 	if err := db.Select(queryFields).Find(&companies).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -104,14 +104,13 @@ func GetCompany(c *gin.Context) {
 		return
 	}
 
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+
+	company := models.Company{}
 	id := c.Params.ByName("id")
-	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Company{}, fields)
-
-	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(preloads, db)
-	var company models.Company
 
 	if err := db.Select(queryFields).First(&company, id).Error; err != nil {
 		content := gin.H{"error": "company with id#" + id + " not found"}
@@ -147,7 +146,7 @@ func CreateCompany(c *gin.Context) {
 	}
 
 	db := dbpkg.DBInstance(c)
-	var company models.Company
+	company := models.Company{}
 
 	if err := c.Bind(&company); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -177,7 +176,7 @@ func UpdateCompany(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var company models.Company
+	company := models.Company{}
 
 	if db.First(&company, id).Error != nil {
 		content := gin.H{"error": "company with id#" + id + " not found"}
@@ -213,7 +212,7 @@ func DeleteCompany(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var company models.Company
+	company := models.Company{}
 
 	if db.First(&company, id).Error != nil {
 		content := gin.H{"error": "company with id#" + id + " not found"}

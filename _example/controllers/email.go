@@ -20,10 +20,6 @@ func GetEmails(c *gin.Context) {
 		return
 	}
 
-	preloads := c.DefaultQuery("preloads", "")
-	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	queryFields := helper.QueryFields(models.Email{}, fields)
-
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
 
@@ -32,9 +28,13 @@ func GetEmails(c *gin.Context) {
 		return
 	}
 
-	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.Email{}, db)
-	var emails []models.Email
+
+	emails := []models.Email{}
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.Email{}, fields)
 
 	if err := db.Select(queryFields).Find(&emails).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -104,14 +104,13 @@ func GetEmail(c *gin.Context) {
 		return
 	}
 
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+
+	email := models.Email{}
 	id := c.Params.ByName("id")
-	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Email{}, fields)
-
-	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(preloads, db)
-	var email models.Email
 
 	if err := db.Select(queryFields).First(&email, id).Error; err != nil {
 		content := gin.H{"error": "email with id#" + id + " not found"}
@@ -147,7 +146,7 @@ func CreateEmail(c *gin.Context) {
 	}
 
 	db := dbpkg.DBInstance(c)
-	var email models.Email
+	email := models.Email{}
 
 	if err := c.Bind(&email); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -177,7 +176,7 @@ func UpdateEmail(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var email models.Email
+	email := models.Email{}
 
 	if db.First(&email, id).Error != nil {
 		content := gin.H{"error": "email with id#" + id + " not found"}
@@ -213,7 +212,7 @@ func DeleteEmail(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var email models.Email
+	email := models.Email{}
 
 	if db.First(&email, id).Error != nil {
 		content := gin.H{"error": "email with id#" + id + " not found"}

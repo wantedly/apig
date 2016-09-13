@@ -20,10 +20,6 @@ func GetProfiles(c *gin.Context) {
 		return
 	}
 
-	preloads := c.DefaultQuery("preloads", "")
-	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
-	queryFields := helper.QueryFields(models.Profile{}, fields)
-
 	pagination := dbpkg.Pagination{}
 	db, err := pagination.Paginate(c)
 
@@ -32,9 +28,13 @@ func GetProfiles(c *gin.Context) {
 		return
 	}
 
-	db = dbpkg.SetPreloads(preloads, db)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	db = dbpkg.SortRecords(c.Query("sort"), db)
 	db = dbpkg.FilterFields(c, models.Profile{}, db)
-	var profiles []models.Profile
+
+	profiles := []models.Profile{}
+	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
+	queryFields := helper.QueryFields(models.Profile{}, fields)
 
 	if err := db.Select(queryFields).Find(&profiles).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -104,14 +104,13 @@ func GetProfile(c *gin.Context) {
 		return
 	}
 
+	db := dbpkg.DBInstance(c)
+	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+
+	profile := models.Profile{}
 	id := c.Params.ByName("id")
-	preloads := c.DefaultQuery("preloads", "")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Profile{}, fields)
-
-	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(preloads, db)
-	var profile models.Profile
 
 	if err := db.Select(queryFields).First(&profile, id).Error; err != nil {
 		content := gin.H{"error": "profile with id#" + id + " not found"}
@@ -147,7 +146,7 @@ func CreateProfile(c *gin.Context) {
 	}
 
 	db := dbpkg.DBInstance(c)
-	var profile models.Profile
+	profile := models.Profile{}
 
 	if err := c.Bind(&profile); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -177,7 +176,7 @@ func UpdateProfile(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var profile models.Profile
+	profile := models.Profile{}
 
 	if db.First(&profile, id).Error != nil {
 		content := gin.H{"error": "profile with id#" + id + " not found"}
@@ -213,7 +212,7 @@ func DeleteProfile(c *gin.Context) {
 
 	db := dbpkg.DBInstance(c)
 	id := c.Params.ByName("id")
-	var profile models.Profile
+	profile := models.Profile{}
 
 	if db.First(&profile, id).Error != nil {
 		content := gin.H{"error": "profile with id#" + id + " not found"}
