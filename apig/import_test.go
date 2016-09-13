@@ -11,8 +11,8 @@ func TestFormatImportDir(t *testing.T) {
 	)
 
 	result := formatImportDir(importPaths)
-	if len(result) != 2 {
-		t.Fatalf("Number of import dir is incorrect. expected: 2, actual: %d", len(result))
+	if len(result) != 1 {
+		t.Fatalf("Number of import dir is incorrect. expected: 1, actual: %d", len(result))
 	}
 
 	expect := "github.com/wantedly/api-server"

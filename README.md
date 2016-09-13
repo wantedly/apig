@@ -124,8 +124,16 @@ After that, you can run the server just executing the command:
 $ bin/server
 ```
 
-The server runs at http://localhost:8080
+The server runs at http://localhost:8080.
 
+By default, use the port 8080.
+If you change the port, set environment variables.
+
+```
+$ PORT=3000 bin/server
+```
+
+The server runs at http://localhost:3000.
 
 ## Usage
 
