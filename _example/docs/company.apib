@@ -18,7 +18,7 @@ Create a new company
         + jobs (array[*jobs])
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (companies, fixed)
+    + Attributes (company, fixed)
 
 ### Get companies [GET]
 
@@ -31,7 +31,7 @@ Returns company list.
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (companies)
+        + (company)
 
 ## company details [/companies/{id}]
 
@@ -52,7 +52,7 @@ Returns company.
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (companies, fixed)
+    + Attributes (company, fixed)
 
 ### Update company [PUT]
 
@@ -69,7 +69,7 @@ Update company.
         + jobs (array[*jobs])
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (companies, fixed)
+    + Attributes (company, fixed)
 
 ### Delete company [DELETE]
 
@@ -83,7 +83,7 @@ Delete company.
 + Response 204
 
 # Data Structures
-## companies (object)
+## company (object)
 
 + id: 1 (number)
 + name: NAME (string)

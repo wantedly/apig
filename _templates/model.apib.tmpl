@@ -16,7 +16,7 @@ Create a new {{ toLower .Model.Name }}
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }}, fixed)
+    + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
 ### Get {{ pluralize (toLower .Model.Name) }} [GET]
 
@@ -29,7 +29,7 @@ Returns {{ toLower .Model.Name }} list.
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + ({{ pluralize (toLower .Model.Name) }})
+        + ({{ toSnakeCase .Model.Name }})
 
 ## {{ toLower .Model.Name }} details [/{{ pluralize (toSnakeCase .Model.Name) }}/{id}]
 
@@ -50,7 +50,7 @@ Returns {{ toLower .Model.Name }}.
             Accept: application/vnd.{{ .User }}+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }}, fixed)
+    + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
 ### Update {{ toLower .Model.Name }} [PUT]
 
@@ -65,7 +65,7 @@ Update {{ toLower .Model.Name }}.
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }}, fixed)
+    + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
 ### Delete {{ toLower .Model.Name }} [DELETE]
 
@@ -79,6 +79,6 @@ Delete {{ toLower .Model.Name }}.
 + Response 204
 
 # Data Structures
-## {{ pluralize (toLower .Model.Name) }} (object)
+## {{ toSnakeCase .Model.Name }} (object)
 {{ range $key, $value := .Model.Fields }}
 + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}

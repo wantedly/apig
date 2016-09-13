@@ -19,7 +19,7 @@ Create a new job
         + role_cd: 1 (number)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (jobs, fixed)
+    + Attributes (job, fixed)
 
 ### Get jobs [GET]
 
@@ -32,7 +32,7 @@ Returns job list.
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (jobs)
+        + (job)
 
 ## job details [/jobs/{id}]
 
@@ -53,7 +53,7 @@ Returns job.
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (jobs, fixed)
+    + Attributes (job, fixed)
 
 ### Update job [PUT]
 
@@ -71,7 +71,7 @@ Update job.
         + role_cd: 1 (number)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (jobs, fixed)
+    + Attributes (job, fixed)
 
 ### Delete job [DELETE]
 
@@ -85,7 +85,7 @@ Delete job.
 + Response 204
 
 # Data Structures
-## jobs (object)
+## job (object)
 
 + id: 1 (number)
 + user_id: 1 (number)

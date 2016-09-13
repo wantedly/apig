@@ -19,7 +19,7 @@ Create a new profile
         + engaged: false (boolean)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (profiles, fixed)
+    + Attributes (profile, fixed)
 
 ### Get profiles [GET]
 
@@ -32,7 +32,7 @@ Returns profile list.
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (profiles)
+        + (profile)
 
 ## profile details [/profiles/{id}]
 
@@ -53,7 +53,7 @@ Returns profile.
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (profiles, fixed)
+    + Attributes (profile, fixed)
 
 ### Update profile [PUT]
 
@@ -71,7 +71,7 @@ Update profile.
         + engaged: false (boolean)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (profiles, fixed)
+    + Attributes (profile, fixed)
 
 ### Delete profile [DELETE]
 
@@ -85,7 +85,7 @@ Delete profile.
 + Response 204
 
 # Data Structures
-## profiles (object)
+## profile (object)
 
 + id: 1 (number)
 + user_id: 1 (number)
