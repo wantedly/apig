@@ -487,19 +487,15 @@ func detectImportDir(targetPath string) (string, error) {
 
 	importDir := formatImportDir(importPaths)
 
-	if len(importDir) > 2 {
+	if len(importDir) > 1 {
 		return "", errors.New("Conflict import path. Please check 'main.go'.")
 	}
 
-	if len(importDir) < 2 {
+	if len(importDir) == 0 {
 		return "", errors.New("Can't refer import path. Please check 'main.go'.")
 	}
 
-	if importDir[0] != "." {
-		return "", errors.New("Unexpected import path. Please check 'main.go'.")
-	}
-
-	return importDir[1], nil
+	return importDir[0], nil
 }
 
 func Generate(outDir, modelDir, targetFile string, all bool) int {
