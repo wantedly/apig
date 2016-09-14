@@ -232,8 +232,10 @@ func TestGenerateRouter(t *testing.T) {
 	}
 }
 
-func TestGenerateDB(t *testing.T) {
-	outDir, err := ioutil.TempDir("", "generateDB")
+func TestGenerateDBSQLite(t *testing.T) {
+	detail.Database = "sqlite"
+
+	outDir, err := ioutil.TempDir("", "generateDBSQLite")
 	if err != nil {
 		t.Fatal("Failed to create tempdir")
 	}
@@ -246,10 +248,38 @@ func TestGenerateDB(t *testing.T) {
 	path := filepath.Join(outDir, "db", "db.go")
 	_, err = os.Stat(path)
 	if err != nil {
-		t.Fatalf("Router file is not generated: %s", path)
+		t.Fatalf("db.go is not generated: %s", path)
 	}
 
-	fixture := filepath.Join("testdata", "db", "db.go")
+	fixture := filepath.Join("testdata", "db", "db_sqlite.go")
+
+	if !compareFiles(path, fixture) {
+		c1, _ := ioutil.ReadFile(fixture)
+		c2, _ := ioutil.ReadFile(path)
+		t.Fatalf("Failed to generate db.go correctly.\nexpected:\n%s\nactual:\n%s", string(c1), string(c2))
+	}
+}
+
+func TestGenerateDBPostgres(t *testing.T) {
+	detail.Database = "postgres"
+
+	outDir, err := ioutil.TempDir("", "generateDBPostgres")
+	if err != nil {
+		t.Fatal("Failed to create tempdir")
+	}
+	defer os.RemoveAll(outDir)
+
+	if err := generateDB(detail, outDir); err != nil {
+		t.Fatalf("Error should not be raised: %s", err)
+	}
+
+	path := filepath.Join(outDir, "db", "db.go")
+	_, err = os.Stat(path)
+	if err != nil {
+		t.Fatalf("db.go is not generated: %s", path)
+	}
+
+	fixture := filepath.Join("testdata", "db", "db_postgres.go")
 
 	if !compareFiles(path, fixture) {
 		c1, _ := ioutil.ReadFile(fixture)
