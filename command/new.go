@@ -11,7 +11,10 @@ import (
 	"github.com/wantedly/apig/apig"
 )
 
-const defaultVCS = "github.com"
+const (
+	defaultDatabase = "sqlite"
+	defaultVCS      = "github.com"
+)
 
 type NewCommand struct {
 	Meta
@@ -20,6 +23,7 @@ type NewCommand struct {
 	username  string
 	project   string
 	namespace string
+	database  string
 }
 
 func (c *NewCommand) Run(args []string) int {
@@ -34,7 +38,7 @@ func (c *NewCommand) Run(args []string) int {
 		return 1
 	}
 
-	return apig.Skeleton(gopath, c.vcs, c.username, c.project, c.namespace)
+	return apig.Skeleton(gopath, c.vcs, c.username, c.project, c.namespace, c.database)
 }
 
 func (c *NewCommand) parseArgs(args []string) error {
@@ -45,6 +49,8 @@ func (c *NewCommand) parseArgs(args []string) error {
 	flag.StringVar(&c.username, "user", "", "Username")
 	flag.StringVar(&c.namespace, "n", "", "Namespace of API")
 	flag.StringVar(&c.namespace, "namespace", "", "Namespace of API")
+	flag.StringVar(&c.database, "d", defaultDatabase, "Database engine [sqlite,postgres]")
+	flag.StringVar(&c.database, "database", defaultDatabase, "Database engine [sqlite,postgres]")
 
 	if err := flag.Parse(args); err != nil {
 		return err
@@ -82,10 +88,10 @@ Usage: apig new [options] PROJECTNAME
   Generate go project and its boilerplate
 
 Options:
+  -database=database, -d     Database engine [sqlite,postgres] (default: sqlite)
   -namespace=namepace, -n    Namespace of API (default: "" (blank string))
   -user=name, -u             Username of VCS (default: username of github in .gitconfig)
   -vcs=name                  Version controll system to use (default: github.com)
-
 `
 	return strings.TrimSpace(helpText)
 }

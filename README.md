@@ -55,7 +55,14 @@ $ apig new -u wantedly apig-sample
 ```
 
 generates Golang API server boilerplate under `$GOPATH/src/gihhub.com/wantedly/apig-sample`.
-You can omit `-u, --user` and `--vcs` options. The default of `-u, -user` is github username, and `--vcs` is `github.com`
+apig supports two database engines; SQLite (`sqlite`) and PostgreSQL (`postgres`). You can specify this by `-d, -database` option.
+You can omit `-d, --database`, `-u, --user` and `--vcs` options. The default values are:
+
+|option|default value|
+|------|-------------|
+| `-d, -database` | `sqlite` |
+| `-u, -user` | github username |
+|  `--vcs` | `github.com` |
 
 ### 2. Write model code
 
