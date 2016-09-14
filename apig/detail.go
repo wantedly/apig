@@ -8,4 +8,5 @@ type Detail struct {
 	Models    Models
 	Model     *Model
 	ImportDir string
+	Database  string
 }
