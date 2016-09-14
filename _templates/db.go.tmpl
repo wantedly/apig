@@ -3,7 +3,8 @@ package db
 import (
 	"log"
 	"os"
-	"path/filepath"
+{{ if (eq .Database "sqlite") }}	"path/filepath"
+{{ end -}}
 	"strings"
 
 	"{{ .ImportDir }}/models"

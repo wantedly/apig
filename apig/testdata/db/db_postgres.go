@@ -3,7 +3,6 @@ package db
 import (
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/wantedly/api-server/models"
