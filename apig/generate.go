@@ -19,7 +19,10 @@ import (
 	"github.com/wantedly/apig/util"
 )
 
-const templateDir = "_templates"
+const (
+	dbDialectPathPrefix = "github.com/jinzhu/gorm/dialects/"
+	templateDir         = "_templates"
+)
 
 var funcMap = template.FuncMap{
 	"apibDefaultValue": apibDefaultValue,
@@ -479,6 +482,22 @@ func collectModels(outModelDir string) (Models, error) {
 	return models, nil
 }
 
+func detectDatabase(outDir string) (string, error) {
+	targetPath := filepath.Join(outDir, "db", "db.go")
+	importPaths, err := parseImport(targetPath)
+	if err != nil {
+		return "", err
+	}
+
+	for _, ip := range importPaths {
+		if strings.HasPrefix(ip, dbDialectPathPrefix) {
+			return strings.TrimPrefix(ip, dbDialectPathPrefix), nil
+		}
+	}
+
+	return "", errors.New("No database engine detected from db/db.go.")
+}
+
 func detectImportDir(targetPath string) (string, error) {
 	importPaths, err := parseImport(targetPath)
 	if err != nil {
@@ -554,6 +573,14 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 	}
 
 	if all {
+		database, err := detectDatabase(outDir)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
+
+		detail.Database = database
+
 		if err := generateSkeleton(detail, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
