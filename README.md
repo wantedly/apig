@@ -61,6 +61,7 @@ You can omit `-d, --database`, `-u, --user` and `--vcs` options. The default val
 |option|default value|
 |------|-------------|
 | `-d, -database` | `sqlite` |
+| `-n, -namespace`|(empty)|
 | `-u, -user` | github username |
 |  `--vcs` | `github.com` |
 
