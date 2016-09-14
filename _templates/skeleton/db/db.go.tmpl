@@ -14,8 +14,17 @@ import (
 )
 
 func Connect() *gorm.DB {
+{{ if (eq .Database "sqlite") -}}
 	dir := filepath.Dir("db/database.db")
 	db, err := gorm.Open("sqlite3", dir+"/database.db")
+{{ else if (eq .Database "postgres") -}}
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		return nil
+	}
+
+	db, err := gorm.Open("postgres", dbURL)
+{{ end -}}
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
