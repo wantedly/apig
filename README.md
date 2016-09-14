@@ -29,8 +29,7 @@ apig is an RESTful API server generator.
 
 ## How to build and install
 
-Prepare Go 1.6 or higher.
-Go 1.5 is acceptable, but `GO15VENDOREXPERIMENT=1` must be set.
+Go 1.6 or higher is required.
 
 After installing required version of Go, you can build and install `apig` by
 
