@@ -16,60 +16,63 @@ import (
 )
 
 func generateSkeleton(detail *Detail, outDir string) error {
-	ch := make(chan error)
-	go func() {
-		var wg sync.WaitGroup
-		r := regexp.MustCompile(`_templates/skeleton/.*\.tmpl$`)
-		for _, skeleton := range AssetNames() {
-			wg.Add(1)
-			go func(s string) {
-				defer wg.Done()
-				if !r.MatchString(s) {
-					return
+	var wg sync.WaitGroup
+	errCh := make(chan error, 1)
+	done := make(chan bool, 1)
+
+	r := regexp.MustCompile(`_templates/skeleton/.*\.tmpl$`)
+	for _, skeleton := range AssetNames() {
+		wg.Add(1)
+		go func(s string) {
+			defer wg.Done()
+
+			if !r.MatchString(s) {
+				return
+			}
+
+			trim := strings.Replace(s, "_templates/skeleton/", "", 1)
+			path := strings.Replace(trim, ".tmpl", "", 1)
+			dstPath := filepath.Join(outDir, path)
+
+			body, err := Asset(s)
+			if err != nil {
+				errCh <- err
+			}
+
+			tmpl, err := template.New("complex").Parse(string(body))
+			if err != nil {
+				errCh <- err
+			}
+
+			var buf bytes.Buffer
+
+			if err := tmpl.Execute(&buf, detail); err != nil {
+				errCh <- err
+			}
+
+			if !util.FileExists(filepath.Dir(dstPath)) {
+				if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
+					errCh <- err
 				}
+			}
 
-				trim := strings.Replace(s, "_templates/skeleton/", "", 1)
-				path := strings.Replace(trim, ".tmpl", "", 1)
-				dstPath := filepath.Join(outDir, path)
+			if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+				errCh <- err
+			}
 
-				body, err := Asset(s)
+			msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
+		}(skeleton)
+	}
 
-				if err != nil {
-					ch <- err
-				}
+	wg.Wait()
+	close(done)
 
-				tmpl, err := template.New("complex").Parse(string(body))
-
-				if err != nil {
-					ch <- err
-				}
-
-				var buf bytes.Buffer
-
-				if err := tmpl.Execute(&buf, detail); err != nil {
-					ch <- err
-				}
-
-				if !util.FileExists(filepath.Dir(dstPath)) {
-					if err := util.Mkdir(filepath.Dir(dstPath)); err != nil {
-						ch <- err
-					}
-				}
-
-				if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
-					ch <- err
-				}
-
-				msg.Printf("\t\x1b[32m%s\x1b[0m %s\n", "create", dstPath)
-			}(skeleton)
+	select {
+	case <-done:
+	case err := <-errCh:
+		if err != nil {
+			return err
 		}
-		wg.Wait()
-		ch <- nil
-	}()
-
-	err := <-ch
-	if err != nil {
-		return err
 	}
 
 	return nil
