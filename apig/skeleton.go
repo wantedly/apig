@@ -15,12 +15,13 @@ import (
 	"github.com/wantedly/apig/util"
 )
 
+var r = regexp.MustCompile(`_templates/skeleton/.*\.tmpl$`)
+
 func generateSkeleton(detail *Detail, outDir string) error {
 	var wg sync.WaitGroup
 	errCh := make(chan error, 1)
 	done := make(chan bool, 1)
 
-	r := regexp.MustCompile(`_templates/skeleton/.*\.tmpl$`)
 	for _, skeleton := range AssetNames() {
 		wg.Add(1)
 		go func(s string) {
