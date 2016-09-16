@@ -202,7 +202,7 @@ Resource name is written in the plural form.
 |--------|-----------|-------|
 |`GET /<resources>`|List items|`GET /users` List users|
 |`POST /<resources>`|Create new item|`POST /users` Create new user|
-|`GET /<resources>/{id}`|Retrive the item|`GET /users/1` Get the user which ID is 1|
+|`GET /<resources>/{id}`|Retrieve the item|`GET /users/1` Get the user which ID is 1|
 |`PUT /<resources>/{id}`|Update the item|`PUT /users/1` Update the user which ID is 1|
 |`DELETE /<resources>/{id}`|Delete the item|`DELETE /users/1` Delete the user which ID is 1|
 
@@ -267,7 +267,7 @@ API server supports 2 pagination types.
 
 #### Offset-based pagination
 
-Retrive items by specifying page number and the number of items per page.
+Retrieve items by specifying page number and the number of items per page.
 
 For example:
 
@@ -292,7 +292,7 @@ Link:   <http://example.com/api/users?limit=5&page=3>; rel="next",
 
 #### ID/Time-based pagination
 
-Retrive items by specifying range from a certain point.
+Retrieve items by specifying range from a certain point.
 
 For example:
 
