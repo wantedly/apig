@@ -100,8 +100,8 @@ func apibType(field *Field) string {
 }
 
 func article(s string) string {
-	switch {
-	case strings.HasPrefix(s, "a"), strings.HasPrefix(s, "i"), strings.HasPrefix(s, "u"), strings.HasPrefix(s, "e"), strings.HasPrefix(s, "o"):
+	switch string([]rune(s)[0]) {
+	case "a", "i", "u", "e", "o":
 		return "an " + s
 	default:
 		return "a " + s
