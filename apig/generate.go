@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+	"unicode"
 
 	"github.com/gedex/inflector"
 	"github.com/serenize/snaker"
@@ -30,6 +31,7 @@ var funcMap = template.FuncMap{
 	"title":            strings.Title,
 	"toLower":          strings.ToLower,
 	"toLowerCamelCase": camelToLowerCamel,
+	"toOriginalCase":   camelToOriginal,
 	"toSnakeCase":      snaker.CamelToSnake,
 }
 
@@ -118,6 +120,26 @@ func camelToLowerCamel(s string) string {
 	ss[0] = strings.ToLower(ss[0])
 
 	return strings.Join(ss, "")
+}
+
+func camelToOriginal(s string) string {
+	var words []string
+	var lastPos int
+	rs := []rune(s)
+
+	for i := 0; i < len(rs); i++ {
+		if i > 0 && unicode.IsUpper(rs[i]) {
+			words = append(words, strings.ToLower(s[lastPos:i]))
+			lastPos = i
+		}
+	}
+
+	// append the last word
+	if s[lastPos:] != "" {
+		words = append(words, strings.ToLower(s[lastPos:]))
+	}
+
+	return strings.Join(words, " ")
 }
 
 func generateApibIndex(detail *Detail, outDir string) error {
