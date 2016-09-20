@@ -130,6 +130,7 @@ func requestParams(fields []*Field) []*Field {
 	return params
 }
 
+// AccountName -> accountName
 func camelToLowerCamel(s string) string {
 	ss := strings.Split(s, "")
 	ss[0] = strings.ToLower(ss[0])
@@ -137,6 +138,7 @@ func camelToLowerCamel(s string) string {
 	return strings.Join(ss, "")
 }
 
+// accountName -> account name
 func camelToOriginal(s string) string {
 	var words []string
 	var lastPos int
