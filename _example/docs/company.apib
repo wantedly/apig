@@ -7,31 +7,31 @@ Welcome to the companies API. This API provides access to the companies service.
 
 Create a new company
 
-+ Request companies (application/json; charset=utf-8)
++ Request company (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + name: NAME (string)
-        + url ()
-        + jobs (array[*jobs])
+        + url: URL (string, nullable)
+        + jobs (array[job])
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (companies)
+    + Attributes (company, fixed)
 
 ### Get companies [GET]
 
-Returns company list.
+Returns a company list.
 
-+ Request companies (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (companies)
+        + (company)
 
 ## company details [/companies/{id}]
 
@@ -44,38 +44,38 @@ Returns company list.
 
 ### Get company [GET]
 
-Returns company.
+Returns a company.
 
-+ Request companies (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (companies, fixed)
+    + Attributes (company, fixed)
 
 ### Update company [PUT]
 
-Update company.
+Update a company.
 
-+ Request companies (application/json; charset=utf-8)
++ Request company (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + name: NAME (string)
-        + url ()
-        + jobs (array[*jobs])
+        + url: URL (string, nullable)
+        + jobs (array[job])
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (companies)
+    + Attributes (company, fixed)
 
 ### Delete company [DELETE]
 
-Delete company.
+Delete a company.
 
-+ Request companies (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
@@ -83,9 +83,9 @@ Delete company.
 + Response 204
 
 # Data Structures
-## companies (object, fixed)
+## company (object)
 
-+ id: 1 (number)
-+ name: NAME (string)
-+ url ()
-+ jobs (array[*jobs])
++ id: *1* (number)
++ name: *NAME* (string)
++ url: *URL* (string, nullable)
++ jobs (array[job])

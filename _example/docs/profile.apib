@@ -7,32 +7,32 @@ Welcome to the profiles API. This API provides access to the profiles service.
 
 Create a new profile
 
-+ Request profiles (application/json; charset=utf-8)
++ Request profile (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + user_id: 1 (number)
-        + user ()
-        + birthday ()
+        + user (user)
+        + birthday: `2000-01-01 00:00:00` (string)
         + engaged: false (boolean)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (profiles)
+    + Attributes (profile, fixed)
 
 ### Get profiles [GET]
 
-Returns profile list.
+Returns a profile list.
 
-+ Request profiles (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (profiles)
+        + (profile)
 
 ## profile details [/profiles/{id}]
 
@@ -45,39 +45,39 @@ Returns profile list.
 
 ### Get profile [GET]
 
-Returns profile.
+Returns a profile.
 
-+ Request profiles (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (profiles, fixed)
+    + Attributes (profile, fixed)
 
 ### Update profile [PUT]
 
-Update profile.
+Update a profile.
 
-+ Request profiles (application/json; charset=utf-8)
++ Request profile (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + user_id: 1 (number)
-        + user ()
-        + birthday ()
+        + user (user)
+        + birthday: `2000-01-01 00:00:00` (string)
         + engaged: false (boolean)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (profiles)
+    + Attributes (profile, fixed)
 
 ### Delete profile [DELETE]
 
-Delete profile.
+Delete a profile.
 
-+ Request profiles (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
@@ -85,10 +85,10 @@ Delete profile.
 + Response 204
 
 # Data Structures
-## profiles (object, fixed)
+## profile (object)
 
-+ id: 1 (number)
-+ user_id: 1 (number)
-+ user ()
-+ birthday ()
-+ engaged: false (boolean)
++ id: *1* (number)
++ user_id: *1* (number)
++ user (user)
++ birthday: `*2000-01-01 00:00:00*` (string)
++ engaged: *false* (boolean)

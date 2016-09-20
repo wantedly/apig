@@ -1,13 +1,13 @@
 # Group {{ pluralize .Model.Name }}
-Welcome to the {{ pluralize (toLower .Model.Name) }} API. This API provides access to the {{ pluralize (toLower .Model.Name) }} service.
+Welcome to the {{ pluralize (toOriginalCase .Model.Name) }} API. This API provides access to the {{ pluralize (toOriginalCase .Model.Name) }} service.
 
-## {{ pluralize (toLower .Model.Name) }} [/{{ pluralize (toLower .Model.Name) }}]
+## {{ pluralize (toOriginalCase .Model.Name) }} [/{{ pluralize (toSnakeCase .Model.Name) }}]
 
-### Create {{ toLower .Model.Name }} [POST]
+### Create {{ toOriginalCase .Model.Name }} [POST]
 
-Create a new {{ toLower .Model.Name }}
+Create a new {{ toOriginalCase .Model.Name }}
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request {{ toOriginalCase .Model.Name }} (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
@@ -16,47 +16,47 @@ Create a new {{ toLower .Model.Name }}
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }})
+    + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
-### Get {{ pluralize (toLower .Model.Name) }} [GET]
+### Get {{ pluralize (toOriginalCase .Model.Name) }} [GET]
 
-Returns {{ toLower .Model.Name }} list.
+Returns {{ article (toOriginalCase .Model.Name) }} list.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + ({{ pluralize (toLower .Model.Name) }})
+        + ({{ toSnakeCase .Model.Name }})
 
-## {{ toLower .Model.Name }} details [/{{ pluralize (toLower .Model.Name) }}/{id}]
+## {{ toOriginalCase .Model.Name }} details [/{{ pluralize (toSnakeCase .Model.Name) }}/{id}]
 
 + Parameters
-    + id: `1` (enum[string]) - The ID of the desired {{ toLower .Model.Name }}.
+    + id: `1` (enum[string]) - The ID of the desired {{ toOriginalCase .Model.Name }}.
         + Members
             + `1`
             + `2`
             + `3`
 
-### Get {{ toLower .Model.Name }} [GET]
+### Get {{ toOriginalCase .Model.Name }} [GET]
 
-Returns {{ toLower .Model.Name }}.
+Returns {{ article (toOriginalCase .Model.Name) }}.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }}, fixed)
+    + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
-### Update {{ toLower .Model.Name }} [PUT]
+### Update {{ toOriginalCase .Model.Name }} [PUT]
 
-Update {{ toLower .Model.Name }}.
+Update {{ article (toOriginalCase .Model.Name) }}.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request {{ toSnakeCase .Model.Name }} (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
@@ -65,13 +65,13 @@ Update {{ toLower .Model.Name }}.
         + {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes ({{ pluralize (toLower .Model.Name) }})
+    + Attributes ({{ toSnakeCase .Model.Name }}, fixed)
 
-### Delete {{ toLower .Model.Name }} [DELETE]
+### Delete {{ toOriginalCase .Model.Name }} [DELETE]
 
-Delete {{ toLower .Model.Name }}.
+Delete {{ article (toOriginalCase .Model.Name) }}.
 
-+ Request {{ pluralize (toLower .Model.Name) }} (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.{{ .User }}+json
@@ -79,6 +79,6 @@ Delete {{ toLower .Model.Name }}.
 + Response 204
 
 # Data Structures
-## {{ pluralize (toLower .Model.Name) }} (object, fixed)
+## {{ toSnakeCase .Model.Name }} (object)
 {{ range $key, $value := .Model.Fields }}
-+ {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
++ {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibExampleValue (apibDefaultValue .) }}{{ end }} ({{ apibType . }}){{ end }}

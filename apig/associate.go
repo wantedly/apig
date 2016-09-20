@@ -6,8 +6,12 @@ func resolveAssociate(model *Model, modelMap map[string]*Model, parents map[stri
 	parents[model.Name] = true
 
 	for i, field := range model.Fields {
+		if field.Association != nil && field.Association.Type != AssociationNone {
+			continue
+		}
+
 		str := strings.Trim(field.Type, "[]*")
-		if modelMap[str] != nil && parents[str] != true {
+		if modelMap[str] != nil && !parents[str] {
 			resolveAssociate(modelMap[str], modelMap, parents)
 
 			var assoc int

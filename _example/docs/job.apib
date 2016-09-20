@@ -7,32 +7,32 @@ Welcome to the jobs API. This API provides access to the jobs service.
 
 Create a new job
 
-+ Request jobs (application/json; charset=utf-8)
++ Request job (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + user_id: 1 (number)
-        + user ()
+        + user (user)
         + company_id: 1 (number)
         + role_cd: 1 (number)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (jobs)
+    + Attributes (job, fixed)
 
 ### Get jobs [GET]
 
-Returns job list.
+Returns a job list.
 
-+ Request jobs (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (jobs)
+        + (job)
 
 ## job details [/jobs/{id}]
 
@@ -45,39 +45,39 @@ Returns job list.
 
 ### Get job [GET]
 
-Returns job.
+Returns a job.
 
-+ Request jobs (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (jobs, fixed)
+    + Attributes (job, fixed)
 
 ### Update job [PUT]
 
-Update job.
+Update a job.
 
-+ Request jobs (application/json; charset=utf-8)
++ Request job (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + user_id: 1 (number)
-        + user ()
+        + user (user)
         + company_id: 1 (number)
         + role_cd: 1 (number)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (jobs)
+    + Attributes (job, fixed)
 
 ### Delete job [DELETE]
 
-Delete job.
+Delete a job.
 
-+ Request jobs (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
@@ -85,10 +85,10 @@ Delete job.
 + Response 204
 
 # Data Structures
-## jobs (object, fixed)
+## job (object)
 
-+ id: 1 (number)
-+ user_id: 1 (number)
-+ user ()
-+ company_id: 1 (number)
-+ role_cd: 1 (number)
++ id: *1* (number)
++ user_id: *1* (number)
++ user (user)
++ company_id: *1* (number)
++ role_cd: *1* (number)

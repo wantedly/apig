@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+	"unicode"
 
 	"github.com/gedex/inflector"
 	"github.com/serenize/snaker"
@@ -26,12 +27,15 @@ const (
 
 var funcMap = template.FuncMap{
 	"apibDefaultValue": apibDefaultValue,
+	"apibExampleValue": apibExampleValue,
 	"apibType":         apibType,
+	"article":          article,
 	"pluralize":        inflector.Pluralize,
 	"requestParams":    requestParams,
 	"title":            strings.Title,
 	"toLower":          strings.ToLower,
 	"toLowerCamelCase": camelToLowerCamel,
+	"toOriginalCase":   camelToOriginal,
 	"toSnakeCase":      snaker.CamelToSnake,
 }
 
@@ -43,45 +47,68 @@ var managedFields = []string{
 
 func apibDefaultValue(field *Field) string {
 	switch field.Type {
-	case "bool":
+	case "bool", "sql.NullBool":
 		return "false"
-	case "string":
-		return strings.ToUpper(field.Name)
-	case "time.Time":
-		return "`2000-01-01 00:00:00`"
-	case "*time.Time":
-		return "`2000-01-01 00:00:00`"
-	case "uint":
+	case "complex64", "complex128", "float32", "float64", "sql.NullFloat64":
+		return "1.1"
+	case "int", "int8", "int16", "int32", "int64", "sql.NullInt64", "uint", "uint8", "uint16", "uint32", "uint64":
 		return "1"
+	case "string", "sql.NullString":
+		return strings.ToUpper(field.Name)
+	case "time.Time", "*time.Time":
+		return "`2000-01-01 00:00:00`"
 	}
 
 	return ""
+}
+
+func apibExampleValue(s string) string {
+	if s == "" {
+		return ""
+	}
+
+	if strings.HasPrefix(s, "`") {
+		return "`*" + strings.Trim(s, "`") + "*`"
+	}
+
+	return "*" + s + "*"
 }
 
 func apibType(field *Field) string {
 	switch field.Type {
 	case "bool":
 		return "boolean"
-	case "string":
+	case "string", "time.Time", "*time.Time":
 		return "string"
-	case "time.Time":
-		return "string"
-	case "*time.Time":
-		return "string"
-	case "uint":
+	case "complex64", "complex128", "float32", "float64", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
 		return "number"
+	case "sql.NullBool":
+		return "boolean, nullable"
+	case "sql.NullFloat64", "sql.NullInt64":
+		return "number, nullable"
+	case "sql.NullString":
+		return "string, nullable"
 	}
 
 	switch field.Association.Type {
 	case AssociationBelongsTo:
-		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
+		return strings.ToLower(strings.Replace(field.Type, "*", "", -1))
 	case AssociationHasMany:
-		return fmt.Sprintf("array[%s]", inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "[]", "", -1))))
+		return fmt.Sprintf("array[%s]", strings.ToLower(strings.Trim(field.Type, "[]*")))
 	case AssociationHasOne:
-		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
+		return strings.ToLower(strings.Replace(field.Type, "*", "", -1))
 	}
 
 	return ""
+}
+
+func article(s string) string {
+	switch string([]rune(s)[0]) {
+	case "a", "i", "u", "e", "o":
+		return "an " + s
+	default:
+		return "a " + s
+	}
 }
 
 func requestParams(fields []*Field) []*Field {
@@ -106,11 +133,33 @@ func requestParams(fields []*Field) []*Field {
 	return params
 }
 
+// AccountName -> accountName
 func camelToLowerCamel(s string) string {
 	ss := strings.Split(s, "")
 	ss[0] = strings.ToLower(ss[0])
 
 	return strings.Join(ss, "")
+}
+
+// accountName -> account name
+func camelToOriginal(s string) string {
+	var words []string
+	var lastPos int
+	rs := []rune(s)
+
+	for i := 0; i < len(rs); i++ {
+		if i > 0 && unicode.IsUpper(rs[i]) {
+			words = append(words, strings.ToLower(s[lastPos:i]))
+			lastPos = i
+		}
+	}
+
+	// append the last word
+	if s[lastPos:] != "" {
+		words = append(words, strings.ToLower(s[lastPos:]))
+	}
+
+	return strings.Join(words, " ")
 }
 
 func generateApibIndex(detail *Detail, outDir string) error {

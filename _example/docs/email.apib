@@ -7,7 +7,7 @@ Welcome to the emails API. This API provides access to the emails service.
 
 Create a new email
 
-+ Request emails (application/json; charset=utf-8)
++ Request email (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
@@ -15,23 +15,23 @@ Create a new email
 
         + address: ADDRESS (string)
         + user_id: 1 (number)
-        + user ()
+        + user (user)
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (emails)
+    + Attributes (email, fixed)
 
 ### Get emails [GET]
 
-Returns email list.
+Returns an email list.
 
-+ Request emails (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (emails)
+        + (email)
 
 ## email details [/emails/{id}]
 
@@ -44,21 +44,21 @@ Returns email list.
 
 ### Get email [GET]
 
-Returns email.
+Returns an email.
 
-+ Request emails (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (emails, fixed)
+    + Attributes (email, fixed)
 
 ### Update email [PUT]
 
-Update email.
+Update an email.
 
-+ Request emails (application/json; charset=utf-8)
++ Request email (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
@@ -66,16 +66,16 @@ Update email.
 
         + address: ADDRESS (string)
         + user_id: 1 (number)
-        + user ()
+        + user (user)
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (emails)
+    + Attributes (email, fixed)
 
 ### Delete email [DELETE]
 
-Delete email.
+Delete an email.
 
-+ Request emails (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
@@ -83,9 +83,9 @@ Delete email.
 + Response 204
 
 # Data Structures
-## emails (object, fixed)
+## email (object)
 
-+ id: 1 (number)
-+ address: ADDRESS (string)
-+ user_id: 1 (number)
-+ user ()
++ id: *1* (number)
++ address: *ADDRESS* (string)
++ user_id: *1* (number)
++ user (user)

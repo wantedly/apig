@@ -7,32 +7,32 @@ Welcome to the users API. This API provides access to the users service.
 
 Create a new user
 
-+ Request users (application/json; charset=utf-8)
++ Request user (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + name: NAME (string)
-        + profile (profiles)
-        + jobs (array[*jobs])
-        + emails (array[*emails])
+        + profile (profile)
+        + jobs (array[job])
+        + emails (array[email])
 
 + Response 201 (application/json; charset=utf-8)
-    + Attributes (users)
+    + Attributes (user, fixed)
 
 ### Get users [GET]
 
-Returns user list.
+Returns an user list.
 
-+ Request users (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
     + Attributes (array, fixed)
-        + (users)
+        + (user)
 
 ## user details [/users/{id}]
 
@@ -45,39 +45,39 @@ Returns user list.
 
 ### Get user [GET]
 
-Returns user.
+Returns an user.
 
-+ Request users (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (users, fixed)
+    + Attributes (user, fixed)
 
 ### Update user [PUT]
 
-Update user.
+Update an user.
 
-+ Request users (application/json; charset=utf-8)
++ Request user (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
     + Attributes
 
         + name: NAME (string)
-        + profile (profiles)
-        + jobs (array[*jobs])
-        + emails (array[*emails])
+        + profile (profile)
+        + jobs (array[job])
+        + emails (array[email])
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (users)
+    + Attributes (user, fixed)
 
 ### Delete user [DELETE]
 
-Delete user.
+Delete an user.
 
-+ Request users (application/json; charset=utf-8)
++ Request (application/json; charset=utf-8)
     + Headers
 
             Accept: application/vnd.wantedly+json
@@ -85,10 +85,10 @@ Delete user.
 + Response 204
 
 # Data Structures
-## users (object, fixed)
+## user (object)
 
-+ id: 1 (number)
-+ name: NAME (string)
-+ profile (profiles)
-+ jobs (array[*jobs])
-+ emails (array[*emails])
++ id: *1* (number)
++ name: *NAME* (string)
++ profile (profile)
++ jobs (array[job])
++ emails (array[email])
