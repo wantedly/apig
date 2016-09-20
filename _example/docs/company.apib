@@ -14,7 +14,7 @@ Create a new company
     + Attributes
 
         + name: NAME (string)
-        + url ()
+        + url: URL (string, nullable)
         + jobs (array[*jobs])
 
 + Response 201 (application/json; charset=utf-8)
@@ -65,7 +65,7 @@ Update a company.
     + Attributes
 
         + name: NAME (string)
-        + url ()
+        + url: URL (string, nullable)
         + jobs (array[*jobs])
 
 + Response 200 (application/json; charset=utf-8)
@@ -87,5 +87,5 @@ Delete a company.
 
 + id: 1 (number)
 + name: NAME (string)
-+ url ()
++ url: URL (string, nullable)
 + jobs (array[*jobs])

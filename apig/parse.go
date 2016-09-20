@@ -23,6 +23,12 @@ func parseField(field *ast.Field) (*Field, error) {
 	case *ast.Ident: // e.g. string
 		fieldType = x.Name
 
+	case *ast.SelectorExpr: // e.g. time.Time, sql.NullString
+		switch x2 := x.X.(type) {
+		case *ast.Ident:
+			fieldType = x2.Name + "." + x.Sel.Name
+		}
+
 	case *ast.ArrayType: // e.g. []Email
 		switch x2 := x.Elt.(type) {
 		case *ast.Ident:

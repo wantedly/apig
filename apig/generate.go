@@ -43,16 +43,16 @@ var managedFields = []string{
 
 func apibDefaultValue(field *Field) string {
 	switch field.Type {
-	case "bool":
+	case "bool", "sql.NullBool":
 		return "false"
-	case "string":
-		return strings.ToUpper(field.Name)
-	case "time.Time":
-		return "`2000-01-01 00:00:00`"
-	case "*time.Time":
-		return "`2000-01-01 00:00:00`"
-	case "uint":
+	case "complex64", "complex128", "float32", "float64", "sql.NullFloat64":
+		return "1.1"
+	case "int", "int8", "int16", "int32", "int64", "sql.NullInt64", "uint", "uint8", "uint16", "uint32", "uint64":
 		return "1"
+	case "string", "sql.NullString":
+		return strings.ToUpper(field.Name)
+	case "time.Time", "*time.Time":
+		return "`2000-01-01 00:00:00`"
 	}
 
 	return ""
@@ -62,14 +62,16 @@ func apibType(field *Field) string {
 	switch field.Type {
 	case "bool":
 		return "boolean"
-	case "string":
+	case "string", "time.Time", "*time.Time":
 		return "string"
-	case "time.Time":
-		return "string"
-	case "*time.Time":
-		return "string"
-	case "uint":
+	case "complex64", "complex128", "float32", "float64", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
 		return "number"
+	case "sql.NullBool":
+		return "boolean, nullable"
+	case "sql.NullFloat64", "sql.NullInt64":
+		return "number, nullable"
+	case "sql.NullString":
+		return "string, nullable"
 	}
 
 	switch field.Association.Type {
