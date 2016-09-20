@@ -81,4 +81,4 @@ Delete {{ article (toOriginalCase .Model.Name) }}.
 # Data Structures
 ## {{ toSnakeCase .Model.Name }} (object)
 {{ range $key, $value := .Model.Fields }}
-+ {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibDefaultValue . }}{{ end }} ({{ apibType . }}){{ end }}
++ {{ .JSONName }}{{ if (apibDefaultValue .) ne "" }}: {{ apibExampleValue (apibDefaultValue .) }}{{ end }} ({{ apibType . }}){{ end }}
