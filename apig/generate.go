@@ -76,11 +76,11 @@ func apibType(field *Field) string {
 
 	switch field.Association.Type {
 	case AssociationBelongsTo:
-		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
+		return strings.ToLower(strings.Replace(field.Type, "*", "", -1))
 	case AssociationHasMany:
-		return fmt.Sprintf("array[%s]", inflector.Pluralize(strings.ToLower(strings.Trim(field.Type, "[]*"))))
+		return fmt.Sprintf("array[%s]", strings.ToLower(strings.Trim(field.Type, "[]*")))
 	case AssociationHasOne:
-		return inflector.Pluralize(strings.ToLower(strings.Replace(field.Type, "*", "", -1)))
+		return strings.ToLower(strings.Replace(field.Type, "*", "", -1))
 	}
 
 	return ""
