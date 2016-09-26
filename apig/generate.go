@@ -607,6 +607,12 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		return 1
 	}
 
+	database, err := detectDatabase(outDir)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+
 	detail := &Detail{
 		Models:    models,
 		ImportDir: importDir,
@@ -614,6 +620,7 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 		User:      user,
 		Project:   project,
 		Namespace: namespace,
+		Database:  database,
 	}
 
 	if err := generateCommonFiles(detail, outDir); err != nil {
@@ -622,14 +629,6 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 	}
 
 	if all {
-		database, err := detectDatabase(outDir)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			return 1
-		}
-
-		detail.Database = database
-
 		if err := generateSkeleton(detail, outDir); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
