@@ -14,24 +14,27 @@ import (
 
 func GetJobs(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	pagination := dbpkg.Pagination{}
-	db, err := pagination.Paginate(c)
-
+	db := dbpkg.DBInstance(c)
+	parameter, err := dbpkg.NewParameter(c, models.Job{})
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
-	db = dbpkg.SortRecords(c.Query("sort"), db)
-	db = dbpkg.FilterFields(c, models.Job{}, db)
+	db, err = parameter.Paginate(db)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
+	db = parameter.SortRecords(db)
+	db = parameter.FilterFields(db)
 	jobs := []models.Job{}
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Job{}, fields)
@@ -47,7 +50,7 @@ func GetJobs(c *gin.Context) {
 		index = int(jobs[len(jobs)-1].ID)
 	}
 
-	if err := pagination.SetHeaderLink(c, index); err != nil {
+	if err := parameter.SetHeaderLink(c, index); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,7 +66,6 @@ func GetJobs(c *gin.Context) {
 
 		for _, job := range jobs {
 			fieldMap, err := helper.FieldToMap(job, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -79,7 +81,6 @@ func GetJobs(c *gin.Context) {
 
 		for _, job := range jobs {
 			fieldMap, err := helper.FieldToMap(job, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -98,15 +99,19 @@ func GetJobs(c *gin.Context) {
 
 func GetJob(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
 	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	parameter, err := dbpkg.NewParameter(c, models.Job{})
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
 	job := models.Job{}
 	id := c.Params.ByName("id")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
@@ -119,7 +124,6 @@ func GetJob(c *gin.Context) {
 	}
 
 	fieldMap, err := helper.FieldToMap(job, fields)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -139,7 +143,6 @@ func GetJob(c *gin.Context) {
 
 func CreateJob(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -168,7 +171,6 @@ func CreateJob(c *gin.Context) {
 
 func UpdateJob(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -204,7 +206,6 @@ func UpdateJob(c *gin.Context) {
 
 func DeleteJob(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

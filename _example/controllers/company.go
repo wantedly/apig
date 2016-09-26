@@ -14,24 +14,27 @@ import (
 
 func GetCompanies(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	pagination := dbpkg.Pagination{}
-	db, err := pagination.Paginate(c)
-
+	db := dbpkg.DBInstance(c)
+	parameter, err := dbpkg.NewParameter(c, models.Company{})
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
-	db = dbpkg.SortRecords(c.Query("sort"), db)
-	db = dbpkg.FilterFields(c, models.Company{}, db)
+	db, err = parameter.Paginate(db)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
+	db = parameter.SortRecords(db)
+	db = parameter.FilterFields(db)
 	companies := []models.Company{}
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.Company{}, fields)
@@ -47,7 +50,7 @@ func GetCompanies(c *gin.Context) {
 		index = int(companies[len(companies)-1].ID)
 	}
 
-	if err := pagination.SetHeaderLink(c, index); err != nil {
+	if err := parameter.SetHeaderLink(c, index); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,7 +66,6 @@ func GetCompanies(c *gin.Context) {
 
 		for _, company := range companies {
 			fieldMap, err := helper.FieldToMap(company, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -79,7 +81,6 @@ func GetCompanies(c *gin.Context) {
 
 		for _, company := range companies {
 			fieldMap, err := helper.FieldToMap(company, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -98,15 +99,19 @@ func GetCompanies(c *gin.Context) {
 
 func GetCompany(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
 	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	parameter, err := dbpkg.NewParameter(c, models.Company{})
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
 	company := models.Company{}
 	id := c.Params.ByName("id")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
@@ -119,7 +124,6 @@ func GetCompany(c *gin.Context) {
 	}
 
 	fieldMap, err := helper.FieldToMap(company, fields)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -139,7 +143,6 @@ func GetCompany(c *gin.Context) {
 
 func CreateCompany(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -168,7 +171,6 @@ func CreateCompany(c *gin.Context) {
 
 func UpdateCompany(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -204,7 +206,6 @@ func UpdateCompany(c *gin.Context) {
 
 func DeleteCompany(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
