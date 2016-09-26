@@ -3,6 +3,7 @@ package apig
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -46,9 +47,19 @@ func generateSkeleton(detail *Detail, outDir string) error {
 			}
 
 			var buf bytes.Buffer
+			var src []byte
 
 			if err := tmpl.Execute(&buf, detail); err != nil {
 				errCh <- err
+			}
+
+			if strings.HasSuffix(path, ".go") {
+				src, err = format.Source(buf.Bytes())
+				if err != nil {
+					errCh <- err
+				}
+			} else {
+				src = buf.Bytes()
 			}
 
 			if !util.FileExists(filepath.Dir(dstPath)) {
@@ -57,7 +68,7 @@ func generateSkeleton(detail *Detail, outDir string) error {
 				}
 			}
 
-			if err := ioutil.WriteFile(dstPath, buf.Bytes(), 0644); err != nil {
+			if err := ioutil.WriteFile(dstPath, src, 0644); err != nil {
 				errCh <- err
 			}
 
