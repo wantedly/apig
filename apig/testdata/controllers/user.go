@@ -14,24 +14,27 @@ import (
 
 func GetUsers(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	pagination := dbpkg.Pagination{}
-	db, err := pagination.Paginate(c)
-
+	db := dbpkg.DBInstance(c)
+	parameter, err := dbpkg.NewParameter(c, models.User{})
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
-	db = dbpkg.SortRecords(c.Query("sort"), db)
-	db = dbpkg.FilterFields(c, models.User{}, db)
+	db, err = parameter.Paginate(db)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
+	db = parameter.SortRecords(db)
+	db = parameter.FilterFields(db)
 	users := []models.User{}
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.User{}, fields)
@@ -47,7 +50,7 @@ func GetUsers(c *gin.Context) {
 		index = int(users[len(users)-1].ID)
 	}
 
-	if err := pagination.SetHeaderLink(c, index); err != nil {
+	if err := parameter.SetHeaderLink(c, index); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,7 +66,6 @@ func GetUsers(c *gin.Context) {
 
 		for _, user := range users {
 			fieldMap, err := helper.FieldToMap(user, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -79,7 +81,6 @@ func GetUsers(c *gin.Context) {
 
 		for _, user := range users {
 			fieldMap, err := helper.FieldToMap(user, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -98,15 +99,19 @@ func GetUsers(c *gin.Context) {
 
 func GetUser(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
 	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	parameter, err := dbpkg.NewParameter(c, models.User{})
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
 	user := models.User{}
 	id := c.Params.ByName("id")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
@@ -119,7 +124,6 @@ func GetUser(c *gin.Context) {
 	}
 
 	fieldMap, err := helper.FieldToMap(user, fields)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -139,7 +143,6 @@ func GetUser(c *gin.Context) {
 
 func CreateUser(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -168,7 +171,6 @@ func CreateUser(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -204,7 +206,6 @@ func UpdateUser(c *gin.Context) {
 
 func DeleteUser(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
