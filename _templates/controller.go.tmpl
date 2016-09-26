@@ -14,24 +14,27 @@ import (
 
 func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	pagination := dbpkg.Pagination{}
-	db, err := pagination.Paginate(c)
-
+	db := dbpkg.DBInstance(c)
+	parameter, err := dbpkg.NewParameter(c, models.{{ .Model.Name }}{})
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
-	db = dbpkg.SortRecords(c.Query("sort"), db)
-	db = dbpkg.FilterFields(c, models.{{ .Model.Name }}{}, db)
+	db, err = parameter.Paginate(db)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
+	db = parameter.SortRecords(db)
+	db = parameter.FilterFields(db)
 	{{ pluralize (toLowerCamelCase .Model.Name) }} := []models.{{ .Model.Name }}{}
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
 	queryFields := helper.QueryFields(models.{{ .Model.Name }}{}, fields)
@@ -47,7 +50,7 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 		index = int({{ pluralize (toLowerCamelCase .Model.Name) }}[len({{ pluralize (toLowerCamelCase .Model.Name) }})-1].ID)
 	}
 
-	if err := pagination.SetHeaderLink(c, index); err != nil {
+	if err := parameter.SetHeaderLink(c, index); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,7 +66,6 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 		for _, {{ toLowerCamelCase .Model.Name }} := range {{ pluralize (toLowerCamelCase .Model.Name) }} {
 			fieldMap, err := helper.FieldToMap({{ toLowerCamelCase .Model.Name }}, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -79,7 +81,6 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 		for _, {{ toLowerCamelCase .Model.Name }} := range {{ pluralize (toLowerCamelCase .Model.Name) }} {
 			fieldMap, err := helper.FieldToMap({{ toLowerCamelCase .Model.Name }}, fields)
-
 			if err != nil {
 				c.JSON(400, gin.H{"error": err.Error()})
 				return
@@ -98,15 +99,19 @@ func Get{{ pluralize .Model.Name }}(c *gin.Context) {
 
 func Get{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
 	db := dbpkg.DBInstance(c)
-	db = dbpkg.SetPreloads(c.Query("preloads"), db)
+	parameter, err := dbpkg.NewParameter(c, models.{{ .Model.Name }}{})
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	db = parameter.SetPreloads(db)
 	{{ toLowerCamelCase .Model.Name }} := models.{{ .Model.Name }}{}
 	id := c.Params.ByName("id")
 	fields := helper.ParseFields(c.DefaultQuery("fields", "*"))
@@ -119,7 +124,6 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 	}
 
 	fieldMap, err := helper.FieldToMap({{ toLowerCamelCase .Model.Name }}, fields)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -139,7 +143,6 @@ func Get{{ .Model.Name }}(c *gin.Context) {
 
 func Create{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -168,7 +171,6 @@ func Create{{ .Model.Name }}(c *gin.Context) {
 
 func Update{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -204,7 +206,6 @@ func Update{{ .Model.Name }}(c *gin.Context) {
 
 func Delete{{ .Model.Name }}(c *gin.Context) {
 	ver, err := version.New(c)
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

@@ -14,12 +14,12 @@ func convertPrefixToQuery(sort string) string {
 	}
 }
 
-func SortRecords(sorts string, db *gorm.DB) *gorm.DB {
-	if sorts == "" {
+func (self *Parameter) SortRecords(db *gorm.DB) *gorm.DB {
+	if self.Sort == "" {
 		return db
 	}
 
-	for _, sort := range strings.Split(sorts, ",") {
+	for _, sort := range strings.Split(self.Sort, ",") {
 		db = db.Order(convertPrefixToQuery(sort))
 	}
 
