@@ -43,12 +43,12 @@ func DBInstance(c *gin.Context) *gorm.DB {
 	return c.MustGet("DB").(*gorm.DB)
 }
 
-func SetPreloads(preloads string, db *gorm.DB) *gorm.DB {
-	if preloads == "" {
+func (self *Parameter) SetPreloads(db *gorm.DB) *gorm.DB {
+	if self.Preloads == "" {
 		return db
 	}
 
-	for _, preload := range strings.Split(preloads, ",") {
+	for _, preload := range strings.Split(self.Preloads, ",") {
 		var a []string
 
 		for _, s := range strings.Split(preload, ".") {
