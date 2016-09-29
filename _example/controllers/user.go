@@ -13,7 +13,7 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
-	ver, err := version.New(c)
+	ver, err := version.NewVersion(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -55,7 +55,7 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+	if ver.Range("=>", "1.0.0") && ver.Range("<", "2.0.0") {
 		// conditional branch by version.
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
@@ -98,7 +98,7 @@ func GetUsers(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	ver, err := version.New(c)
+	ver, err := version.NewVersion(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -129,7 +129,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+	if ver.Range("=>", "1.0.0") && ver.Range("<", "2.0.0") {
 		// conditional branch by version.
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
@@ -142,7 +142,7 @@ func GetUser(c *gin.Context) {
 }
 
 func CreateUser(c *gin.Context) {
-	ver, err := version.New(c)
+	ver, err := version.NewVersion(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -161,7 +161,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+	if ver.Range("=>", "1.0.0") && ver.Range("<", "2.0.0") {
 		// conditional branch by version.
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
@@ -170,7 +170,7 @@ func CreateUser(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	ver, err := version.New(c)
+	ver, err := version.NewVersion(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -196,7 +196,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+	if ver.Range("=>", "1.0.0") && ver.Range("<", "2.0.0") {
 		// conditional branch by version.
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
@@ -205,7 +205,7 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
-	ver, err := version.New(c)
+	ver, err := version.NewVersion(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -226,7 +226,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	if version.Range("1.0.0", "<=", ver) && version.Range(ver, "<", "2.0.0") {
+	if ver.Range("=>", "1.0.0") && ver.Range("<", "2.0.0") {
 		// conditional branch by version.
 		// 1.0.0 <= this version < 2.0.0 !!
 	}

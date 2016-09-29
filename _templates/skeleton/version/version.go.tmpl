@@ -8,43 +8,60 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func New(c *gin.Context) (string, error) {
-	ver := ""
+const (
+	latestVersion = "-1"
+)
+
+type Version struct {
+	TargetVersion string
+}
+
+func NewVersion(c *gin.Context) (*Version, error) {
+	version := &Version{}
+
+	if err := version.initialize(c); err != nil {
+		return nil, err
+	}
+
+	return version, nil
+}
+
+func (self *Version) initialize(c *gin.Context) error {
 	header := c.Request.Header.Get("Accept")
 	header = strings.Join(strings.Fields(header), "")
 
 	if strings.Contains(header, "version=") {
-		ver = strings.Split(strings.SplitAfter(header, "version=")[1], ";")[0]
+		self.TargetVersion = strings.Split(strings.SplitAfter(header, "version=")[1], ";")[0]
 	}
 
 	if v := c.Query("v"); v != "" {
-		ver = v
+		self.TargetVersion = v
 	}
 
-	if ver == "" {
-		return "-1", nil
+	if self.TargetVersion == "" {
+		self.TargetVersion = latestVersion
+		return nil
 	}
 
-	_, err := strconv.Atoi(strings.Join(strings.Split(ver, "."), ""))
-	if err != nil {
-		return "", err
+	if _, err := strconv.Atoi(strings.Join(strings.Split(self.TargetVersion, "."), "")); err != nil {
+		return err
 	}
 
-	return ver, nil
+	return nil
 }
 
-func Range(left string, op string, right string) bool {
+func (self Version) Range(op string, right string) bool {
 	switch op {
 	case "<":
-		return (compare(left, right) == -1)
+		return (compare(self.TargetVersion, right) == -1)
 	case "<=":
-		return (compare(left, right) <= 0)
+		return (compare(self.TargetVersion, right) <= 0)
 	case ">":
-		return (compare(left, right) == 1)
+		return (compare(self.TargetVersion, right) == 1)
 	case ">=":
-		return (compare(left, right) >= 0)
+		return (compare(self.TargetVersion, right) >= 0)
 	case "==":
-		return (compare(left, right) == 0)
+		return (compare(self.TargetVersion, right) == 0)
 	}
 
 	return false

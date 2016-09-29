@@ -13,9 +13,10 @@ func TestAcceptHeader(t *testing.T) {
 	c := &gin.Context{
 		Request: req,
 	}
-	ver, _ := New(c)
-	if ver != "1.0.0" {
-		t.Errorf("Accept header should be `1.0.0`. actual: %#v", ver)
+	ver, _ := NewVersion(c)
+
+	if ver.TargetVersion != "1.0.0" {
+		t.Errorf("Accept header should be `1.0.0`. actual: %#v", ver.TargetVersion)
 	}
 }
 
@@ -25,9 +26,10 @@ func TestEmptyAcceptHeader(t *testing.T) {
 	c := &gin.Context{
 		Request: req,
 	}
-	ver, _ := New(c)
-	if ver != "-1" {
-		t.Errorf("Accept header should be the latest version `-1`. actual: %#v", ver)
+	ver, _ := NewVersion(c)
+
+	if ver.TargetVersion != "-1" {
+		t.Errorf("Accept header should be the latest version `-1`. actual: %#v", ver.TargetVersion)
 	}
 }
 
@@ -36,9 +38,10 @@ func TestUndefinedAcceptHeader(t *testing.T) {
 	c := &gin.Context{
 		Request: req,
 	}
-	ver, _ := New(c)
-	if ver != "-1" {
-		t.Errorf("No accept header should be the latest version `-1`. actual: %#v", ver)
+	ver, _ := NewVersion(c)
+
+	if ver.TargetVersion != "-1" {
+		t.Errorf("No accept header should be the latest version `-1`. actual: %#v", ver.TargetVersion)
 	}
 }
 
@@ -48,171 +51,178 @@ func TestQuery(t *testing.T) {
 	c := &gin.Context{
 		Request: req,
 	}
-	ver, _ := New(c)
-	if ver != "1.0.1" {
-		t.Errorf("URL Query should be `1.0.1`. actual: %#v", ver)
+	ver, _ := NewVersion(c)
+
+	if ver.TargetVersion != "1.0.1" {
+		t.Errorf("URL Query should be `1.0.1`. actual: %#v", ver.TargetVersion)
 	}
 }
 
 func TestRange(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/json;version= 1.2.3 ; more information; more information")
+	c := &gin.Context{
+		Request: req,
+	}
+	ver, _ := NewVersion(c)
 
-	if Range("1.2.3", "<", "0.9") {
+	if ver.Range("<", "0.9") {
 		t.Errorf("defect in <")
 	}
 
-	if Range("1.2.3", "<", "0.9.1") {
+	if ver.Range("<", "0.9.1") {
 		t.Errorf("defect in <")
 	}
 
-	if Range("1.2.3", "<", "1.2.2") {
+	if ver.Range("<", "1.2.2") {
 		t.Errorf("defect in <")
 	}
 
-	if Range("1.2.3", "<", "1.2.3") {
+	if ver.Range("<", "1.2.3") {
 		t.Errorf("defect in <")
 	}
 
-	if !Range("1.2.3", "<", "1.2.4") {
+	if !ver.Range("<", "1.2.4") {
 		t.Errorf("defect in <")
 	}
 
-	if !Range("1.2.3", "<", "1.2") {
+	if !ver.Range("<", "1.2") {
 		t.Errorf("defect in <")
 	}
 
-	if !Range("1.2.3", "<", "1.5") {
+	if !ver.Range("<", "1.5") {
 		t.Errorf("defect in <")
 	}
 
-	if !Range("1.2.3", "<", "-1") {
+	if !ver.Range("<", "-1") {
 		t.Errorf("defect in <")
 	}
 
-	if Range("1.2.3", "<=", "0.9") {
+	if ver.Range("<=", "0.9") {
 		t.Errorf("defect in <=")
 	}
 
-	if Range("1.2.3", "<=", "0.9.1") {
+	if ver.Range("<=", "0.9.1") {
 		t.Errorf("defect in <=")
 	}
 
-	if Range("1.2.3", "<=", "1.2.2") {
+	if ver.Range("<=", "1.2.2") {
 		t.Errorf("defect in <=")
 	}
 
-	if !Range("1.2.3", "<=", "1.2.3") {
+	if !ver.Range("<=", "1.2.3") {
 		t.Errorf("defect in <=")
 	}
 
-	if !Range("1.2.3", "<=", "1.2.4") {
+	if !ver.Range("<=", "1.2.4") {
 		t.Errorf("defect in <=")
 	}
 
-	if !Range("1.2.3", "<=", "1.2") {
+	if !ver.Range("<=", "1.2") {
 		t.Errorf("defect in <=")
 	}
 
-	if !Range("1.2.3", "<=", "1.5") {
+	if !ver.Range("<=", "1.5") {
 		t.Errorf("defect in <=")
 	}
 
-	if !Range("1.2.3", "<=", "-1") {
+	if !ver.Range("<=", "-1") {
 		t.Errorf("defect in <=")
 	}
 
-	if !Range("1.2.3", ">", "0.9") {
+	if !ver.Range(">", "0.9") {
 		t.Errorf("defect in >")
 	}
 
-	if !Range("1.2.3", ">", "0.9.1") {
+	if !ver.Range(">", "0.9.1") {
 		t.Errorf("defect in >")
 	}
 
-	if !Range("1.2.3", ">", "1.2.2") {
+	if !ver.Range(">", "1.2.2") {
 		t.Errorf("defect in >")
 	}
 
-	if Range("1.2.3", ">", "1.2.3") {
+	if ver.Range(">", "1.2.3") {
 		t.Errorf("defect in >")
 	}
 
-	if Range("1.2.3", ">", "1.2.4") {
+	if ver.Range(">", "1.2.4") {
 		t.Errorf("defect in >")
 	}
 
-	if Range("1.2.3", ">", "1.2") {
+	if ver.Range(">", "1.2") {
 		t.Errorf("defect in >")
 	}
 
-	if Range("1.2.3", ">", "1.5") {
+	if ver.Range(">", "1.5") {
 		t.Errorf("defect in >")
 	}
 
-	if Range("1.2.3", ">", "-1") {
+	if ver.Range(">", "-1") {
 		t.Errorf("defect in >")
 	}
 
-	if !Range("1.2.3", ">=", "0.9") {
+	if !ver.Range(">=", "0.9") {
 		t.Errorf("defect in >=")
 	}
 
-	if !Range("1.2.3", ">=", "0.9.1") {
+	if !ver.Range(">=", "0.9.1") {
 		t.Errorf("defect in >=")
 	}
 
-	if !Range("1.2.3", ">=", "1.2.2") {
+	if !ver.Range(">=", "1.2.2") {
 		t.Errorf("defect in >=")
 	}
 
-	if !Range("1.2.3", ">=", "1.2.3") {
+	if !ver.Range(">=", "1.2.3") {
 		t.Errorf("defect in >=")
 	}
 
-	if Range("1.2.3", ">=", "1.2.4") {
+	if ver.Range(">=", "1.2.4") {
 		t.Errorf("defect in >=")
 	}
 
-	if Range("1.2.3", ">=", "1.2") {
+	if ver.Range(">=", "1.2") {
 		t.Errorf("defect in >=")
 	}
 
-	if Range("1.2.3", ">=", "1.5") {
+	if ver.Range(">=", "1.5") {
 		t.Errorf("defect in >=")
 	}
 
-	if Range("1.2.3", ">=", "-1") {
+	if ver.Range(">=", "-1") {
 		t.Errorf("defect in >=")
 	}
 
-	if Range("1.2.3", "==", "0.9") {
+	if ver.Range("==", "0.9") {
 		t.Errorf("defect in ==")
 	}
 
-	if Range("1.2.3", "==", "0.9.1") {
+	if ver.Range("==", "0.9.1") {
 		t.Errorf("defect in ==")
 	}
 
-	if Range("1.2.3", "==", "1.2.2") {
+	if ver.Range("==", "1.2.2") {
 		t.Errorf("defect in ==")
 	}
 
-	if !Range("1.2.3", "==", "1.2.3") {
+	if !ver.Range("==", "1.2.3") {
 		t.Errorf("defect in ==")
 	}
 
-	if Range("1.2.3", "==", "1.2.4") {
+	if ver.Range("==", "1.2.4") {
 		t.Errorf("defect in ==")
 	}
 
-	if Range("1.2.3", "==", "1.2") {
+	if ver.Range("==", "1.2") {
 		t.Errorf("defect in ==")
 	}
 
-	if Range("1.2.3", "==", "1.5") {
+	if ver.Range("==", "1.5") {
 		t.Errorf("defect in ==")
 	}
 
-	if Range("1.2.3", "==", "-1") {
+	if ver.Range("==", "-1") {
 		t.Errorf("defect in ==")
 	}
 }
