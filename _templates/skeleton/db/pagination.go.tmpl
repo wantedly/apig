@@ -29,11 +29,15 @@ func (self *Parameter) SetHeaderLink(c *gin.Context, index int) error {
 		return errors.New("Parameter struct got nil.")
 	}
 
-	var filters, preloads, sort string
+	var pretty, filters, preloads string
 	reqScheme := "http"
 
 	if c.Request.TLS != nil {
 		reqScheme = "https"
+	}
+
+	if _, ok := c.GetQuery("pretty"); ok {
+		pretty = "&pretty"
 	}
 
 	if len(self.Filters) != 0 {
@@ -44,23 +48,18 @@ func (self *Parameter) SetHeaderLink(c *gin.Context, index int) error {
 		preloads = fmt.Sprintf("&preloads=%v", self.Preloads)
 	}
 
-	if self.Sort != "" {
-		sort = fmt.Sprintf("&sort=%v", self.Sort)
-	}
-
 	if self.IsLastID {
-		c.Header("Link", fmt.Sprintf("<%s://%v%v?limit=%v%v%v%v&last_id=%v&order=%v>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, self.Limit, filters, preloads, sort, index, self.Order))
+		c.Header("Link", fmt.Sprintf("<%s://%v%v?limit=%v%s%s&last_id=%v&order=%v%s>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, self.Limit, filters, preloads, index, self.Order, pretty))
 		return nil
 	}
 
 	if self.Page == 1 {
-		c.Header("Link", fmt.Sprintf("<%s://%v%v?limit=%v%v%v%v&page=%v>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, self.Limit, filters, preloads, sort, self.Page+1))
+		c.Header("Link", fmt.Sprintf("<%s://%v%v?limit=%v%s%s&page=%v%s>; rel=\"next\"", reqScheme, c.Request.Host, c.Request.URL.Path, self.Limit, filters, preloads, self.Page+1, pretty))
 		return nil
 	}
 
 	c.Header("Link", fmt.Sprintf(
-		"<%s://%v%v?limit=%v&page=%v>; rel=\"next\",<http://%v%v?limit=%v%v%v%v&page=%v>; rel=\"prev\"", reqScheme,
-		c.Request.Host, c.Request.URL.Path, self.Limit, self.Page+1, c.Request.Host, c.Request.URL.Path, self.Limit, filters, preloads, sort, self.Page-1,
-	))
+		"<%s://%v%v?limit=%v%s%s&page=%v%s>; rel=\"next\",<%s://%v%v?limit=%v%s%s&page=%v%s>; rel=\"prev\"", reqScheme,
+		c.Request.Host, c.Request.URL.Path, self.Limit, filters, preloads, self.Page+1, pretty, reqScheme, c.Request.Host, c.Request.URL.Path, self.Limit, filters, preloads, self.Page-1, pretty))
 	return nil
 }
