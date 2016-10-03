@@ -17,37 +17,28 @@ type Version struct {
 }
 
 func NewVersion(c *gin.Context) (*Version, error) {
-	version := &Version{}
-
-	if err := version.initialize(c); err != nil {
-		return nil, err
-	}
-
-	return version, nil
-}
-
-func (self *Version) initialize(c *gin.Context) error {
+	targetVersion := ""
 	header := c.Request.Header.Get("Accept")
 	header = strings.Join(strings.Fields(header), "")
 
 	if strings.Contains(header, "version=") {
-		self.TargetVersion = strings.Split(strings.SplitAfter(header, "version=")[1], ";")[0]
+		targetVersion = strings.Split(strings.SplitAfter(header, "version=")[1], ";")[0]
 	}
 
 	if v := c.Query("v"); v != "" {
-		self.TargetVersion = v
+		targetVersion = v
 	}
 
-	if self.TargetVersion == "" {
-		self.TargetVersion = latestVersion
-		return nil
+	if targetVersion == "" {
+		targetVersion = latestVersion
+		return &Version{targetVersion}, nil
 	}
 
-	if _, err := strconv.Atoi(strings.Join(strings.Split(self.TargetVersion, "."), "")); err != nil {
-		return err
+	if _, err := strconv.Atoi(strings.Join(strings.Split(targetVersion, "."), "")); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return &Version{targetVersion}, nil
 }
 
 func (self Version) Range(op string, right string) bool {
