@@ -490,6 +490,7 @@ func collectModels(outModelDir string) (Models, error) {
 
 	var models Models
 	var wg sync.WaitGroup
+	var mu sync.Mutex
 	errCh := make(chan error, 1)
 	done := make(chan bool, 1)
 
@@ -511,9 +512,13 @@ func collectModels(outModelDir string) (Models, error) {
 				errCh <- err
 			}
 
+			mu.Lock()
+
 			for _, m := range ms {
 				models = append(models, m)
 			}
+
+			mu.Unlock()
 		}(file)
 	}
 
