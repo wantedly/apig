@@ -54,7 +54,7 @@ $ apig new -u wantedly apig-sample
 ```
 
 generates Golang API server boilerplate under `$GOPATH/src/gihhub.com/wantedly/apig-sample`.
-apig supports two database engines; SQLite (`sqlite`) and PostgreSQL (`postgres`). You can specify this by `-d, -database` option.
+apig supports two database engines; SQLite (`sqlite`) and PostgreSQL (`postgres`) and Mysql (`mysql`). You can specify this by `-d, -database` option.
 
 Available command line options of `apig new` command are:
 
