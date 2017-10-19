@@ -24,6 +24,13 @@ func Connect() *gorm.DB {
 	}
 
 	db, err := gorm.Open("postgres", dbURL)
+{{ else if (eq .Database "mysql") -}}
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		return nil
+	}
+
+	db, err := gorm.Open("mysql", dbURL)
 {{ end -}}
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
