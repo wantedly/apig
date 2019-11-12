@@ -1,3 +1,9 @@
+:warning: **This package is now officially maintained by @shimastripe at [shimastripe/apig](https://github.com/shimastripe/apig).** :warning: 
+
+This repository exists only for preventing existing codes from failing to resolve package, and will no longer be maintained. Please send a pull request to the new repository. 
+
+---
+
 # apig: Golang RESTful API Server Generator
 [![Build Status](https://travis-ci.org/wantedly/apig.svg?branch=master)](https://travis-ci.org/wantedly/apig)
 
